@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>카메라 AI 추론 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <style>
+    body { overflow: hidden; }
+
+    .page-body {
+      padding-top: var(--header-height);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .analysis-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr 340px;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ── 좌측 설정 패널 ── */
+    .side-panel {
+      border-right: 1px solid var(--color-border);
+      background: var(--color-surface);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .side-panel-header {
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+      flex-shrink: 0;
+    }
+
+    .side-panel-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .side-panel-title svg { color: var(--color-primary); }
+
+    .side-panel-sub {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    .side-section {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .side-section:last-of-type { border-bottom: none; }
+
+    .side-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 12px;
+    }
+
+    /* 영상 파일 리스트 */
+    .video-file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .video-file-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 13px;
+      border-radius: var(--border-radius);
+      border: 1.5px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: var(--color-surface);
+    }
+
+    .video-file-item:hover { border-color: var(--color-primary); }
+    .video-file-item.selected {
+      border-color: var(--color-primary);
+      background: #FBEEF0;
+    }
+
+    .video-file-item input[type="radio"] {
+      accent-color: var(--color-primary);
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .video-thumb {
+      width: 46px;
+      height: 32px;
+      border-radius: 4px;
+      background: #1a2535;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+
+    .video-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+
+    .video-meta {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    /* 모델 카드 */
+    .model-card-radio {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .model-radio-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 13px 14px;
+      border-radius: var(--border-radius);
+      border: 1.5px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .model-radio-item:hover { border-color: var(--color-primary); }
+    .model-radio-item.active {
+      border-color: var(--color-primary);
+      background: #FBEEF0;
+    }
+
+    .model-radio-item input[type="radio"] {
+      accent-color: var(--color-primary);
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .model-radio-info { min-width: 0; }
+    .model-radio-info .model-radio-name { font-size: 13px; font-weight: 700; color: var(--color-text); }
+    .model-radio-info .model-radio-sub { font-size: 11px; color: var(--color-text-muted); margin-top: 2px; }
+
+    /* 설정 필드 */
+    .config-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 11px;
+      gap: 10px;
+    }
+
+    .config-label { font-size: 13px; font-weight: 600; color: var(--color-text); }
+
+    .config-select {
+      padding: 7px 32px 7px 11px !important;
+      border-radius: var(--border-radius);
+      border: 1.5px solid var(--color-border);
+      font-size: 13px;
+      background: var(--color-surface);
+      color: var(--color-text);
+      outline: none;
+      cursor: pointer;
+      min-width: 130px;
+    }
+
+    .config-select:focus { border-color: var(--color-primary); }
+
+    .slider-row { margin-bottom: 12px; }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .slider-value { font-weight: 700; color: var(--color-primary); }
+
+    input[type="range"].config-slider {
+      width: 100%;
+      accent-color: var(--color-primary);
+      height: 4px;
+      cursor: pointer;
+    }
+
+    /* 분석 실행 버튼 */
+    .analyze-btn {
+      margin: 18px 22px 22px;
+      padding: 14px 16px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius-lg);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .analyze-btn:hover:not(:disabled) {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(200, 16, 46, 0.25);
+    }
+
+    .analyze-btn:disabled {
+      background: #CED4DA;
+      cursor: not-allowed;
+    }
+
+    /* ── 중앙 뷰어 영역 ── */
+    .viewer-area {
+      background: #0F1923;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .viewer-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .viewer-toolbar-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.78);
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .viewer-ctrl-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+
+    .viewer-ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .viewer-canvas-wrap {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    #cam-viewer-canvas {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+    }
+
+    /* 분석 진행 오버레이 */
+    .analysis-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 15, 25, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .analysis-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .overlay-pct {
+      font-size: 72px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -3px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .overlay-step {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 12px;
+      font-weight: 500;
+    }
+
+    .overlay-progress-bar {
+      width: 320px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 2px;
+      margin-top: 24px;
+      overflow: hidden;
+    }
+
+    .overlay-progress-fill {
+      height: 100%;
+      background: #fff;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* 결과 리스트 (뷰어 하단) - 가로 스크롤 카드 리스트 */
+    .result-section {
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      flex-shrink: 0;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .result-tabs {
+      display: flex;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface-2);
+      flex-shrink: 0;
+    }
+
+    .result-tab {
+      padding: 13px 16px;
+      font-size: 13px;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .result-tab.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+      font-weight: 700;
+    }
+
+    .result-tab:hover:not(.active) { color: var(--color-text); }
+
+    .result-panel {
+      padding: 14px 20px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      flex: 1;
+      min-height: 0;
+      background: var(--color-surface);
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+      scrollbar-width: thin;
+    }
+
+    .result-panel::-webkit-scrollbar { height: 8px; }
+    .result-panel::-webkit-scrollbar-thumb { background: #CED4DA; border-radius: 4px; }
+
+    .result-card {
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0;
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      width: 180px;
+      overflow: hidden;
+    }
+
+    .result-card-thumb {
+      width: 100%;
+      height: 90px;
+      background: #1a2535;
+      display: block;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .result-card-body {
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .result-card:hover {
+      border-color: var(--color-primary);
+      background: #FAFAFB;
+    }
+    .result-card.selected {
+      border-color: var(--color-primary);
+      background: #FBEEF0;
+    }
+
+    .result-card-info { flex: 1; min-width: 0; }
+    .result-card-class {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+    }
+    .result-card-sub { font-size: 12px; color: var(--color-text-muted); }
+    .result-card-sev {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 7px;
+    }
+
+    .conf-bar-wrap { flex-shrink: 0; width: 100%; }
+    .conf-bar-lbl {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      text-align: right;
+      margin-bottom: 4px;
+      font-family: monospace;
+      font-weight: 700;
+    }
+    .conf-bar {
+      height: 5px;
+      background: #E9ECEF;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .conf-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+
+    /* ── 우측 파이프라인 + 정보 패널 ── */
+    .pipeline-panel {
+      border-left: 1px solid var(--color-border);
+      background: var(--color-surface);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pipeline-header {
+      padding: 22px 22px 16px;
+      border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+
+    .pipeline-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .pipeline-title svg { color: var(--color-primary); }
+
+    .pipeline-sub {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    /* 파이프라인 단계 */
+    .pipeline-steps {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .pipeline-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 9px 0;
+      position: relative;
+    }
+
+    .pipeline-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: 32px;
+      bottom: -9px;
+      width: 2px;
+      background: var(--color-border);
+      z-index: 0;
+    }
+
+    .step-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid var(--color-border);
+      background: var(--color-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s ease;
+    }
+
+    .step-dot.running {
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+      color: #fff;
+      animation: pulse-dot 1.2s infinite;
+    }
+
+    .step-dot.done {
+      border-color: #495057;
+      background: #495057;
+      color: #fff;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.35); }
+      50% { box-shadow: 0 0 0 6px rgba(200, 16, 46, 0); }
+    }
+
+    .step-content { flex: 1; min-width: 0; }
+    .step-name { font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px; }
+    .step-desc { font-size: 11px; color: var(--color-text-muted); line-height: 1.4; }
+    .step-status { font-size: 11px; font-weight: 600; margin-top: 3px; }
+    .step-status.pending { color: var(--color-text-muted); }
+    .step-status.running { color: var(--color-primary); }
+    .step-status.done { color: #495057; }
+
+    /* GNSS 정보 - 라이트 테마 (패널 전체와 동일) */
+    .gnss-panel {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+    }
+
+    .gnss-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 12px;
+    }
+
+    .gnss-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #F1F3F5;
+      font-size: 13px;
+      gap: 10px;
+    }
+
+    .gnss-row:last-child { border-bottom: none; }
+    .gnss-row .gnss-label {
+      color: var(--color-text-muted);
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+    .gnss-row .gnss-val {
+      font-weight: 600;
+      color: var(--color-text);
+      font-family: 'Inter', monospace;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    /* AI 캡셔닝 */
+    .caption-section {
+      padding: 18px 22px;
+    }
+
+    .caption-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+    }
+
+    .caption-box {
+      background: var(--color-page-bg);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--color-border);
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--color-text);
+      min-height: 62px;
+    }
+
+    .caption-box.empty {
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+
+    /* 대기 메시지 */
+    .idle-message {
+      padding: 36px 22px;
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+
+    .idle-message svg { opacity: 0.3; margin-bottom: 12px; }
+    .idle-message p { font-size: 13px; line-height: 1.6; }
+
+    /* 결과 요약 박스 */
+    .result-summary-box {
+      margin: 16px 22px 0;
+      padding: 16px 18px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+    }
+
+    .result-summary-box .rs-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .result-summary-box .rs-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--color-text);
+      line-height: 1;
+    }
+
+    .result-summary-box .rs-unit {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      margin-left: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="analysis-layout">
+
+    <!-- ── 좌측 설정 패널 ── -->
+    <aside class="side-panel">
+      <div class="side-panel-header">
+        <div class="side-panel-title">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          카메라 AI 추론
+        </div>
+        <div class="side-panel-sub">이미지셋 하나를 선택하고 분석을 실행합니다</div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-section-title">이미지셋 선택</div>
+        <div style="font-size:11px; color:var(--color-text-muted); margin-bottom:10px; line-height:1.45;">
+          차량 카메라로 수집된 이미지셋 묶음 하나를 선택하세요.
+        </div>
+        <div class="video-file-list" id="video-file-list"></div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-section-title">AI 모델 선택</div>
+        <div class="model-card-radio">
+          <label class="model-radio-item active" id="model-cam-lw">
+            <input type="radio" name="cam-model" value="lightweight" checked>
+            <div class="model-radio-info">
+              <div class="model-radio-name">YOLO-Road-Camera Lightweight</div>
+              <div class="model-radio-sub">v1.4 · mAP 0.83 · 실시간 처리</div>
+            </div>
+          </label>
+          <label class="model-radio-item" id="model-cam-hd">
+            <input type="radio" name="cam-model" value="hd">
+            <div class="model-radio-info">
+              <div class="model-radio-name">YOLO-Road-Camera HD</div>
+              <div class="model-radio-sub">v2.0 · mAP 0.89 · 정밀 분석</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-section-title">분석 설정</div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="config-label">신뢰도 임계값</span>
+            <span class="slider-value" id="conf-val-disp">0.45</span>
+          </div>
+          <input type="range" class="config-slider" id="conf-threshold" min="10" max="90" value="45"
+            oninput="document.getElementById('conf-val-disp').textContent=(this.value/100).toFixed(2)">
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="config-label">NMS IoU</span>
+            <span class="slider-value" id="iou-val-disp">0.50</span>
+          </div>
+          <input type="range" class="config-slider" id="iou-threshold" min="10" max="90" value="50"
+            oninput="document.getElementById('iou-val-disp').textContent=(this.value/100).toFixed(2)">
+        </div>
+
+        <div class="config-row">
+          <span class="config-label">처리 해상도</span>
+          <select class="config-select form-select">
+            <option>1280×720</option>
+            <option selected>1920×1080</option>
+            <option>3840×2160</option>
+          </select>
+        </div>
+
+        <div class="config-row" style="margin-top:4px;">
+          <span class="config-label">프레임 간격</span>
+          <select class="config-select form-select">
+            <option>1 fps</option>
+            <option selected>5 fps</option>
+            <option>10 fps</option>
+            <option>30 fps</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="analyze-btn" id="analyze-btn" onclick="startAnalysis()" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span id="analyze-btn-label">AI 분석 시작</span>
+      </button>
+    </aside>
+
+    <!-- ── 중앙 뷰어 ── -->
+    <main class="viewer-area">
+      <div class="viewer-toolbar">
+        <span class="viewer-toolbar-title" id="viewer-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          원본 영상을 선택하세요
+        </span>
+        <button class="viewer-ctrl-btn" onclick="NotifyUI.success('GeoJSON 내보내기 완료 (시뮬레이션)')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          GeoJSON
+        </button>
+        <button class="viewer-ctrl-btn" onclick="window.location.href='map-home.html'">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>
+          지도에서 보기
+        </button>
+      </div>
+
+      <div class="viewer-canvas-wrap">
+        <canvas id="cam-viewer-canvas" width="960" height="540"></canvas>
+
+        <div class="analysis-overlay" id="analysis-overlay">
+          <div class="overlay-pct" id="overlay-pct">0%</div>
+          <div class="overlay-step" id="overlay-step">분석 준비 중...</div>
+          <div class="overlay-progress-bar">
+            <div class="overlay-progress-fill" id="overlay-progress-fill" style="width:0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-section" id="result-section" style="display:none;">
+        <div class="result-tabs">
+          <div class="result-tab active" onclick="switchTab(this,'all')">전체 탐지</div>
+          <div class="result-tab" onclick="switchTab(this,'high')">고위험</div>
+          <div class="result-tab" onclick="switchTab(this,'medium')">주의</div>
+          <div class="result-tab" onclick="switchTab(this,'low')">양호</div>
+        </div>
+        <div class="result-panel" id="result-cards"></div>
+      </div>
+    </main>
+
+    <!-- ── 우측 파이프라인 + 정보 패널 ── -->
+    <aside class="pipeline-panel">
+      <div class="pipeline-header">
+        <div class="pipeline-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          처리 파이프라인
+        </div>
+        <div class="pipeline-sub" id="pipeline-status-text">분석 대기 중</div>
+      </div>
+
+      <div class="pipeline-steps" id="pipeline-steps"></div>
+
+      <div id="result-summary-area" style="display:none;">
+        <div class="result-summary-box">
+          <div class="rs-label">탐지 완료</div>
+          <div class="rs-value"><span id="result-count">0</span><span class="rs-unit">건</span></div>
+        </div>
+      </div>
+
+      <div class="gnss-panel" id="gnss-panel" style="display:none;">
+        <div class="gnss-title">GNSS 위치 정보</div>
+        <div class="gnss-row">
+          <span class="gnss-label">위도</span>
+          <span class="gnss-val" id="gnss-lat">–</span>
+        </div>
+        <div class="gnss-row">
+          <span class="gnss-label">경도</span>
+          <span class="gnss-val" id="gnss-lng">–</span>
+        </div>
+        <div class="gnss-row">
+          <span class="gnss-label">주소</span>
+          <span class="gnss-val" style="font-size:11px;font-family:inherit;" id="gnss-addr">–</span>
+        </div>
+        <div class="gnss-row">
+          <span class="gnss-label">탐지 시각</span>
+          <span class="gnss-val" style="font-family:inherit;font-size:12px;" id="gnss-time">–</span>
+        </div>
+      </div>
+
+      <div class="caption-section" id="caption-section" style="display:none;">
+        <div class="caption-title">AI 캡셔닝</div>
+        <div class="caption-box empty" id="caption-text">탐지 항목을 선택하면 AI 설명이 표시됩니다.</div>
+      </div>
+
+      <div class="idle-message" id="idle-message">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        <p>좌측에서 영상을 선택하고<br>AI 분석 시작 버튼을 눌러주세요</p>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/detect.js"></script>
+<script>
+(function () {
+  var PIPELINE_STEPS = [
+    { key: 'decode', name: '영상 디코딩', desc: 'MP4/AVI 파일에서 프레임 추출' },
+    { key: 'preproc', name: '전처리', desc: '해상도 조정 및 노이즈 제거' },
+    { key: 'detect', name: 'YOLO 추론', desc: '객체 탐지 모델 실행' },
+    { key: 'track', name: '객체 추적', desc: '프레임 간 동일 객체 연계' },
+    { key: 'gnss', name: 'GNSS 좌표 매핑', desc: '탐지 위치 지리좌표 변환' },
+    { key: 'postproc', name: '후처리', desc: 'NMS 및 중복 제거' },
+    { key: 'export', name: '결과 저장', desc: 'GeoJSON / DB 저장' }
+  ];
+
+  var CAPTIONS = {
+    Pothole: '노면에 포트홀이 탐지되었습니다. 차량 통행 시 위험이 우려되므로 즉시 보수가 필요합니다.',
+    Barrier_Damaged: '중앙분리대 구조물 파손이 확인되었습니다. 대향차로 침범 위험이 있어 긴급 조치가 필요합니다.',
+    Sign_Damaged: '교통표지판 훼손으로 운전자 인식이 어렵습니다. 교체 조치가 필요합니다.',
+    Lane_Faded: '차선 마모로 야간 및 우천 시 시인성이 저하된 구간입니다. 재도색이 권고됩니다.',
+    Delineator_Damaged: '시선유도봉 파손이 확인되었습니다. 야간 안전사고 예방을 위한 교체가 필요합니다.',
+    Pedestrian_Facility_Damaged: '보행안전시설물 파손 상태로, 보행자 안전을 위해 점검 및 보수가 필요합니다.',
+    Color_Manhole: '컬러 맨홀 현장 확인이 필요합니다. 미끄럼 방지 상태를 점검하세요.',
+    Illegal_Parking: '불법 주정차 차량이 탐지되었습니다. 교통 흐름 방해 및 보행자 시야 차단이 우려됩니다.'
+  };
+
+  var cameraSources = [];
+  var allDetections = [];
+  var jobsData = null;
+  var selectedSource = null;
+  var currentResults = [];
+  var activeTab = 'all';
+  var isRunning = false;
+
+  // 데이터 로드
+  Promise.all([
+    fetch('assets/data/sample-detections.json').then(function (r) { return r.json(); }),
+    fetch('assets/data/sample-jobs.json').then(function (r) { return r.json(); })
+  ]).then(function (results) {
+    allDetections = results[0].detections;
+    jobsData = results[1];
+    cameraSources = jobsData.camera_sources || [];
+    init();
+  }).catch(function () { init(); });
+
+  function init() {
+    buildVideoList();
+    buildPipelineSteps();
+    initModelRadios();
+    drawIdleCanvas();
+  }
+
+  function buildVideoList() {
+    var container = document.getElementById('video-file-list');
+    container.innerHTML = '';
+
+    cameraSources.forEach(function (src, idx) {
+      var item = document.createElement('label');
+      item.className = 'video-file-item';
+      item.dataset.idx = idx;
+      item.innerHTML =
+        '<input type="radio" name="cam-source" value="' + idx + '"' + (idx === 0 ? ' checked' : '') + '>' +
+        '<div class="video-thumb">' +
+          '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>' +
+        '</div>' +
+        '<div class="video-info">' +
+          '<div class="video-name">' + (src.route || src.file_name) + '</div>' +
+          '<div class="video-meta">' + src.captured_at.replace(/-/g, '.') + ' · ' + src.duration + ' · ' + src.frame_count.toLocaleString() + ' 프레임</div>' +
+        '</div>';
+
+      item.querySelector('input').addEventListener('change', function () {
+        document.querySelectorAll('.video-file-item').forEach(function (el) { el.classList.remove('selected'); });
+        item.classList.add('selected');
+        selectedSource = src;
+        updateViewer();
+        updateAnalyzeBtn();
+      });
+
+      if (idx === 0) {
+        item.classList.add('selected');
+        selectedSource = src;
+      }
+      container.appendChild(item);
+    });
+    // 첫 항목 자동 반영
+    if (selectedSource) {
+      updateViewer();
+      updateAnalyzeBtn();
+    }
+  }
+
+  function updateViewer() {
+    if (!selectedSource) return;
+    document.getElementById('viewer-title').innerHTML =
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>' +
+      selectedSource.file_name + ' · ' + selectedSource.route;
+    drawIdleCanvas();
+  }
+
+  function updateAnalyzeBtn() {
+    var btn = document.getElementById('analyze-btn');
+    btn.disabled = !selectedSource || isRunning;
+    var label = document.getElementById('analyze-btn-label');
+    if (isRunning) label.textContent = '분석 중...';
+    else if (!selectedSource) label.textContent = 'AI 분석 시작';
+    else label.textContent = 'AI 분석 시작';
+  }
+
+  function buildPipelineSteps() {
+    var container = document.getElementById('pipeline-steps');
+    container.innerHTML = '';
+    PIPELINE_STEPS.forEach(function (step, i) {
+      var el = document.createElement('div');
+      el.className = 'pipeline-step';
+      el.innerHTML =
+        '<div class="step-dot" id="dot-' + step.key + '">' + (i + 1) + '</div>' +
+        '<div class="step-content">' +
+          '<div class="step-name">' + step.name + '</div>' +
+          '<div class="step-desc">' + step.desc + '</div>' +
+          '<div class="step-status pending" id="status-' + step.key + '">대기</div>' +
+        '</div>';
+      container.appendChild(el);
+    });
+  }
+
+  function resetPipeline() {
+    PIPELINE_STEPS.forEach(function (step, i) {
+      var dot = document.getElementById('dot-' + step.key);
+      var status = document.getElementById('status-' + step.key);
+      dot.className = 'step-dot';
+      dot.textContent = i + 1;
+      status.className = 'step-status pending';
+      status.textContent = '대기';
+    });
+  }
+
+  function initModelRadios() {
+    document.querySelectorAll('.model-radio-item').forEach(function (item) {
+      item.querySelector('input').addEventListener('change', function () {
+        document.querySelectorAll('.model-radio-item').forEach(function (i) { i.classList.remove('active'); });
+        item.classList.add('active');
+      });
+    });
+  }
+
+  function drawIdleCanvas() {
+    var canvas = document.getElementById('cam-viewer-canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0F1923';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 그리드 라인
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    for (var x = 60; x < canvas.width; x += 60) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+    for (var y = 60; y < canvas.height; y += 60) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    }
+
+    // 중앙 아이콘
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '14px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(selectedSource ? '분석 실행 대기 중' : '영상 선택 대기', canvas.width / 2, canvas.height / 2);
+  }
+
+  function drawCameraScene(canvas, dets) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#1a2535';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 하늘
+    var skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.35);
+    skyGrad.addColorStop(0, '#0d1520');
+    skyGrad.addColorStop(1, '#1e3050');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height * 0.35);
+
+    // 도로
+    ctx.fillStyle = '#2a3444';
+    ctx.fillRect(0, canvas.height * 0.35, canvas.width, canvas.height * 0.65);
+
+    // 차선
+    ctx.strokeStyle = 'rgba(255,255,220,0.7)';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([40, 20]);
+    ctx.beginPath();
+    ctx.moveTo(canvas.width * 0.5, canvas.height * 0.35);
+    ctx.lineTo(canvas.width * 0.5, canvas.height);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 측면 차선
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.lineWidth = 2;
+    [[0.15, 0.85], [0.85, 0.15]].forEach(function (pair) {
+      ctx.beginPath();
+      ctx.moveTo(canvas.width * pair[0], canvas.height * 0.35);
+      ctx.lineTo(canvas.width * pair[1], canvas.height);
+      ctx.stroke();
+    });
+
+    // 탐지 박스
+    var sevColors = { high: '#C8102E', medium: '#868E96', low: '#CED4DA' };
+    dets.slice(0, 5).forEach(function (det, i) {
+      var col = sevColors[det.severity] || '#868E96';
+      var x = 80 + (i % 3) * 240 + Math.random() * 40;
+      var y = canvas.height * 0.38 + (i % 2) * 100 + Math.random() * 40;
+      var w = 120 + Math.random() * 60;
+      var h = 80 + Math.random() * 40;
+      if (x + w > canvas.width - 20) x = canvas.width - w - 20;
+
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, w, h);
+
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.15;
+      ctx.fillRect(x, y, w, h);
+      ctx.globalAlpha = 1;
+
+      // 라벨
+      ctx.fillStyle = col;
+      var label = det.class_ko.substring(0, 7);
+      ctx.font = 'bold 12px Inter, sans-serif';
+      var lw = ctx.measureText(label).width + 18;
+      ctx.fillRect(x, y - 20, lw, 20);
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'left';
+      ctx.fillText(label, x + 4, y - 5);
+
+      // 신뢰도
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.fillText(det.confidence, x + lw + 4, y - 5);
+    });
+
+    // 상단 타임스탬프
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(12, 12, 230, 28);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = '12px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('REC  ' + (selectedSource ? selectedSource.captured_at.replace(/-/g, '.') : '2026.04.15') + '  09:14:32', 20, 31);
+
+    // 카메라 정보
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(canvas.width - 152, 12, 140, 28);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillText((selectedSource && selectedSource.vehicle) || 'CAM01', canvas.width - 144, 31);
+  }
+
+  window.startAnalysis = function () {
+    if (isRunning || !selectedSource) return;
+    isRunning = true;
+    updateAnalyzeBtn();
+    resetPipeline();
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('gnss-panel').style.display = 'none';
+    document.getElementById('caption-section').style.display = 'none';
+    document.getElementById('result-summary-area').style.display = 'none';
+    document.getElementById('idle-message').style.display = 'none';
+
+    var overlay = document.getElementById('analysis-overlay');
+    overlay.classList.add('visible');
+    document.getElementById('pipeline-status-text').textContent = '분석 실행 중...';
+
+    var totalSteps = PIPELINE_STEPS.length;
+    var stepIdx = 0;
+    var pct = 0;
+
+    function runStep() {
+      if (stepIdx >= totalSteps) { finishAnalysis(); return; }
+      var step = PIPELINE_STEPS[stepIdx];
+      var dot = document.getElementById('dot-' + step.key);
+      var statusEl = document.getElementById('status-' + step.key);
+
+      dot.className = 'step-dot running';
+      dot.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
+      statusEl.className = 'step-status running';
+      statusEl.textContent = '처리 중...';
+
+      var targetPct = Math.round((stepIdx + 1) / totalSteps * 100);
+      var pctInterval = setInterval(function () {
+        if (pct < targetPct) {
+          pct++;
+          document.getElementById('overlay-pct').textContent = pct + '%';
+          document.getElementById('overlay-progress-fill').style.width = pct + '%';
+          document.getElementById('overlay-step').textContent = step.name + '...';
+        }
+      }, 20);
+
+      setTimeout(function () {
+        clearInterval(pctInterval);
+        pct = targetPct;
+        document.getElementById('overlay-pct').textContent = pct + '%';
+        document.getElementById('overlay-progress-fill').style.width = pct + '%';
+        dot.className = 'step-dot done';
+        dot.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+        statusEl.className = 'step-status done';
+        statusEl.textContent = '완료';
+        stepIdx++;
+        setTimeout(runStep, 150);
+      }, 700 + Math.random() * 400);
+    }
+
+    runStep();
+  };
+
+  function finishAnalysis() {
+    document.getElementById('analysis-overlay').classList.remove('visible');
+    isRunning = false;
+    updateAnalyzeBtn();
+    document.getElementById('pipeline-status-text').textContent = '분석 완료';
+
+    // 탐지 결과 샘플링 (해당 카메라 source에 맞는 탐지 필터링)
+    currentResults = allDetections.filter(function (d) { return d.model_type === 'camera'; }).slice(0, 8);
+
+    var canvas = document.getElementById('cam-viewer-canvas');
+    drawCameraScene(canvas, currentResults.slice(0, 5));
+
+    document.getElementById('result-count').textContent = currentResults.length;
+    document.getElementById('result-summary-area').style.display = 'block';
+    renderResultCards('all');
+    document.getElementById('result-section').style.display = 'flex';
+    document.getElementById('gnss-panel').style.display = 'block';
+    document.getElementById('caption-section').style.display = 'block';
+  }
+
+  function renderResultCards(tab) {
+    var container = document.getElementById('result-cards');
+    container.innerHTML = '';
+    var sevColors = { high: '#C8102E', medium: '#868E96', low: '#CED4DA' };
+    var sevKo = { high: '고위험', medium: '주의', low: '양호' };
+
+    var filtered = tab === 'all'
+      ? currentResults
+      : currentResults.filter(function (d) { return d.severity === tab; });
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.35);padding:20px;font-size:12px;">해당 심각도의 탐지 결과가 없습니다.</div>';
+      return;
+    }
+
+    filtered.slice(0, 20).forEach(function (det, idx) {
+      var col = sevColors[det.severity];
+      var confPct = Math.round(parseFloat(det.confidence) * 100);
+      var card = document.createElement('div');
+      card.className = 'result-card';
+      card.innerHTML =
+        '<canvas class="result-card-thumb" id="rcthumb-' + idx + '" width="180" height="90"></canvas>' +
+        '<div class="result-card-body">' +
+          '<div class="result-card-class"><span class="result-card-sev" style="background:' + col + ';"></span>' + det.class_ko + '</div>' +
+          '<div class="result-card-sub">' + sevKo[det.severity] + ' · 신뢰도 ' + confPct + '%</div>' +
+          '<div class="conf-bar"><div class="conf-bar-fill" style="width:' + confPct + '%;background:' + col + ';"></div></div>' +
+        '</div>';
+
+      card.addEventListener('click', function () {
+        document.querySelectorAll('.result-card').forEach(function (c) { c.classList.remove('selected'); });
+        card.classList.add('selected');
+        showDetectionInfo(det);
+        // 중앙 뷰어에 선택된 프레임 표시
+        var mainCanvas = document.getElementById('cam-viewer-canvas');
+        drawCameraScene(mainCanvas, [det]);
+        document.getElementById('viewer-title').innerHTML =
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>' +
+          (selectedSource ? selectedSource.file_name : '') + ' · ' + det.id;
+      });
+
+      container.appendChild(card);
+
+      // 썸네일 그리기 (지연 실행)
+      setTimeout(function () {
+        var tc = document.getElementById('rcthumb-' + idx);
+        if (tc) drawThumbFrame(tc, det);
+      }, 10);
+    });
+  }
+
+  function drawThumbFrame(canvas, det) {
+    var ctx = canvas.getContext('2d');
+    var w = canvas.width, h = canvas.height;
+
+    // 하늘
+    var sky = ctx.createLinearGradient(0, 0, 0, h * 0.4);
+    sky.addColorStop(0, '#0d1520');
+    sky.addColorStop(1, '#1e3050');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, w, h * 0.4);
+
+    // 도로
+    ctx.fillStyle = '#2a3444';
+    ctx.fillRect(0, h * 0.4, w, h * 0.6);
+
+    // 차선
+    ctx.strokeStyle = 'rgba(255,255,220,0.65)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([10, 6]);
+    ctx.beginPath();
+    ctx.moveTo(w * 0.5, h * 0.4);
+    ctx.lineTo(w * 0.5, h);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 측면
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.beginPath();
+    ctx.moveTo(w * 0.15, h); ctx.lineTo(w * 0.4, h * 0.4);
+    ctx.moveTo(w * 0.85, h); ctx.lineTo(w * 0.6, h * 0.4);
+    ctx.stroke();
+
+    // bbox
+    var col = det.severity === 'high' ? '#C8102E'
+            : det.severity === 'medium' ? '#F4A261'
+            : '#2A9D8F';
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(w * 0.32, h * 0.48, w * 0.36, h * 0.32);
+    ctx.fillStyle = col;
+    ctx.globalAlpha = 0.22;
+    ctx.fillRect(w * 0.32, h * 0.48, w * 0.36, h * 0.32);
+    ctx.globalAlpha = 1;
+  }
+
+  function showDetectionInfo(det) {
+    document.getElementById('gnss-lat').textContent = det.lat.toFixed(5);
+    document.getElementById('gnss-lng').textContent = det.lng.toFixed(5);
+    document.getElementById('gnss-addr').textContent = det.address;
+    document.getElementById('gnss-time').textContent = det.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+
+    var cap = CAPTIONS[det.class_en] || '이상 객체가 탐지되었습니다. 현장 확인이 필요합니다.';
+    var capEl = document.getElementById('caption-text');
+    capEl.textContent = cap;
+    capEl.classList.remove('empty');
+  }
+
+  window.switchTab = function (el, tab) {
+    activeTab = tab;
+    document.querySelectorAll('.result-tab').forEach(function (t) { t.classList.remove('active'); });
+    el.classList.add('active');
+    renderResultCards(tab);
+  };
+})();
+</script>
+</body>
+</html>

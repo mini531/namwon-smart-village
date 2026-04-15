@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>대시보드 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <style>
+    body { overflow: auto; }
+    .page-body { overflow-y: auto; height: calc(100vh - var(--header-height)); flex-direction: column; }
+
+    .dashboard {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px 32px 56px;
+    }
+
+    /* ── 상단 공지 스트립 (한 줄) ── */
+    .notice-strip {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 12px 20px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 1px 3px rgba(15,37,64,0.04);
+    }
+
+    .notice-strip-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      background: #F1F3F5;
+      color: var(--color-primary);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      border: 1px solid #E9ECEF;
+    }
+
+    .notice-strip-text {
+      flex: 1;
+      font-size: 15px;
+      color: var(--color-text);
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .notice-strip-date {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .notice-strip-more {
+      color: var(--color-text-muted);
+      font-size: 13px;
+      flex-shrink: 0;
+      padding-left: 14px;
+      border-left: 1px solid var(--color-border);
+    }
+
+    .notice-strip-more:hover { color: var(--color-primary); }
+
+    /* ── 페이지 타이틀 ── */
+    .dash-title {
+      margin-bottom: 22px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .dash-title h2 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--color-text);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .dash-title .dash-subtitle {
+      font-size: 16px;
+      color: var(--color-text-muted);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    .dash-date {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      text-align: right;
+    }
+
+    .dash-date strong {
+      display: block;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 2px;
+    }
+
+    /* ── 공통 4열 그리드 (KPI + 메인 + 바텀 정렬 일치) ── */
+    .kpi-grid,
+    .main-grid,
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .kpi-grid { margin-bottom: 26px; }
+    .main-grid { margin-bottom: 20px; }
+
+    .main-grid > .dash-card,
+    .bottom-grid > .dash-card {
+      grid-column: span 2;
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border-radius: var(--border-radius-lg);
+      padding: 24px 26px 22px;
+      border: 1px solid var(--color-border);
+      box-shadow: 0 1px 3px rgba(15,37,64,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all var(--transition);
+    }
+
+    .kpi-card:hover {
+      box-shadow: 0 6px 20px rgba(15,37,64,0.08);
+      transform: translateY(-2px);
+    }
+
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .kpi-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #F1F3F5;
+      color: #495057;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .kpi-icon.danger {
+      background: #FBEEF0;
+      color: var(--color-primary);
+    }
+
+    .kpi-value {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--color-text);
+      line-height: 1;
+      letter-spacing: -1.2px;
+    }
+
+    .kpi-value .unit {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      margin-left: 5px;
+      letter-spacing: 0;
+    }
+
+    .kpi-card.is-danger .kpi-value { color: var(--color-danger); }
+
+    .kpi-delta {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+
+    .kpi-delta strong {
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+
+    .kpi-delta.warn strong { color: var(--color-danger); }
+
+    /* (위 공통 그리드로 통합됨) */
+
+    /* ── 섹션 카드 ── */
+    .dash-card {
+      background: var(--color-surface);
+      border-radius: var(--border-radius-lg);
+      border: 1px solid var(--color-border);
+      box-shadow: 0 1px 3px rgba(15,37,64,0.04);
+      overflow: hidden;
+    }
+
+    .dash-card-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dash-card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dash-card-title svg { color: var(--color-primary); }
+
+    .dash-card-body { padding: 20px 22px; }
+
+    /* ── AI 분석 과제 카드 (실사 썸네일 상단/제목 하단) ── */
+    .model-select-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .model-select-card {
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      background: var(--color-surface);
+      overflow: hidden;
+      position: relative;
+      min-height: 132px;
+    }
+
+    .model-select-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 12px 28px rgba(15,37,64,0.12);
+      transform: translateY(-2px);
+    }
+
+    /* 좌측: 실사 썸네일 이미지 영역 */
+    .model-thumb {
+      position: relative;
+      width: 100%;
+      min-height: 100%;
+      background: #1a2535;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+
+    .model-thumb::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(15,37,64,0.05) 0%, rgba(15,37,64,0.55) 100%);
+    }
+
+    .model-thumb-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.35);
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .model-thumb-tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.95);
+      color: var(--color-primary);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* 우측: 모델 정보 */
+    .model-info {
+      padding: 16px 20px;
+      background: var(--color-surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .model-name-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .model-name-strong {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--color-text);
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+
+    .model-action-inline {
+      font-size: 13px;
+      color: var(--color-primary);
+      font-weight: 700;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .model-version {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+
+    .model-version strong {
+      color: var(--color-text);
+      font-weight: 700;
+    }
+
+    .model-classes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .class-tag {
+      background: var(--color-page-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+      padding: 2px 7px;
+      font-size: 11px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+
+    /* ── 최근 분석 작업 카드 리스트 ── */
+    .recent-job-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .recent-job-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 16px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      transition: all 0.15s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .recent-job-card:hover {
+      border-color: var(--color-primary);
+      transform: translateX(2px);
+      box-shadow: 0 4px 14px rgba(200,16,46,0.08);
+    }
+
+    .recent-job-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #F1F3F5;
+      color: #495057;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .recent-job-main { min-width: 0; }
+
+    .recent-job-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-bottom: 3px;
+    }
+
+    .recent-job-meta {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .recent-job-meta .meta-chip {
+      font-family: monospace;
+      font-size: 11px;
+      padding: 2px 7px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+    }
+
+    .recent-job-stat {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .recent-job-stat .stat-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--color-text);
+      line-height: 1;
+    }
+
+    .recent-job-stat .stat-unit {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+
+    .recent-job-stat .stat-high {
+      display: block;
+      font-size: 11px;
+      color: var(--color-primary);
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    /* (bottom-grid는 공통 그리드를 따름) */
+
+    /* 활동 로그 (단색 톤) */
+    .activity-log { display: flex; flex-direction: column; }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid #F1F5F9;
+      font-size: 14px;
+    }
+
+    .activity-item:last-child { border-bottom: none; }
+
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 7px;
+      background: #CED4DA;
+    }
+
+    .activity-dot.danger { background: var(--color-primary); }
+
+    .activity-time {
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      min-width: 60px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .activity-text { color: var(--color-text); }
+
+    /* 처리 현황 요약 */
+    .stat-summary {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--color-page-bg);
+      border-radius: var(--border-radius);
+      border: 1px solid transparent;
+    }
+
+    .stat-row.danger {
+      background: #FBEEF0;
+      border-color: #F5DDE1;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--color-text);
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--color-text);
+    }
+
+    .stat-row.danger .stat-value { color: var(--color-primary); }
+
+    .stat-bar-wrap {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .stat-bar-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .stat-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 9px;
+      font-size: 13px;
+    }
+
+    .stat-bar-name {
+      width: 90px;
+      color: var(--color-text);
+      font-weight: 500;
+    }
+
+    .stat-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--color-page-bg);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: #868E96;
+      transition: width 0.8s ease;
+    }
+
+    .stat-bar-item:first-child .stat-bar-fill { background: var(--color-primary); }
+
+    .stat-bar-count {
+      width: 32px;
+      text-align: right;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1100px) {
+      .kpi-grid,
+      .main-grid,
+      .bottom-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .main-grid > .dash-card,
+      .bottom-grid > .dash-card {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .kpi-grid,
+      .main-grid,
+      .bottom-grid {
+        grid-template-columns: 1fr;
+      }
+      .main-grid > .dash-card,
+      .bottom-grid > .dash-card {
+        grid-column: span 1;
+      }
+      .model-select-card { grid-template-columns: 1fr; }
+      .model-thumb { aspect-ratio: 16 / 9; min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+<div class="dashboard">
+
+  <!-- 페이지 타이틀 -->
+  <div class="dash-title">
+    <div>
+      <h2>도로 안전관리 대시보드</h2>
+      <div class="dash-subtitle">남원시 AI 기반 도로 안전관리 행정서비스</div>
+    </div>
+    <div class="dash-date">
+      <strong id="dash-now-date"></strong>
+      기준일 현재
+    </div>
+  </div>
+
+  <!-- 공지 스트립 (한 줄) -->
+  <div class="notice-strip">
+    <span class="notice-strip-tag">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
+      공지
+    </span>
+    <span class="notice-strip-text">YOLOv8 도로 탐지 모델 v2.1 배포가 완료되었습니다. 정사영상 추론 정확도가 향상되었습니다.</span>
+    <span class="notice-strip-date">2026.04.14</span>
+    <a href="#" class="notice-strip-more">더보기 ›</a>
+  </div>
+
+  <!-- KPI 섹션 (좌측 선 제거, 단색 톤) -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="kpi-label">총 탐지 건수</span>
+        <div class="kpi-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
+      <div class="kpi-value"><span id="kpi-total">–</span><span class="unit">건</span></div>
+      <div class="kpi-delta">전월 대비 <strong>+12%</strong></div>
+    </div>
+    <div class="kpi-card is-danger">
+      <div class="kpi-header">
+        <span class="kpi-label">고위험 건수</span>
+        <div class="kpi-icon danger">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+      </div>
+      <div class="kpi-value"><span id="kpi-high">–</span><span class="unit">건</span></div>
+      <div class="kpi-delta warn">전체의 <strong id="kpi-high-pct">–</strong>%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="kpi-label">미처리 건수</span>
+        <div class="kpi-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+      </div>
+      <div class="kpi-value"><span id="kpi-unprocessed">–</span><span class="unit">건</span></div>
+      <div class="kpi-delta">처리중 <strong id="kpi-processing">–</strong>건 포함</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="kpi-label">처리 완료</span>
+        <div class="kpi-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+      </div>
+      <div class="kpi-value"><span id="kpi-done">–</span><span class="unit">건</span></div>
+      <div class="kpi-delta">처리율 <strong id="kpi-rate">–</strong>%</div>
+    </div>
+  </div>
+
+  <!-- 메인 그리드: 분석 모델 + 최근 탐지 -->
+  <div class="main-grid">
+
+    <!-- AI 분석 모델 선택 (실사 썸네일 + 강조 제목) -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+          AI 분석 과제
+        </div>
+        <span class="badge badge-primary" style="font-size:12px;">2종 운영중</span>
+      </div>
+      <div class="dash-card-body">
+        <div class="model-select-grid">
+          <!-- 정사영상 모델 -->
+          <a href="analysis-orthophoto.html" class="model-select-card">
+            <div class="model-thumb" style="background-image:url('assets/images/model_orthophoto.jpg');">
+<span class="model-thumb-tag">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                드론 정사영상
+              </span>
+            </div>
+            <div class="model-info">
+              <div class="model-name-row">
+                <div class="model-name-strong">정사영상 모델</div>
+                <div class="model-action-inline">
+                  AI 분석 실행
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </div>
+              </div>
+              <div class="model-version"><strong>YOLOv8-Road-Ortho</strong> · v2.1 · mAP 0.87</div>
+              <div class="model-classes">
+                <span class="class-tag">포트홀</span>
+                <span class="class-tag">크랙</span>
+                <span class="class-tag">보수흔적</span>
+                <span class="class-tag">공동의심</span>
+                <span class="class-tag">쓰레기</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- 카메라 모델 -->
+          <a href="analysis-camera.html" class="model-select-card">
+            <div class="model-thumb" style="background-image:url('assets/images/model_camera.jpg');">
+<span class="model-thumb-tag">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                차량 카메라
+              </span>
+            </div>
+            <div class="model-info">
+              <div class="model-name-row">
+                <div class="model-name-strong">카메라 모델</div>
+                <div class="model-action-inline">
+                  AI 분석 실행
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </div>
+              </div>
+              <div class="model-version"><strong>YOLO-Road-Camera</strong> · Lightweight v1.4 · mAP 0.83</div>
+              <div class="model-classes">
+                <span class="class-tag">분리대파손</span>
+                <span class="class-tag">표지판파손</span>
+                <span class="class-tag">차선불량</span>
+                <span class="class-tag">불법주정차</span>
+                <span class="class-tag">+3종</span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- 빠른 이동 -->
+        <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--color-border); display:flex; gap:10px;">
+          <a href="map-home.html" class="btn btn-primary btn-sm" style="flex:1; justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            지도 홈 바로가기
+          </a>
+          <a href="report.html" class="btn btn-ghost btn-sm" style="flex:1; justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+            보고서 출력
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 최근 분석 작업 (카드 리스트) -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          최근 분석 작업
+        </div>
+        <a href="history.html" class="btn btn-ghost btn-sm">작업 이력</a>
+      </div>
+      <div class="dash-card-body" style="padding:14px 18px;">
+        <div class="recent-job-list" id="recent-jobs-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단: 처리 대기 고위험 탐지 -->
+  <div class="bottom-grid">
+    <div class="dash-card" style="grid-column: span 4;">
+      <div class="dash-card-header">
+        <div class="dash-card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/></svg>
+          처리 대기 고위험 탐지
+        </div>
+        <a href="history.html" class="btn btn-ghost btn-sm">전체 이력</a>
+      </div>
+      <div class="dash-card-body" style="padding:0;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>탐지 ID</th>
+              <th>클래스</th>
+              <th>모델</th>
+              <th>위치</th>
+              <th>탐지일</th>
+              <th style="text-align:right;padding-right:22px;">신뢰도</th>
+              <th style="text-align:right;padding-right:22px;">동작</th>
+            </tr>
+          </thead>
+          <tbody id="priority-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /dashboard -->
+</div><!-- /page-body -->
+
+<script src="assets/js/layout.js"></script>
+<script>
+(function () {
+  // 현재 날짜 표시
+  var now = new Date();
+  var y = now.getFullYear();
+  var m = String(now.getMonth() + 1).padStart(2, '0');
+  var d = String(now.getDate()).padStart(2, '0');
+  document.getElementById('dash-now-date').textContent = y + '.' + m + '.' + d;
+
+  fetch('assets/data/sample-detections.json')
+    .then(function (r) { return r.json(); })
+    .then(function (json) {
+      var s = json.summary;
+      var dets = json.detections;
+
+      // KPI
+      document.getElementById('kpi-total').textContent = s.total;
+      document.getElementById('kpi-high').textContent = s.high_severity;
+      document.getElementById('kpi-high-pct').textContent = Math.round(s.high_severity / s.total * 100);
+      document.getElementById('kpi-unprocessed').textContent = s.status_counts['미처리'] || 0;
+      document.getElementById('kpi-processing').textContent = s.status_counts['처리중'] || 0;
+      document.getElementById('kpi-done').textContent = s.status_counts['완료'] || 0;
+      document.getElementById('kpi-rate').textContent = Math.round((s.status_counts['완료'] || 0) / s.total * 100);
+
+      // 처리 대기 고위험 탐지 (고위험 + 미처리, 신뢰도 내림차순 상위 6)
+      var overrides = {};
+      try { overrides = JSON.parse(localStorage.getItem('namwon-detection-overrides') || '{}'); } catch (e) {}
+      var priority = dets
+        .map(function (d) { return Object.assign({}, d, { status: overrides[d.id] || d.status }); })
+        .filter(function (d) { return d.severity === 'high' && d.status === '미처리'; })
+        .sort(function (a, b) { return b.confidence - a.confidence; })
+        .slice(0, 6);
+
+      var ptbody = document.getElementById('priority-tbody');
+      if (priority.length === 0) {
+        ptbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--color-text-muted);padding:28px;">처리 대기 중인 고위험 탐지가 없습니다</td></tr>';
+      } else {
+        priority.forEach(function (det) {
+          var modelLabel = det.model_type === 'orthophoto' ? '정사영상' : '카메라';
+          var dateStr = det.detected_at.substring(0, 10).replace(/-/g, '.');
+          var confPct = Math.round(det.confidence * 100);
+          ptbody.insertAdjacentHTML('beforeend',
+            '<tr>' +
+            '<td style="font-family:monospace;font-size:12px;color:var(--color-text-muted);">' + det.id + '</td>' +
+            '<td style="font-weight:700;">' + det.class_ko + '</td>' +
+            '<td><span class="badge">' + modelLabel + '</span></td>' +
+            '<td style="font-size:12px;color:var(--color-text-muted);">' + det.address + '</td>' +
+            '<td style="font-size:12px;font-family:monospace;color:var(--color-text-muted);">' + dateStr + '</td>' +
+            '<td style="text-align:right;padding-right:22px;font-weight:700;color:var(--color-primary);">' + confPct + '%</td>' +
+            '<td style="text-align:right;padding-right:14px;"><a href="history.html" class="btn btn-ghost btn-sm">처리</a></td>' +
+            '</tr>'
+          );
+        });
+      }
+    })
+    .catch(function () {
+      console.warn('detections load failed');
+    });
+
+  // 최근 분석 작업 로드
+  fetch('assets/data/sample-jobs.json')
+    .then(function (r) { return r.json(); })
+    .then(function (json) {
+      var classKoShort = {
+        'Pothole': '포트홀', 'Crack': '크랙', 'Patch': '보수흔적', 'Void_Suspected': '공동의심',
+        'Litter': '쓰레기', 'Barrier_Damaged': '분리대파손', 'Delineator_Damaged': '시선유도봉파손',
+        'Pedestrian_Facility_Damaged': '보행시설파손', 'Sign_Damaged': '표지판파손',
+        'Lane_Faded': '차선불량', 'Color_Manhole': '컬러맨홀', 'Illegal_Parking': '불법주정차'
+      };
+
+      var listEl = document.getElementById('recent-jobs-list');
+      listEl.innerHTML = '';
+      var recent = json.jobs.slice().sort(function (a, b) { return b.analyzed_at.localeCompare(a.analyzed_at); }).slice(0, 4);
+
+      recent.forEach(function (job) {
+        var iconSvg = job.source_type === 'orthophoto'
+          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'
+          : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+
+        var captured = job.captured_at.replace(/-/g, '.');
+        var analyzed = job.analyzed_at.substring(0, 10).replace(/-/g, '.');
+        var typeLabel = job.source_type === 'orthophoto' ? '정사영상' : '카메라';
+
+        var classEntries = Object.entries(job.class_summary).sort(function (a, b) { return b[1] - a[1]; });
+        var topClass = classEntries[0] ? (classKoShort[classEntries[0][0]] || classEntries[0][0]) : '-';
+
+        var card = document.createElement('a');
+        card.className = 'recent-job-card';
+        card.href = 'history.html?job=' + encodeURIComponent(job.job_id);
+        card.innerHTML =
+          '<div class="recent-job-icon">' + iconSvg + '</div>' +
+          '<div class="recent-job-main">' +
+            '<div class="recent-job-name">' + (job.source_label || job.source_name) + '</div>' +
+            '<div class="recent-job-meta">' +
+              '<span>' + typeLabel + '</span>' +
+              '<span class="meta-chip">촬영 ' + captured + '</span>' +
+              '<span class="meta-chip">분석 ' + analyzed + '</span>' +
+              '<span>주요: ' + topClass + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="recent-job-stat">' +
+            '<span class="stat-num">' + job.detection_count + '</span><span class="stat-unit">건</span>' +
+            (job.high_count > 0 ? '<span class="stat-high">고위험 ' + job.high_count + '</span>' : '') +
+          '</div>';
+        listEl.appendChild(card);
+      });
+    })
+    .catch(function () {
+      document.getElementById('recent-jobs-list').innerHTML =
+        '<div style="text-align:center;color:var(--color-text-muted);padding:24px;">분석 작업 데이터를 불러올 수 없습니다.</div>';
+    });
+})();
+</script>
+</body>
+</html>

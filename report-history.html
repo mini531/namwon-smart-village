@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>보고서 생성 이력 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <style>
+    body { overflow: hidden; }
+
+    .page-body {
+      padding-top: var(--header-height);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .history-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ── 좌측 목록 ── */
+    .history-list-panel {
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .history-list-header {
+      padding: 22px 24px 18px;
+      border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+
+    .history-list-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .history-list-title svg { color: var(--color-primary); }
+
+    .history-list-sub {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      margin-bottom: 14px;
+    }
+
+    .new-report-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .new-report-btn:hover { background: var(--color-primary-dark); }
+
+    .history-list-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+    }
+
+    .saved-card {
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .saved-card:hover {
+      border-color: #343A40;
+      background: #FAFAFB;
+    }
+
+    .saved-card.active {
+      border-color: var(--color-primary);
+      background: #FBEEF0;
+    }
+
+    .saved-card-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      background: #F1F3F5;
+      color: #495057;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .saved-card.active .saved-card-badge {
+      background: #fff;
+      color: var(--color-primary);
+    }
+
+    .saved-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .saved-card-meta {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      font-family: 'Inter', monospace;
+      line-height: 1.55;
+    }
+
+    .saved-card-del {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 26px;
+      height: 26px;
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.15s;
+    }
+
+    .saved-card:hover .saved-card-del { opacity: 1; }
+    .saved-card-del:hover {
+      background: #F1F3F5;
+      color: var(--color-primary);
+    }
+
+    .empty-list {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+
+    .empty-list svg {
+      opacity: 0.3;
+      margin-bottom: 14px;
+    }
+
+    .empty-list p {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ── 우측 뷰어 ── */
+    .history-viewer {
+      background: var(--color-page-bg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .viewer-toolbar {
+      padding: 14px 24px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .viewer-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .viewer-title svg { color: var(--color-primary); }
+
+    .viewer-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    #report-iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: var(--color-page-bg);
+    }
+
+    .viewer-placeholder {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: var(--color-text-muted);
+    }
+
+    .viewer-placeholder svg {
+      opacity: 0.25;
+      margin-bottom: 16px;
+    }
+
+    .viewer-placeholder p {
+      font-size: 15px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="history-layout">
+
+    <!-- 좌측 목록 -->
+    <aside class="history-list-panel">
+      <div class="history-list-header">
+        <div class="history-list-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          보고서 생성 이력
+        </div>
+        <div class="history-list-sub">저장된 보고서를 클릭하여 열람·재다운로드</div>
+        <a href="report.html" class="new-report-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          새 보고서 생성
+        </a>
+      </div>
+      <div class="history-list-body" id="saved-list"></div>
+    </aside>
+
+    <!-- 우측 뷰어 -->
+    <main class="history-viewer">
+      <div class="viewer-toolbar">
+        <div class="viewer-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span id="viewer-title-text">보고서 미리보기</span>
+        </div>
+        <div class="viewer-actions">
+          <button class="btn btn-ghost btn-sm" id="btn-open-full" disabled>전체 화면</button>
+          <button class="btn btn-primary btn-sm" id="btn-download-pdf" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF 다운로드
+          </button>
+        </div>
+      </div>
+
+      <div class="viewer-placeholder" id="viewer-placeholder">
+        <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <p>좌측 목록에서 보고서를 선택하세요</p>
+      </div>
+
+      <iframe id="report-iframe" style="display:none;"></iframe>
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script>
+(function () {
+  'use strict';
+  var STORAGE_KEY = 'namwon-saved-reports';
+  var currentReportId = null;
+
+  function getSavedReports() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+
+  function deleteReport(reportId) {
+    var list = getSavedReports().filter(function (r) { return r.id !== reportId; });
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+    if (currentReportId === reportId) {
+      currentReportId = null;
+      document.getElementById('report-iframe').style.display = 'none';
+      document.getElementById('viewer-placeholder').style.display = 'flex';
+      document.getElementById('viewer-title-text').textContent = '보고서 미리보기';
+      document.getElementById('btn-download-pdf').disabled = true;
+      document.getElementById('btn-open-full').disabled = true;
+    }
+    renderList();
+  }
+
+  function loadReport(reportId) {
+    var reports = getSavedReports();
+    var report = reports.find(function (r) { return r.id === reportId; });
+    if (!report) return;
+
+    currentReportId = reportId;
+
+    // 활성 카드 표시
+    document.querySelectorAll('.saved-card').forEach(function (c) {
+      c.classList.toggle('active', c.dataset.id === reportId);
+    });
+
+    // iframe에 로드 (embed 모드)
+    var iframe = document.getElementById('report-iframe');
+    iframe.src = 'report.html?embed=1&id=' + encodeURIComponent(reportId);
+    iframe.style.display = 'block';
+    document.getElementById('viewer-placeholder').style.display = 'none';
+
+    document.getElementById('viewer-title-text').textContent = report.title || '보고서';
+    document.getElementById('btn-download-pdf').disabled = false;
+    document.getElementById('btn-open-full').disabled = false;
+  }
+
+  function renderList() {
+    var wrap = document.getElementById('saved-list');
+    var reports = getSavedReports();
+
+    if (reports.length === 0) {
+      wrap.innerHTML =
+        '<div class="empty-list">' +
+          '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+          '<p>생성된 보고서가 없습니다<br>새 보고서를 만들어보세요</p>' +
+        '</div>';
+      return;
+    }
+
+    wrap.innerHTML = '';
+    reports.forEach(function (r) {
+      var typeLabel = r.sourceType === 'orthophoto' ? '정사영상' : '카메라';
+      var savedAt = r.savedAt.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+      var periodStart = (r.periodStart || '').replace(/-/g, '.');
+      var periodEnd = (r.periodEnd || '').replace(/-/g, '.');
+      var jobCount = (r.selectedJobIds || []).length;
+
+      var card = document.createElement('div');
+      card.className = 'saved-card' + (currentReportId === r.id ? ' active' : '');
+      card.dataset.id = r.id;
+      card.innerHTML =
+        '<button class="saved-card-del" title="삭제">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>' +
+        '</button>' +
+        '<div class="saved-card-badge">' + typeLabel + '</div>' +
+        '<div class="saved-card-title">' + (r.title || '보고서') + '</div>' +
+        '<div class="saved-card-meta">' +
+          r.id + '<br>' +
+          '기간 : ' + periodStart + ' ~ ' + periodEnd + '<br>' +
+          '작업 ' + jobCount + '건 · 저장 ' + savedAt +
+        '</div>';
+
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('.saved-card-del')) return;
+        loadReport(r.id);
+      });
+
+      card.querySelector('.saved-card-del').addEventListener('click', function (e) {
+        e.stopPropagation();
+        NotifyUI.confirm(
+          '이 저장된 보고서를 삭제하시겠습니까?',
+          function () { deleteReport(r.id); },
+          { title: '보고서 삭제', okText: '삭제' }
+        );
+      });
+
+      wrap.appendChild(card);
+    });
+  }
+
+  // 상단 액션 버튼
+  document.getElementById('btn-open-full').addEventListener('click', function () {
+    if (!currentReportId) return;
+    window.open('report.html?id=' + encodeURIComponent(currentReportId), '_blank');
+  });
+
+  document.getElementById('btn-download-pdf').addEventListener('click', function () {
+    if (!currentReportId) return;
+    var iframe = document.getElementById('report-iframe');
+    try {
+      if (iframe.contentWindow && iframe.contentWindow.downloadReport) {
+        iframe.contentWindow.downloadReport();
+      } else {
+        NotifyUI.info('보고서를 로드 중입니다. 잠시 후 다시 시도해주세요.');
+      }
+    } catch (e) {
+      NotifyUI.error('PDF 다운로드 중 오류가 발생했습니다.');
+    }
+  });
+
+  renderList();
+
+  // 첫 번째 보고서 자동 선택
+  var first = getSavedReports()[0];
+  if (first) setTimeout(function () { loadReport(first.id); }, 100);
+})();
+</script>
+</body>
+</html>

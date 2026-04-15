@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>탐지 이력 관리 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <style>
+    body { overflow: auto; }
+
+    .page-body {
+      padding-top: var(--header-height);
+      min-height: 100vh;
+      background: var(--color-page-bg);
+      display: block;
+      overflow-y: auto;
+    }
+
+    .history-container {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 24px 28px 48px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .page-title-wrap h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .page-title-wrap h1 svg { color: var(--color-primary); }
+
+    .page-title-wrap p {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    .page-actions { display: flex; gap: 8px; }
+
+    /* 통계 요약 카드 */
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .summary-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all var(--transition);
+    }
+
+    .summary-card:hover {
+      box-shadow: 0 4px 16px rgba(15,37,64,0.08);
+      transform: translateY(-1px);
+    }
+
+    .summary-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .summary-icon {
+      background: #F1F3F5;
+      color: #495057;
+    }
+    .summary-icon.red {
+      background: #FBEEF0;
+      color: var(--color-primary);
+    }
+    /* alias - 모두 중성 톤으로 통합 */
+    .summary-icon.blue,
+    .summary-icon.orange,
+    .summary-icon.green,
+    .summary-icon.purple {
+      background: #F1F3F5;
+      color: #495057;
+    }
+
+    .summary-info .label {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .summary-info .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.1;
+    }
+
+    .summary-info .unit {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      font-weight: 500;
+      margin-left: 3px;
+    }
+
+    /* 필터 패널 */
+    .filter-panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 18px 22px;
+      margin-bottom: 18px;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr) auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .filter-field { display: flex; flex-direction: column; }
+
+    .filter-field label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+
+    .filter-field input,
+    .filter-field select {
+      padding: 8px 11px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 13px;
+      background: var(--color-surface);
+      color: var(--color-text);
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    .filter-field input:focus,
+    .filter-field select:focus {
+      border-color: var(--color-accent);
+    }
+
+    .filter-actions { display: flex; gap: 6px; }
+
+    /* 데이터 테이블 카드 */
+    .table-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+    }
+
+    /* ── 탭 ── */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 6px;
+      margin-bottom: 18px;
+      max-width: 420px;
+    }
+
+    .view-tab {
+      flex: 1;
+      padding: 10px 18px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .view-tab.active {
+      background: var(--color-primary);
+      color: #fff;
+    }
+
+    .view-tab:hover:not(.active) {
+      background: var(--color-page-bg);
+      color: var(--color-text);
+    }
+
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    /* 작업 뷰 테이블 전용 */
+    .job-row-clickable { cursor: pointer; }
+    .job-row-clickable:hover { background: #F8FBFF; }
+
+    .job-source-cell {
+      font-weight: 600;
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .job-class-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .job-class-chip {
+      font-size: 11px;
+      padding: 2px 8px;
+      background: var(--color-page-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+      color: var(--color-text);
+      font-weight: 500;
+    }
+
+    /* 작업 필터 배너 (탐지 객체 탭이 작업으로 필터링 중일 때 표시) */
+    .job-filter-banner {
+      background: #FBEEF0;
+      border: 1px solid #F5DDE1;
+      border-radius: var(--border-radius);
+      padding: 10px 16px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--color-primary);
+    }
+
+    .job-filter-banner strong {
+      font-weight: 700;
+      font-family: monospace;
+      margin: 0 4px;
+    }
+
+    .job-filter-banner button {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .table-head {
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-head .th-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .table-head .th-title svg { color: var(--color-primary); }
+
+    .table-head .th-info {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .data-table { margin: 0; }
+    .data-table th, .data-table td {
+      font-size: 13px;
+    }
+    .data-table th { white-space: nowrap; }
+
+    .data-table .col-id { width: 90px; font-family: monospace; color: var(--color-text-muted); font-size: 12px; }
+    .data-table .col-thumb { width: 60px; }
+    .data-table .col-conf { width: 100px; }
+    .data-table th.col-actions,
+    .data-table td.col-actions {
+      width: 110px;
+      text-align: center;
+      padding-right: 14px;
+    }
+
+    .row-thumb {
+      width: 44px;
+      height: 32px;
+      border-radius: 4px;
+      background: #1a2535;
+      display: block;
+    }
+
+    .conf-bar-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .conf-bar-cell .bar {
+      flex: 1;
+      height: 6px;
+      background: #E2EAF4;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .conf-bar-cell .bar > span {
+      display: block;
+      height: 100%;
+      background: #868E96;
+      border-radius: 3px;
+    }
+
+    .conf-bar-cell .pct {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      width: 32px;
+      text-align: right;
+    }
+
+    .badge-camera,
+    .badge-orthophoto {
+      background: #F1F3F5;
+      color: #495057;
+    }
+    .badge-camera::before,
+    .badge-orthophoto::before { background: #868E96; }
+
+    .row-action-btn {
+      padding: 5px 10px;
+      font-size: 12px;
+      border: 1.5px solid var(--color-border);
+      border-radius: 6px;
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .row-action-btn:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    /* 모달 */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,37,64,0.55);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: var(--color-surface);
+      border-radius: var(--border-radius-lg);
+      width: 540px;
+      max-width: calc(100vw - 40px);
+      max-height: calc(100vh - 60px);
+      overflow: auto;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+      transform: translateY(8px);
+      transition: transform 0.2s;
+    }
+
+    .modal-backdrop.show .modal-card { transform: translateY(0); }
+
+    .modal-head {
+      padding: 16px 22px;
+      background: var(--color-primary);
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    }
+
+    .modal-head .title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-head .close-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.75);
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .modal-body { padding: 20px 22px; }
+
+    .modal-thumb {
+      width: 100%;
+      height: 180px;
+      background: #1a2535;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .modal-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 18px;
+      margin-bottom: 16px;
+    }
+
+    .modal-info-grid .info-item .label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 3px;
+    }
+
+    .modal-info-grid .info-item .value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .modal-info-grid .info-item.full { grid-column: 1 / -1; }
+
+    .modal-foot {
+      padding: 14px 22px;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* 처리 액션 섹션 */
+    .m-action-section {
+      margin-top: 4px;
+      padding-top: 18px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .m-action-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .m-action-title svg { color: var(--color-primary); }
+
+    .m-status-steps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .m-status-step {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      min-width: 88px;
+    }
+
+    .m-status-step:hover {
+      border-color: var(--color-primary);
+    }
+
+    .m-status-step.active {
+      border-color: var(--color-primary);
+      background: #FBEEF0;
+    }
+
+    .m-status-step.active .m-step-label {
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+
+    .m-step-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #F1F3F5;
+      border: 2px solid #E9ECEF;
+    }
+
+    .m-status-step.active .m-step-dot {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+
+    .m-status-step.active .m-step-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .m-step-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+    }
+
+    .m-step-line {
+      flex: 1;
+      height: 2px;
+      background: var(--color-border);
+      min-width: 20px;
+    }
+
+    .m-action-field {
+      margin-bottom: 14px;
+    }
+
+    .m-action-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      margin-bottom: 5px;
+    }
+
+    .m-action-field textarea {
+      width: 100%;
+      min-height: 62px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--color-text);
+      resize: vertical;
+      outline: none;
+      background: var(--color-surface-2);
+    }
+
+    .m-action-field textarea:focus {
+      border-color: var(--color-primary);
+      background: var(--color-surface);
+    }
+
+    .m-history-log {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      background: var(--color-surface-2);
+      border-radius: 6px;
+      padding: 10px 12px;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    .m-history-log:empty { display: none; }
+
+    .m-history-log-item {
+      display: flex;
+      gap: 8px;
+      padding: 3px 0;
+      line-height: 1.4;
+    }
+
+    .m-history-log-item time {
+      color: var(--color-text-muted);
+      font-family: monospace;
+      flex-shrink: 0;
+    }
+
+    /* 빈 상태 */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+
+    .empty-state svg { opacity: 0.35; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    @media (max-width: 1200px) {
+      .summary-strip { grid-template-columns: repeat(3, 1fr); }
+      .filter-row { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 720px) {
+      .summary-strip { grid-template-columns: repeat(2, 1fr); }
+      .filter-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="history-container">
+
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M7.76 16.24l-2.83 2.83M19.07 4.93l-2.83 2.83"/><circle cx="12" cy="12" r="3"/></svg>
+          분석 이력 관리
+        </h1>
+        <p>AI 분석 작업 단위로 실행 이력을 조회하고, 각 작업에서 탐지된 이상 객체를 관리합니다</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV 내보내기
+        </button>
+        <a href="report.html" class="btn btn-primary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          보고서 출력
+        </a>
+      </div>
+    </div>
+
+    <!-- 통계 요약 -->
+    <div class="summary-strip" id="summary-strip">
+      <div class="summary-card">
+        <div class="summary-icon blue">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="summary-info">
+          <div class="label">총 탐지</div>
+          <div class="value"><span id="sum-total">0</span><span class="unit">건</span></div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon red">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="summary-info">
+          <div class="label">고위험</div>
+          <div class="value"><span id="sum-high">0</span><span class="unit">건</span></div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon orange">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="summary-info">
+          <div class="label">미처리</div>
+          <div class="value"><span id="sum-unprocessed">0</span><span class="unit">건</span></div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon purple">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        </div>
+        <div class="summary-info">
+          <div class="label">정사영상</div>
+          <div class="value"><span id="sum-ortho">0</span><span class="unit">건</span></div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon green">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        </div>
+        <div class="summary-info">
+          <div class="label">카메라</div>
+          <div class="value"><span id="sum-cam">0</span><span class="unit">건</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 탭 스트립 -->
+    <div class="view-tabs">
+      <div class="view-tab active" id="tab-jobs" onclick="switchView('jobs')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        분석 작업 이력
+      </div>
+      <div class="view-tab" id="tab-detections" onclick="switchView('detections')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+        탐지 객체 목록
+      </div>
+    </div>
+
+    <!-- 작업 이력 뷰 -->
+    <div class="view-panel active" id="view-jobs">
+      <div class="table-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            분석 작업 목록
+          </div>
+          <div class="th-info" id="jobs-table-info">총 0건</div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:130px;">작업 ID</th>
+                <th>원본 영상/이미지</th>
+                <th>모델</th>
+                <th style="white-space:nowrap;">촬영일</th>
+                <th style="white-space:nowrap;">분석일</th>
+                <th style="width:110px;text-align:center;white-space:nowrap;">탐지</th>
+                <th>주요 클래스</th>
+                <th style="width:100px;text-align:center;white-space:nowrap;">상태</th>
+                <th style="width:130px;text-align:left;padding-right:18px;">동작</th>
+              </tr>
+            </thead>
+            <tbody id="jobs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 탐지 객체 뷰 -->
+    <div class="view-panel" id="view-detections">
+
+    <!-- 작업 필터 배너 -->
+    <div class="job-filter-banner" id="job-filter-banner" style="display:none;">
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        분석 작업 <strong id="banner-job-id"></strong> 의 탐지 결과만 표시 중입니다
+      </span>
+      <button onclick="clearJobFilter()">× 전체 보기</button>
+    </div>
+
+    <!-- 필터 패널 -->
+    <div class="filter-panel">
+      <div class="filter-row">
+        <div class="filter-field">
+          <label>기간 시작</label>
+          <input type="date" id="filter-date-from" value="2026-03-01">
+        </div>
+        <div class="filter-field">
+          <label>기간 종료</label>
+          <input type="date" id="filter-date-to" value="2026-04-15">
+        </div>
+        <div class="filter-field">
+          <label>모델 종류</label>
+          <select id="filter-model">
+            <option value="">전체</option>
+            <option value="orthophoto">정사영상</option>
+            <option value="camera">카메라</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label>심각도</label>
+          <select id="filter-severity">
+            <option value="">전체</option>
+            <option value="high">고위험</option>
+            <option value="medium">주의</option>
+            <option value="low">양호</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label>처리 상태</label>
+          <select id="filter-status">
+            <option value="">전체</option>
+            <option value="미처리">미처리</option>
+            <option value="처리중">처리중</option>
+            <option value="완료">완료</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label>키워드 (클래스/주소)</label>
+          <input type="text" id="filter-keyword" placeholder="예: 포트홀, 도통동">
+        </div>
+        <div class="filter-actions">
+          <button class="btn btn-primary btn-sm" onclick="applyFilter()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            검색
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="resetFilter()">초기화</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="table-card">
+      <div class="table-head">
+        <div class="th-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          탐지 이력 목록
+        </div>
+        <div class="th-info" id="table-info">총 0건 · 페이지 1/1</div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-id">ID</th>
+              <th class="col-thumb">썸네일</th>
+              <th>모델</th>
+              <th>탐지 클래스</th>
+              <th>심각도</th>
+              <th class="col-conf">신뢰도</th>
+              <th>위치 (주소)</th>
+              <th>탐지 일시</th>
+              <th>처리 상태</th>
+              <th class="col-actions">동작</th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody">
+          </tbody>
+        </table>
+      </div>
+      <div id="empty-state-wrap"></div>
+      <div class="pagination" id="pagination" style="margin: 18px 0;"></div>
+    </div>
+    </div><!-- /view-detections -->
+
+  </div>
+</div>
+
+<!-- 상세 모달 -->
+<div class="modal-backdrop" id="detail-modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        탐지 정보
+      </div>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <canvas class="modal-thumb" id="modal-thumb" width="500" height="180"></canvas>
+      <div class="modal-info-grid">
+        <div class="info-item"><div class="label">탐지 ID</div><div class="value" id="m-id">-</div></div>
+        <div class="info-item"><div class="label">탐지 클래스</div><div class="value" id="m-class">-</div></div>
+        <div class="info-item"><div class="label">신뢰도</div><div class="value" id="m-conf">-</div></div>
+        <div class="info-item"><div class="label">심각도</div><div class="value" id="m-severity">-</div></div>
+        <div class="info-item full"><div class="label">위치</div><div class="value" id="m-addr">-</div></div>
+        <div class="info-item"><div class="label">위도</div><div class="value" id="m-lat">-</div></div>
+        <div class="info-item"><div class="label">경도</div><div class="value" id="m-lng">-</div></div>
+        <div class="info-item"><div class="label">탐지 일시</div><div class="value" id="m-date">-</div></div>
+        <div class="info-item"><div class="label">처리 상태</div><div class="value" id="m-status">-</div></div>
+        <div class="info-item full"><div class="label">원본 파일</div><div class="value" id="m-file">-</div></div>
+      </div>
+
+      <!-- 처리 액션 섹션 -->
+      <div class="m-action-section">
+        <div class="m-action-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          처리 상태 변경
+        </div>
+        <div class="m-status-steps">
+          <button class="m-status-step" data-status="미처리">
+            <span class="m-step-dot unprocessed"></span>
+            <span class="m-step-label">미처리</span>
+          </button>
+          <div class="m-step-line"></div>
+          <button class="m-status-step" data-status="처리중">
+            <span class="m-step-dot processing"></span>
+            <span class="m-step-label">처리중</span>
+          </button>
+          <div class="m-step-line"></div>
+          <button class="m-status-step" data-status="완료">
+            <span class="m-step-dot done"></span>
+            <span class="m-step-label">완료</span>
+          </button>
+        </div>
+        <div class="m-action-field">
+          <label>조치 메모 (선택)</label>
+          <textarea id="m-note" placeholder="예) 4/15 현장 확인 · 긴급 보수 요청 · 자재 주문 완료 등"></textarea>
+        </div>
+        <div id="m-history-log" class="m-history-log"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">닫기</button>
+      <button class="btn btn-ghost btn-sm" onclick="goToMap()">지도에서 보기</button>
+      <button class="btn btn-primary btn-sm" onclick="saveProcessing()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var allDetections = [];
+  var allJobs = [];
+  var filtered = [];
+  var currentPage = 1;
+  var pageSize = 12;
+  var currentDetection = null;
+  var currentJobFilter = null;
+  var pendingStatus = null;
+  var OVERRIDE_KEY = 'namwon-detection-overrides';
+  var LOG_KEY = 'namwon-detection-logs';
+
+  var CLASS_KO_SHORT = {
+    Pothole: '포트홀', Crack: '크랙', Patch: '보수흔적', Void_Suspected: '공동의심',
+    Litter: '쓰레기', Barrier_Damaged: '분리대파손', Delineator_Damaged: '시선유도봉파손',
+    Pedestrian_Facility_Damaged: '보행시설파손', Sign_Damaged: '표지판파손',
+    Lane_Faded: '차선불량', Color_Manhole: '컬러맨홀', Illegal_Parking: '불법주정차'
+  };
+
+  var SEVERITY_KO = { high: '고위험', medium: '주의', low: '양호' };
+  var SEVERITY_BADGE = { high: 'badge-high', medium: 'badge-medium', low: 'badge-low' };
+  var STATUS_BADGE = { '미처리': 'badge-unprocessed', '처리중': 'badge-processing', '완료': 'badge-done' };
+
+  // ── 데이터 로드 ──
+  function loadData() {
+    Promise.all([
+      fetch('assets/data/sample-detections.json').then(function (r) { return r.json(); }),
+      fetch('assets/data/sample-jobs.json').then(function (r) { return r.json(); })
+    ]).then(function (results) {
+      var detJson = results[0];
+      var jobJson = results[1];
+
+      allDetections = detJson.detections.slice();
+      // 로컬스토리지 오버라이드 적용
+      var overrides = getOverrides();
+      allDetections.forEach(function (d) {
+        if (overrides[d.id]) d.status = overrides[d.id];
+      });
+
+      allDetections.sort(function (a, b) { return b.detected_at.localeCompare(a.detected_at); });
+      allJobs = jobJson.jobs.slice();
+      allJobs.sort(function (a, b) { return b.analyzed_at.localeCompare(a.analyzed_at); });
+
+      updateSummaryLive();
+      renderJobsTable();
+
+      // URL 쿼리 파라미터로 job_id 필터가 넘어왔는지 확인
+      var params = new URLSearchParams(window.location.search);
+      var jobId = params.get('job');
+      if (jobId) {
+        currentJobFilter = jobId;
+        switchView('detections');
+      }
+      applyFilter();
+    }).catch(function (err) {
+      console.error('데이터 로드 실패:', err);
+      renderEmptyState('데이터를 불러올 수 없습니다.');
+    });
+  }
+
+  // ── 탭 전환 ──
+  window.switchView = function (view) {
+    document.getElementById('tab-jobs').classList.toggle('active', view === 'jobs');
+    document.getElementById('tab-detections').classList.toggle('active', view === 'detections');
+    document.getElementById('view-jobs').classList.toggle('active', view === 'jobs');
+    document.getElementById('view-detections').classList.toggle('active', view === 'detections');
+
+    if (view === 'detections') {
+      var banner = document.getElementById('job-filter-banner');
+      if (currentJobFilter) {
+        document.getElementById('banner-job-id').textContent = currentJobFilter;
+        banner.style.display = 'flex';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+  };
+
+  window.clearJobFilter = function () {
+    currentJobFilter = null;
+    document.getElementById('job-filter-banner').style.display = 'none';
+    // URL 쿼리 제거
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+    applyFilter();
+  };
+
+  // ── 분석 작업 테이블 렌더링 ──
+  function renderJobsTable() {
+    var tbody = document.getElementById('jobs-tbody');
+    tbody.innerHTML = '';
+
+    allJobs.forEach(function (job) {
+      var modelBadge = job.source_type === 'orthophoto'
+        ? '<span class="badge badge-primary" style="font-size:11px;">정사영상</span>'
+        : '<span class="badge" style="font-size:11px;">카메라</span>';
+
+      var captured = job.captured_at.replace(/-/g, '.');
+      var analyzed = job.analyzed_at.substring(0, 10).replace(/-/g, '.');
+      var statusClass = job.status === '완료' ? 'badge-done' : job.status === '처리중' ? 'badge-processing' : 'badge-unprocessed';
+
+      // 클래스 요약 칩
+      var classChips = Object.entries(job.class_summary).sort(function (a, b) { return b[1] - a[1]; })
+        .map(function (e) {
+          return '<span class="job-class-chip">' + (CLASS_KO_SHORT[e[0]] || e[0]) + ' ' + e[1] + '</span>';
+        }).join('');
+
+      var highMark = job.high_count > 0
+        ? '<div style="font-size:11px;color:var(--color-primary);font-weight:700;margin-top:2px;">고위험 ' + job.high_count + '건</div>'
+        : '';
+
+      var tr = document.createElement('tr');
+      tr.className = 'job-row-clickable';
+      tr.innerHTML =
+        '<td style="font-family:monospace;color:var(--color-text-muted);font-size:12px;font-weight:600;">' + job.job_id + '</td>' +
+        '<td class="job-source-cell" title="' + job.source_name + '">' + (job.source_label || job.source_name) +
+          '<div style="font-size:11px;color:var(--color-text-muted);font-weight:400;margin-top:1px;font-family:monospace;">' + job.source_name + '</div></td>' +
+        '<td>' + modelBadge + '<div style="font-size:11px;color:var(--color-text-muted);margin-top:2px;">' + job.model + ' ' + job.model_version + '</div></td>' +
+        '<td style="font-size:12px;font-family:monospace;color:var(--color-text-muted);">' + captured + '</td>' +
+        '<td style="font-size:12px;font-family:monospace;color:var(--color-text-muted);">' + analyzed + '</td>' +
+        '<td style="text-align:center;white-space:nowrap;"><div style="font-size:18px;font-weight:800;color:var(--color-text);">' + job.detection_count + '</div>' + highMark + '</td>' +
+        '<td><div class="job-class-summary">' + classChips + '</div></td>' +
+        '<td style="text-align:center;white-space:nowrap;"><span class="badge ' + statusClass + '">' + job.status + '</span></td>' +
+        '<td style="text-align:right;padding-right:18px;white-space:nowrap;"><button class="row-action-btn" data-job="' + job.job_id + '">탐지 보기</button></td>';
+
+      tr.querySelector('.row-action-btn').addEventListener('click', function (e) {
+        e.stopPropagation();
+        currentJobFilter = job.job_id;
+        switchView('detections');
+        applyFilter();
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, '', window.location.pathname + '?job=' + job.job_id);
+        }
+      });
+
+      tr.addEventListener('click', function () {
+        currentJobFilter = job.job_id;
+        switchView('detections');
+        applyFilter();
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, '', window.location.pathname + '?job=' + job.job_id);
+        }
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('jobs-table-info').textContent = '총 ' + allJobs.length + '건';
+  }
+
+  function updateSummaryLive() {
+    var total = allDetections.length;
+    var high = 0, unproc = 0, ortho = 0, cam = 0;
+    allDetections.forEach(function (d) {
+      if (d.severity === 'high') high++;
+      if (d.status === '미처리') unproc++;
+      if (d.model_type === 'orthophoto') ortho++;
+      else cam++;
+    });
+    document.getElementById('sum-total').textContent = total;
+    document.getElementById('sum-high').textContent = high;
+    document.getElementById('sum-unprocessed').textContent = unproc;
+    document.getElementById('sum-ortho').textContent = ortho;
+    document.getElementById('sum-cam').textContent = cam;
+  }
+
+  // ── 처리 상태 오버라이드 관리 ──
+  function getOverrides() {
+    try { return JSON.parse(localStorage.getItem(OVERRIDE_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+
+  function setOverride(detId, status) {
+    var o = getOverrides();
+    o[detId] = status;
+    try { localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o)); } catch (e) {}
+  }
+
+  function getLogs() {
+    try { return JSON.parse(localStorage.getItem(LOG_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+
+  function appendLog(detId, action, note) {
+    var logs = getLogs();
+    if (!logs[detId]) logs[detId] = [];
+    logs[detId].push({
+      at: new Date().toISOString(),
+      action: action,
+      note: note || ''
+    });
+    try { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); } catch (e) {}
+  }
+
+  // ── 필터 적용 ──
+  window.applyFilter = function () {
+    var dateFrom = document.getElementById('filter-date-from').value;
+    var dateTo = document.getElementById('filter-date-to').value;
+    var model = document.getElementById('filter-model').value;
+    var severity = document.getElementById('filter-severity').value;
+    var status = document.getElementById('filter-status').value;
+    var keyword = document.getElementById('filter-keyword').value.trim().toLowerCase();
+
+    // 작업 필터 적용: 해당 job_id의 detection_ids 목록만 통과
+    var jobDetIds = null;
+    if (currentJobFilter) {
+      var job = allJobs.find(function (j) { return j.job_id === currentJobFilter; });
+      if (job) jobDetIds = new Set(job.detection_ids);
+      document.getElementById('banner-job-id').textContent = currentJobFilter;
+      document.getElementById('job-filter-banner').style.display = 'flex';
+    }
+
+    filtered = allDetections.filter(function (d) {
+      if (jobDetIds && !jobDetIds.has(d.id)) return false;
+      var date = d.detected_at.substring(0, 10);
+      if (dateFrom && date < dateFrom) return false;
+      if (dateTo && date > dateTo) return false;
+      if (model && d.model_type !== model) return false;
+      if (severity && d.severity !== severity) return false;
+      if (status && d.status !== status) return false;
+      if (keyword) {
+        var hay = (d.class_ko + ' ' + d.address + ' ' + d.class_en).toLowerCase();
+        if (hay.indexOf(keyword) === -1) return false;
+      }
+      return true;
+    });
+
+    currentPage = 1;
+    renderTable();
+  };
+
+  window.resetFilter = function () {
+    document.getElementById('filter-date-from').value = '2026-03-01';
+    document.getElementById('filter-date-to').value = '2026-04-15';
+    document.getElementById('filter-model').value = '';
+    document.getElementById('filter-severity').value = '';
+    document.getElementById('filter-status').value = '';
+    document.getElementById('filter-keyword').value = '';
+    applyFilter();
+  };
+
+  // ── 테이블 렌더링 ──
+  function renderTable() {
+    var tbody = document.getElementById('history-tbody');
+    var emptyWrap = document.getElementById('empty-state-wrap');
+    tbody.innerHTML = '';
+    emptyWrap.innerHTML = '';
+
+    if (filtered.length === 0) {
+      renderEmptyState('조건에 해당하는 탐지 이력이 없습니다.');
+      document.getElementById('table-info').textContent = '총 0건 · 페이지 1/1';
+      document.getElementById('pagination').innerHTML = '';
+      return;
+    }
+
+    var totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    var start = (currentPage - 1) * pageSize;
+    var pageItems = filtered.slice(start, start + pageSize);
+
+    pageItems.forEach(function (d, i) {
+      var tr = document.createElement('tr');
+      var confPct = Math.round(d.confidence * 100);
+      var modelLabel = d.model_type === 'orthophoto' ? '정사영상' : '카메라';
+      var modelBadge = d.model_type === 'orthophoto' ? 'badge-orthophoto' : 'badge-camera';
+
+      tr.innerHTML =
+        '<td class="col-id">' + d.id + '</td>' +
+        '<td><canvas class="row-thumb" width="44" height="32" id="rt-' + d.id + '"></canvas></td>' +
+        '<td><span class="badge ' + modelBadge + '">' + modelLabel + '</span></td>' +
+        '<td><strong>' + d.class_ko + '</strong></td>' +
+        '<td><span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + SEVERITY_KO[d.severity] + '</span></td>' +
+        '<td><div class="conf-bar-cell"><div class="bar"><span style="width:' + confPct + '%;"></span></div><div class="pct">' + confPct + '%</div></div></td>' +
+        '<td style="font-size:12px;">' + d.address + '</td>' +
+        '<td style="font-size:12px;font-family:monospace;">' + d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.') + '</td>' +
+        '<td><span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span></td>' +
+        '<td class="col-actions"><button class="row-action-btn" data-id="' + d.id + '">자세히</button></td>';
+
+      tr.querySelector('.row-action-btn').addEventListener('click', function () {
+        openModal(d);
+      });
+
+      tbody.appendChild(tr);
+
+      // 썸네일 그리기
+      setTimeout(function () {
+        drawRowThumb(document.getElementById('rt-' + d.id), d);
+      }, 0);
+    });
+
+    document.getElementById('table-info').textContent =
+      '총 ' + filtered.length + '건 · 페이지 ' + currentPage + '/' + totalPages;
+    renderPagination(totalPages);
+  }
+
+  function drawRowThumb(canvas, d) {
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var w = canvas.width, h = canvas.height;
+
+    // 배경
+    var grd = ctx.createLinearGradient(0, 0, 0, h);
+    if (d.model_type === 'orthophoto') {
+      grd.addColorStop(0, '#3d6b4a');
+      grd.addColorStop(1, '#2a4f36');
+    } else {
+      grd.addColorStop(0, '#1e3050');
+      grd.addColorStop(1, '#0d1520');
+    }
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, w, h);
+
+    // 도로
+    ctx.fillStyle = '#5a6370';
+    if (d.model_type === 'orthophoto') {
+      ctx.fillRect(w * 0.25, 0, w * 0.5, h);
+    } else {
+      ctx.fillRect(0, h * 0.4, w, h * 0.6);
+    }
+
+    // bbox 표시
+    var col = d.severity === 'high' ? '#E63946' : d.severity === 'medium' ? '#F4A261' : '#2A9D8F';
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(w * 0.3, h * 0.35, w * 0.4, h * 0.35);
+    ctx.fillStyle = col;
+    ctx.globalAlpha = 0.25;
+    ctx.fillRect(w * 0.3, h * 0.35, w * 0.4, h * 0.35);
+    ctx.globalAlpha = 1;
+  }
+
+  function renderEmptyState(message) {
+    var wrap = document.getElementById('empty-state-wrap');
+    wrap.innerHTML =
+      '<div class="empty-state">' +
+        '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+        '<p>' + message + '</p>' +
+      '</div>';
+  }
+
+  // ── 페이지네이션 ──
+  function renderPagination(totalPages) {
+    var container = document.getElementById('pagination');
+    container.innerHTML = '';
+
+    function makeBtn(label, page, opts) {
+      opts = opts || {};
+      var btn = document.createElement('button');
+      btn.className = 'page-btn';
+      if (opts.active) btn.classList.add('active');
+      btn.textContent = label;
+      if (opts.disabled) {
+        btn.style.opacity = '0.4';
+        btn.style.cursor = 'not-allowed';
+      } else {
+        btn.addEventListener('click', function () {
+          currentPage = page;
+          renderTable();
+          window.scrollTo({ top: 200, behavior: 'smooth' });
+        });
+      }
+      container.appendChild(btn);
+    }
+
+    makeBtn('‹', currentPage - 1, { disabled: currentPage === 1 });
+
+    var maxButtons = 7;
+    var startP = Math.max(1, currentPage - 3);
+    var endP = Math.min(totalPages, startP + maxButtons - 1);
+    if (endP - startP < maxButtons - 1) startP = Math.max(1, endP - maxButtons + 1);
+
+    for (var p = startP; p <= endP; p++) {
+      makeBtn(String(p), p, { active: p === currentPage });
+    }
+
+    makeBtn('›', currentPage + 1, { disabled: currentPage === totalPages });
+  }
+
+  // ── 모달 ──
+  function openModal(d) {
+    currentDetection = d;
+    pendingStatus = d.status;
+    document.getElementById('m-id').textContent = d.id;
+    document.getElementById('m-class').textContent = d.class_ko + ' (' + d.class_en + ')';
+    document.getElementById('m-conf').textContent = (d.confidence * 100).toFixed(0) + '%';
+    document.getElementById('m-severity').innerHTML =
+      '<span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + SEVERITY_KO[d.severity] + '</span>';
+    document.getElementById('m-addr').textContent = d.address;
+    document.getElementById('m-lat').textContent = d.lat.toFixed(6);
+    document.getElementById('m-lng').textContent = d.lng.toFixed(6);
+    document.getElementById('m-date').textContent = d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+    document.getElementById('m-status').innerHTML =
+      '<span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span>';
+    document.getElementById('m-file').textContent = d.image_file;
+
+    // 큰 썸네일
+    var canvas = document.getElementById('modal-thumb');
+    drawModalThumb(canvas, d);
+
+    // 처리 상태 단계 버튼 반영
+    document.querySelectorAll('.m-status-step').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.status === d.status);
+    });
+
+    // 메모 초기화
+    document.getElementById('m-note').value = '';
+
+    // 이력 로그 표시
+    var logEl = document.getElementById('m-history-log');
+    var logs = getLogs()[d.id] || [];
+    if (logs.length === 0) {
+      logEl.innerHTML = '';
+    } else {
+      logEl.innerHTML = logs.slice().reverse().map(function (l) {
+        var t = l.at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+        return '<div class="m-history-log-item"><time>' + t + '</time><span>' + l.action + (l.note ? ' · ' + l.note : '') + '</span></div>';
+      }).join('');
+    }
+
+    document.getElementById('detail-modal').classList.add('show');
+  }
+
+  // 처리 단계 버튼 클릭
+  document.querySelectorAll('.m-status-step').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      pendingStatus = btn.dataset.status;
+      document.querySelectorAll('.m-status-step').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    });
+  });
+
+  // 저장 핸들러
+  window.saveProcessing = function () {
+    if (!currentDetection) return;
+    var newStatus = pendingStatus;
+    var note = document.getElementById('m-note').value.trim();
+
+    if (newStatus === currentDetection.status && !note) {
+      NotifyUI.info('변경 사항이 없습니다.');
+      return;
+    }
+
+    var oldStatus = currentDetection.status;
+    currentDetection.status = newStatus;
+    setOverride(currentDetection.id, newStatus);
+
+    if (oldStatus !== newStatus) {
+      appendLog(currentDetection.id, oldStatus + ' → ' + newStatus, note);
+    } else if (note) {
+      appendLog(currentDetection.id, '메모 추가', note);
+    }
+
+    // UI 업데이트
+    updateSummaryLive();
+    renderTable();
+
+    // 모달 내 상태 배지 & 이력 로그 갱신
+    document.getElementById('m-status').innerHTML =
+      '<span class="badge ' + STATUS_BADGE[newStatus] + '">' + newStatus + '</span>';
+
+    var logs = getLogs()[currentDetection.id] || [];
+    document.getElementById('m-history-log').innerHTML = logs.slice().reverse().map(function (l) {
+      var t = l.at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+      return '<div class="m-history-log-item"><time>' + t + '</time><span>' + l.action + (l.note ? ' · ' + l.note : '') + '</span></div>';
+    }).join('');
+
+    // 메모 입력 초기화
+    document.getElementById('m-note').value = '';
+
+    // 완료 피드백
+    var foot = document.querySelector('.modal-foot');
+    var saved = document.createElement('span');
+    saved.textContent = '저장되었습니다';
+    saved.style.cssText = 'color:var(--color-success);font-size:12px;font-weight:600;margin-right:auto;align-self:center;';
+    foot.insertBefore(saved, foot.firstChild);
+    setTimeout(function () { saved.remove(); }, 2000);
+  };
+
+  function drawModalThumb(canvas, d) {
+    var ctx = canvas.getContext('2d');
+    var w = canvas.width, h = canvas.height;
+
+    // 배경
+    var grd = ctx.createLinearGradient(0, 0, 0, h);
+    if (d.model_type === 'orthophoto') {
+      grd.addColorStop(0, '#4a7c59');
+      grd.addColorStop(0.5, '#3d6b4a');
+      grd.addColorStop(1, '#2a4f36');
+    } else {
+      grd.addColorStop(0, '#0d1520');
+      grd.addColorStop(0.4, '#1e3050');
+      grd.addColorStop(1, '#1a2535');
+    }
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, w, h);
+
+    if (d.model_type === 'orthophoto') {
+      // 도로 (정사영상 톱뷰)
+      ctx.fillStyle = '#5a6370';
+      ctx.fillRect(w * 0.25, 0, w * 0.5, h);
+      ctx.fillStyle = '#4e5765';
+      ctx.fillRect(w * 0.32, 0, w * 0.36, h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([20, 12]);
+      ctx.beginPath();
+      ctx.moveTo(w * 0.5, 0);
+      ctx.lineTo(w * 0.5, h);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    } else {
+      // 도로 (카메라 1인칭)
+      ctx.fillStyle = '#2a3444';
+      ctx.fillRect(0, h * 0.4, w, h * 0.6);
+      ctx.strokeStyle = 'rgba(255,255,220,0.7)';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([30, 15]);
+      ctx.beginPath();
+      ctx.moveTo(w * 0.5, h * 0.4);
+      ctx.lineTo(w * 0.5, h);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(w * 0.15, h);
+      ctx.lineTo(w * 0.4, h * 0.4);
+      ctx.moveTo(w * 0.85, h);
+      ctx.lineTo(w * 0.6, h * 0.4);
+      ctx.stroke();
+    }
+
+    // bbox
+    var col = d.severity === 'high' ? '#E63946' : d.severity === 'medium' ? '#F4A261' : '#2A9D8F';
+    var bx = w * 0.34, by = h * 0.42, bw = w * 0.32, bh = h * 0.34;
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 3;
+    ctx.strokeRect(bx, by, bw, bh);
+    ctx.fillStyle = col;
+    ctx.globalAlpha = 0.18;
+    ctx.fillRect(bx, by, bw, bh);
+    ctx.globalAlpha = 1;
+
+    // 라벨
+    var label = d.class_ko + ' ' + d.confidence.toFixed(2);
+    ctx.font = 'bold 13px monospace';
+    var tw = ctx.measureText(label).width + 12;
+    ctx.fillStyle = col;
+    ctx.fillRect(bx, by - 22, tw, 22);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(label, bx + 6, by - 7);
+
+    // 좌하단 좌표
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0, h - 24, 240, 24);
+    ctx.fillStyle = '#0f0';
+    ctx.font = '11px monospace';
+    ctx.fillText('LAT: ' + d.lat.toFixed(5) + '  LON: ' + d.lng.toFixed(5), 8, h - 8);
+  }
+
+  window.closeModal = function () {
+    document.getElementById('detail-modal').classList.remove('show');
+  };
+
+  document.getElementById('detail-modal').addEventListener('click', function (e) {
+    if (e.target === this) closeModal();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  window.goToMap = function () {
+    if (!currentDetection) return;
+    window.location.href = 'map-home.html?id=' + encodeURIComponent(currentDetection.id);
+  };
+
+  // ── CSV 내보내기 ──
+  window.exportCSV = function () {
+    if (filtered.length === 0) {
+      NotifyUI.warn('내보낼 데이터가 없습니다.');
+      return;
+    }
+    var headers = ['ID', '모델', '클래스', '심각도', '신뢰도', '위도', '경도', '주소', '탐지일시', '상태', '원본파일'];
+    var rows = filtered.map(function (d) {
+      return [
+        d.id,
+        d.model_type === 'orthophoto' ? '정사영상' : '카메라',
+        d.class_ko,
+        SEVERITY_KO[d.severity],
+        d.confidence,
+        d.lat,
+        d.lng,
+        d.address,
+        d.detected_at,
+        d.status,
+        d.image_file
+      ].map(function (v) {
+        var s = String(v).replace(/"/g, '""');
+        return /[",\n]/.test(s) ? '"' + s + '"' : s;
+      }).join(',');
+    });
+    var csv = '\uFEFF' + headers.join(',') + '\n' + rows.join('\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = '남원시_탐지이력_' + new Date().toISOString().substring(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // ── 초기화 ──
+  loadData();
+})();
+</script>
+</body>
+</html>
