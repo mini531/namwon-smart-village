@@ -478,30 +478,7 @@
 
     .filter-actions { display: flex; gap: 6px; }
 
-    /* 테이블 카드 — history 와 동일 */
-    .table-card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--border-radius-lg);
-      overflow: hidden;
-    }
-    .table-head {
-      padding: 14px 22px;
-      border-bottom: 1px solid var(--color-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .table-head .th-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--color-text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .table-head .th-title svg { color: var(--color-primary); }
-    .table-wrap { overflow-x: auto; }
+    /* 테이블 카드 — 전역 .table-card / .table-head / .th-title 사용 */
     .data-table { margin: 0; }
     .data-table .col-status { width: 120px; text-align: center; }
     .data-table .col-date { width: 180px; text-align: center; }

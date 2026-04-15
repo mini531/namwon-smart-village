@@ -689,6 +689,56 @@ select {
 /* =========================================================
    테이블
    ========================================================= */
+/* 공용 카드 + 헤더 (대시보드 .dash-card 와 동일한 룩) */
+.table-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 1px 3px rgba(15, 37, 64, 0.04);
+  overflow: hidden;
+}
+
+.table-head {
+  padding: 0 22px;
+  height: 62px;
+  min-height: 62px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.table-head .th-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.table-head .th-title svg { color: var(--color-primary); flex-shrink: 0; }
+
+.table-head .th-info {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.table-wrap { overflow-x: auto; }
+
+@media (max-width: 720px) {
+  .table-head {
+    padding: 0 16px;
+    height: 56px;
+    min-height: 56px;
+  }
+  .table-head .th-title { font-size: 15px; }
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
