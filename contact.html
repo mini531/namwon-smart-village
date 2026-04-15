@@ -413,7 +413,7 @@
     }
     .filter-row {
       display: grid;
-      grid-template-columns: 150px minmax(0, 1.2fr) minmax(0, 2fr) auto;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr) auto;
       gap: 12px;
       align-items: end;
     }
@@ -447,11 +447,16 @@
       align-items: center;
       gap: 6px;
       flex-wrap: wrap;
+      min-width: 0;
     }
-    .date-range > input[type="date"] { flex: 1; min-width: 130px; }
-    .date-range .sep { color: var(--color-text-muted); font-weight: 700; }
+    .date-range > input[type="date"] {
+      flex: 1 1 130px;
+      min-width: 120px;
+      max-width: 170px;
+    }
+    .date-range .sep { color: var(--color-text-muted); font-weight: 700; flex-shrink: 0; }
     .date-range .quick-btn {
-      padding: 7px 11px;
+      padding: 6px 10px;
       background: var(--color-surface);
       border: 1.5px solid var(--color-border);
       color: var(--color-text);
@@ -461,6 +466,7 @@
       cursor: pointer;
       font-family: inherit;
       transition: all 0.15s;
+      flex-shrink: 0;
     }
     .date-range .quick-btn:hover:not(.active) { border-color: var(--color-text); color: var(--color-text); }
     .date-range .quick-btn.active {
@@ -549,18 +555,22 @@
     .empty-state svg { opacity: 0.35; margin-bottom: 12px; }
     .empty-state p { font-size: 14px; }
 
-    @media (max-width: 1024px) {
-      .filter-row { grid-template-columns: 1fr 1fr; }
-      .filter-row .filter-field.wide { grid-column: span 2; }
-      .filter-actions { grid-column: span 2; justify-content: flex-end; }
+    @media (max-width: 1200px) {
+      .filter-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .filter-field.date { grid-column: span 3; }
+      .filter-actions { grid-column: span 3; justify-content: flex-end; }
     }
     @media (max-width: 720px) {
       .contact-container { padding: 18px 14px 40px; }
       .form-card { padding: 20px 18px 18px; }
       .filter-row { grid-template-columns: 1fr; }
-      .filter-actions { grid-column: auto; }
-      .inquiry-table thead th.col-status,
-      .inquiry-table tbody td.col-status { display: none; }
+      .filter-field.date { grid-column: auto; }
+      .filter-actions { grid-column: auto; justify-content: stretch; }
+      .filter-actions .btn { flex: 1; }
+      .data-table thead th.col-status,
+      .data-table tbody td.col-status { display: none; }
     }
   </style>
 </head>
@@ -645,7 +655,7 @@
             <label>제목</label>
             <input type="text" id="filter-keyword" placeholder="제목 검색">
           </div>
-          <div class="filter-field">
+          <div class="filter-field date">
             <label>등록일</label>
             <div class="date-range">
               <input type="date" id="filter-from">

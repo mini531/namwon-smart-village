@@ -218,20 +218,9 @@
   transform: translateY(-1px);
 }
 
-/* 현재 페이지가 이 드롭다운 하위 링크인 경우 */
+/* 현재 페이지가 이 드롭다운 하위 링크인 경우 — 아이콘 색만 강조 */
 .action-dropdown.active .action-icon {
   color: #fff;
-}
-.action-dropdown.active::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -6px;
-  transform: translateX(-50%);
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--color-primary-light);
 }
 
 /* 호버 갭 브릿지 */
