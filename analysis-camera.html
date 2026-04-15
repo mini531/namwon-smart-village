@@ -377,22 +377,54 @@
       display: flex;
       flex-direction: column;
       width: 100%;
+      transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .viewer-area > .result-section.maximized {
+      flex: 1;
+      height: auto;
+      min-height: 0;
+    }
+    .viewer-area.result-max > .viewer-canvas-wrap {
+      flex: 0 0 160px;
+      min-height: 0;
     }
 
     .result-section .result-tabs {
       display: flex;
-      padding: 0 20px;
+      padding: 0 8px 0 20px;
       border-bottom: 1px solid var(--color-border);
       background: var(--color-surface-2);
       flex-shrink: 0;
       gap: 2px;
       overflow-x: auto;
       scrollbar-width: none;
+      align-items: center;
     }
     .result-section .result-tabs::-webkit-scrollbar { display: none; }
+    .result-section .result-tabs .rt-spacer { flex: 1; }
+    .result-section .result-max-btn {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: all 0.15s;
+    }
+    .result-section .result-max-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .result-section .result-max-btn svg { width: 16px; height: 16px; }
 
     .result-section .result-tab {
-      padding: 13px 14px;
+      padding: 11px 12px;
       font-size: 13px;
       color: var(--color-text-muted);
       cursor: pointer;
@@ -450,10 +482,10 @@
     /* 리스트 헤더 (컬럼 라벨) */
     .result-list-head {
       display: grid;
-      grid-template-columns: 22px minmax(0, 1.4fr) minmax(0, 2fr) 120px 90px;
+      grid-template-columns: 20px minmax(0, 1.3fr) minmax(0, 2fr) 130px 150px;
       gap: 14px;
       align-items: center;
-      padding: 8px 20px;
+      padding: 7px 20px;
       background: var(--color-surface-2);
       border-bottom: 1px solid var(--color-border);
       font-size: 12px;
@@ -468,15 +500,16 @@
 
     .result-row {
       display: grid;
-      grid-template-columns: 22px minmax(0, 1.4fr) minmax(0, 2fr) 120px 90px;
+      grid-template-columns: 20px minmax(0, 1.3fr) minmax(0, 2fr) 130px 150px;
       gap: 14px;
       align-items: center;
-      padding: 10px 20px;
+      padding: 6px 20px;
       border-bottom: 1px solid #F1F3F5;
       font-size: 13px;
       color: var(--color-text);
       cursor: pointer;
       transition: background 0.12s;
+      min-height: 32px;
     }
     .result-row:hover { background: #F8F9FA; }
     .result-row.selected {
@@ -546,16 +579,19 @@
       font-family: 'Inter', monospace;
       text-align: right;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .result-list-footer {
-      padding: 12px 20px;
+      padding: 7px 20px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       gap: 10px;
       background: var(--color-surface);
       border-top: 1px solid #F1F3F5;
+      flex-shrink: 0;
     }
     .result-list-footer .rf-info {
       font-size: 12px;
@@ -572,6 +608,8 @@
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s;
+      text-decoration: none;
+      display: inline-block;
     }
     .result-list-footer .rf-load-more:hover {
       border-color: var(--color-primary);
@@ -589,7 +627,7 @@
     @media (max-width: 1024px) {
       .result-list-head,
       .result-row {
-        grid-template-columns: 18px minmax(0, 1.2fr) minmax(0, 1.8fr) 100px 72px;
+        grid-template-columns: 18px minmax(0, 1.2fr) minmax(0, 1.8fr) 110px 130px;
         gap: 10px;
         padding-left: 14px;
         padding-right: 14px;
@@ -600,9 +638,9 @@
         display: none;
       }
       .result-row {
-        grid-template-columns: 16px minmax(0, 1fr) 70px;
+        grid-template-columns: 16px minmax(0, 1fr) 120px;
         gap: 8px;
-        padding: 10px 14px;
+        padding: 8px 14px;
       }
       .result-row .rr-meta,
       .result-row .rr-conf { display: none; }
@@ -985,7 +1023,12 @@
           <div class="result-tab" data-tab="high">고위험<span class="rt-count" id="tab-count-high">0</span></div>
           <div class="result-tab" data-tab="medium">주의<span class="rt-count" id="tab-count-medium">0</span></div>
           <div class="result-tab" data-tab="low">양호<span class="rt-count" id="tab-count-low">0</span></div>
-          <div class="result-tab" data-tab="none">탐지 없음<span class="rt-count" id="tab-count-none">0</span></div>
+          <div class="result-tab" data-tab="none">이상 없음<span class="rt-count" id="tab-count-none">0</span></div>
+          <div class="rt-spacer"></div>
+          <button type="button" class="result-max-btn" id="result-max-btn" title="패널 최대화">
+            <svg id="result-max-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+            <svg id="result-max-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+          </button>
         </div>
         <div class="result-panel" id="result-list-panel">
           <div class="result-list-head">
@@ -993,13 +1036,13 @@
             <div>클래스</div>
             <div>주소</div>
             <div>신뢰도</div>
-            <div>프레임</div>
+            <div>프레임 / 시각</div>
           </div>
           <div id="result-rows"></div>
         </div>
         <div class="result-list-footer" id="result-list-footer" style="display:none;">
           <span class="rf-info" id="rf-info">0 / 0</span>
-          <button type="button" class="rf-load-more" id="rf-load-more">더 보기</button>
+          <a class="rf-load-more" id="rf-load-more" href="history.html">추론 이력 조회에서 전체 보기 →</a>
         </div>
       </div>
     </main>
@@ -1369,7 +1412,7 @@
 
   var currentFrames = [];     // 모든 프레임 (탐지+미탐지)
   var renderedCount = 0;      // 현재 탭에서 이미 렌더된 행 수
-  var PAGE_SIZE = 100;
+  var PAGE_SIZE = 300;
 
   function buildFrameList() {
     // selectedSource.frame_count 기반으로 샘플링된 프레임 목록 생성
@@ -1480,6 +1523,9 @@
       footer.style.display = 'none';
       return;
     }
+    if (tab === 'none') {
+      // 이상 없음 탭은 너무 많으므로 상위 300개만 표시
+    }
 
     appendRows(tab, filtered);
     updateFooter(filtered.length);
@@ -1501,7 +1547,7 @@
 
       var confPct = det ? Math.round(parseFloat(det.confidence) * 100) : 0;
       var sevColor = det ? sevColors[f.severity] : '#CED4DA';
-      var className = det ? det.class_ko : '탐지 없음';
+      var className = det ? det.class_ko : '이상 없음';
       var addr = det ? det.address : '–';
       var confHtml = det
         ? '<div class="rr-conf-bar"><span style="width:' + confPct + '%;background:' + sevColor + ';"></span></div>' +
@@ -1514,7 +1560,7 @@
         '<div class="rr-class" title="' + className + (det ? ' · ' + sevKo[f.severity] : '') + '">' + className + '</div>' +
         '<div class="rr-meta" title="' + addr + '">' + addr + '</div>' +
         '<div class="rr-conf">' + confHtml + '</div>' +
-        '<div class="rr-frame">#' + f.frameNo + '<br>' + f.timeStr + '</div>';
+        '<div class="rr-frame">#' + f.frameNo + ' · ' + f.timeStr + '</div>';
 
       row.addEventListener('click', (function (frame) {
         return function () {
@@ -1536,13 +1582,8 @@
     var btn = document.getElementById('rf-load-more');
     footer.style.display = 'flex';
     info.textContent = renderedCount.toLocaleString() + ' / ' + totalCount.toLocaleString();
-    if (renderedCount >= totalCount) {
-      btn.style.display = 'none';
-    } else {
-      btn.style.display = 'inline-block';
-      var remain = totalCount - renderedCount;
-      btn.textContent = '더 보기 (' + Math.min(PAGE_SIZE, remain) + '건)';
-    }
+    // 더 보기는 항상 표시 (추론 이력 조회 메뉴로 이동)
+    btn.style.display = 'inline-block';
   }
 
   function showFrameInfo(frame) {
@@ -1597,11 +1638,28 @@
       switchTab(tabEl.dataset.tab);
       return;
     }
-    if (e.target.id === 'rf-load-more') {
-      appendRows(activeTab, getFilteredFrames(activeTab));
-      updateFooter(getFilteredFrames(activeTab).length);
+    var maxBtn = e.target.closest('#result-max-btn');
+    if (maxBtn) {
+      toggleResultMax();
+      return;
     }
   });
+
+  function toggleResultMax() {
+    var section = document.getElementById('result-section');
+    var viewer = document.querySelector('.viewer-area');
+    var btn = document.getElementById('result-max-btn');
+    var iconOpen = document.getElementById('result-max-icon-open');
+    var iconClose = document.getElementById('result-max-icon-close');
+    if (!section || !viewer || !btn) return;
+    var maxed = section.classList.toggle('maximized');
+    viewer.classList.toggle('result-max', maxed);
+    btn.setAttribute('title', maxed ? '패널 축소' : '패널 최대화');
+    if (iconOpen && iconClose) {
+      iconOpen.style.display = maxed ? 'none' : '';
+      iconClose.style.display = maxed ? '' : 'none';
+    }
+  }
 })();
 </script>
 </body>
