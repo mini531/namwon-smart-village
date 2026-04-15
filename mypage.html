@@ -152,6 +152,158 @@
     .pwd-field.has-error input[type="password"] { border-color: var(--color-primary); }
     .pwd-field.has-error .err-msg { display: block; }
 
+    /* ── 뷰 토글 ── */
+    .mp-view { display: none; }
+    .mp-view.active { display: block; }
+
+    /* 회원정보 수정 폼 */
+    .edit-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px 22px;
+    }
+    .ef-field.ef-field-wide { grid-column: 1 / -1; }
+    .ef-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 7px;
+    }
+    .ef-field label .req {
+      color: var(--color-primary);
+      margin-left: 3px;
+    }
+    .ef-field input[type="text"],
+    .ef-field input[type="email"],
+    .ef-field input[type="tel"],
+    .ef-field select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      color: var(--color-text);
+      font-family: inherit;
+      outline: none;
+      background: var(--color-surface);
+      transition: border-color 0.15s;
+    }
+    .ef-field input:focus,
+    .ef-field select:focus { border-color: var(--color-primary); }
+    .ef-field input[readonly] {
+      background: #F8F9FA;
+      color: var(--color-text-muted);
+      cursor: not-allowed;
+    }
+    .ef-field .ef-hint {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    /* 동의 체크박스 */
+    .consent-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .consent-check input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .consent-check .cc-box {
+      width: 22px;
+      height: 22px;
+      border: 1.5px solid var(--color-border);
+      border-radius: 5px;
+      background: var(--color-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .consent-check .cc-box svg {
+      width: 14px;
+      height: 14px;
+      color: #fff;
+      opacity: 0;
+      transform: scale(0.6);
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .consent-check input:checked ~ .cc-box {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+    .consent-check input:checked ~ .cc-box svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .consent-check:hover .cc-box { border-color: var(--color-primary); }
+    .consent-check .cc-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .consent-check .cc-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .consent-sub { padding-left: 16px; }
+
+    .consent-info {
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      padding: 14px 18px;
+      margin: 6px 0 10px;
+    }
+    .consent-info .ci-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 8px;
+    }
+    .consent-info ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .consent-info ul li {
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--color-text-muted);
+    }
+    .consent-info ul li strong {
+      color: var(--color-text);
+      font-weight: 700;
+    }
+
+    .edit-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
     /* 2열 그리드 (스토리지) */
     .two-col {
       display: grid;
@@ -319,9 +471,14 @@
         margin-top: 14px;
       }
     }
+    @media (max-width: 900px) {
+      .edit-form-grid { grid-template-columns: 1fr; }
+    }
     @media (max-width: 720px) {
       .mypage-container { padding: 18px 14px 40px; }
       .card-body { padding: 18px 16px; }
+      .edit-actions { flex-direction: column-reverse; }
+      .edit-actions .btn { width: 100%; }
       .profile-grid {
         grid-template-columns: 1fr;
         padding: 10px 0;
@@ -361,12 +518,14 @@
       <div class="page-title-wrap">
         <h1>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          마이 페이지
+          <span id="page-title-text">마이 페이지</span>
         </h1>
-        <p>회원 정보 및 스토리지 사용 현황을 확인하세요</p>
+        <p id="page-title-sub">회원 정보 및 스토리지 사용 현황을 확인하세요</p>
       </div>
     </div>
 
+    <!-- 메인 뷰 -->
+    <section class="mp-view active" id="view-main">
     <!-- 회원 정보 -->
     <div class="table-card">
       <div class="table-head">
@@ -481,10 +640,123 @@
         </div>
       </div>
     </div>
+    </section>
+
+    <!-- 회원정보 수정 뷰 -->
+    <section class="mp-view" id="view-edit">
+      <div class="table-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            기본 정보
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="edit-form-grid">
+            <div class="ef-field">
+              <label>이름</label>
+              <input type="text" id="ef-name" readonly>
+              <div class="ef-hint">이름은 관리자에게 문의해 변경할 수 있습니다.</div>
+            </div>
+            <div class="ef-field">
+              <label>아이디 (이메일)</label>
+              <input type="email" id="ef-email" readonly>
+              <div class="ef-hint">아이디는 변경할 수 없습니다.</div>
+            </div>
+            <div class="ef-field">
+              <label>전화번호 <span class="req">*</span></label>
+              <input type="tel" id="ef-phone" placeholder="010-0000-0000">
+            </div>
+            <div class="ef-field">
+              <label>직위</label>
+              <input type="text" id="ef-rank" placeholder="예) 주무관">
+            </div>
+            <div class="ef-field ef-field-wide">
+              <label>부서 <span class="req">*</span></label>
+              <select id="ef-dept" class="form-select">
+                <option value="도로관리과">도로관리과</option>
+                <option value="교통행정과">교통행정과</option>
+                <option value="도시계획과">도시계획과</option>
+                <option value="정보통신팀">정보통신팀</option>
+                <option value="안전총괄과">안전총괄과</option>
+                <option value="재난관리과">재난관리과</option>
+                <option value="홍보전산과">홍보전산과</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            정보 이용 동의 설정
+          </div>
+        </div>
+        <div class="card-body">
+          <label class="consent-check">
+            <input type="checkbox" id="consent-marketing">
+            <span class="cc-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="cc-text"><span class="cc-tag">선택</span>홍보를 위한 정보수집 동의</span>
+          </label>
+
+          <div class="consent-info">
+            <div class="ci-title">회원정보 수집 및 이용에 관한 사항</div>
+            <ul>
+              <li><strong>회원정보의 수집·이용 목적:</strong> 광고 홍보 활동 등을 위한 목적으로만 수집됩니다.</li>
+              <li><strong>회원정보 수집·이용 항목:</strong> 휴대전화 번호, 이메일, SMS/이메일 수신 동의</li>
+              <li>선택 항목에 동의하지 않은 경우도 회원가입 및 일반적인 서비스를 이용할 수 있습니다.</li>
+            </ul>
+          </div>
+
+          <label class="consent-check consent-sub">
+            <input type="checkbox" id="consent-sms">
+            <span class="cc-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="cc-text"><span class="cc-tag">선택</span>광고성 정보 SMS 수신 동의</span>
+          </label>
+          <label class="consent-check consent-sub">
+            <input type="checkbox" id="consent-email">
+            <span class="cc-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="cc-text"><span class="cc-tag">선택</span>광고성 정보 Email 수신 동의</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="edit-actions">
+        <button type="button" class="btn btn-ghost" id="btn-edit-cancel">취소</button>
+        <button type="button" class="btn btn-primary" id="btn-edit-save">저장</button>
+      </div>
+    </section>
 
   </div>
 
   <div id="footer-include"></div>
+</div>
+
+<!-- 비밀번호 확인 모달 (회원정보 수정 진입용) -->
+<div class="modal-backdrop" id="pwdc-modal">
+  <div class="modal-card" style="width: 440px;">
+    <div class="modal-head">
+      <div class="title">본인 확인</div>
+      <button class="close-btn" id="pwdc-close">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--color-text-muted);margin:0 0 16px;line-height:1.6;">
+        회원정보 수정을 위해 현재 비밀번호를 한 번 더 입력해 주세요.
+      </p>
+      <div class="pwd-field" id="pwdc-field">
+        <label>현재 비밀번호 <span class="req">*</span></label>
+        <input type="password" id="pwdc-input" autocomplete="current-password" placeholder="현재 사용 중인 비밀번호">
+        <div class="err-msg">비밀번호가 일치하지 않습니다.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <div class="mf-spacer"></div>
+      <button type="button" class="btn btn-ghost" id="pwdc-cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="pwdc-confirm">확인</button>
+    </div>
+  </div>
 </div>
 
 <!-- 비밀번호 변경 모달 -->
@@ -528,10 +800,19 @@
   var PROFILE = {
     displayName: '관리자',
     name: '관리자',
+    email: 'admin@namwon.go.kr',
+    phone: '063-620-6102',
     dept: '도로관리과',
     rank: '주무관',
-    joined: '2025-04-10T11:18:44'
+    joined: '2025-04-10T11:18:44',
+    consent: {
+      marketing: false,
+      sms: false,
+      email: false
+    }
   };
+  // 데모용 비밀번호 (실제 배포본은 서버 검증)
+  var DEMO_PASSWORD = 'admin1234';
 
   // 스토리지: 현재 사용량 / 전체 (단위 GB)
   var STORAGE = {
@@ -710,11 +991,109 @@
     });
   });
 
+  // ── 회원정보 수정 뷰 + 비밀번호 확인 ──
+  var pwdcModal = document.getElementById('pwdc-modal');
+
+  function switchView(view) {
+    document.querySelectorAll('.mp-view').forEach(function (v) {
+      v.classList.toggle('active', v.id === 'view-' + view);
+    });
+    var titleText = document.getElementById('page-title-text');
+    var sub = document.getElementById('page-title-sub');
+    if (view === 'edit') {
+      titleText.textContent = '회원정보 수정';
+      sub.textContent = '회원 정보와 정보 이용 동의 설정을 변경합니다.';
+    } else {
+      titleText.textContent = '마이 페이지';
+      sub.textContent = '회원 정보 및 스토리지 사용 현황을 확인하세요';
+    }
+    document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  function openPwdConfirm() {
+    document.getElementById('pwdc-input').value = '';
+    document.getElementById('pwdc-field').classList.remove('has-error');
+    pwdcModal.classList.add('show');
+    setTimeout(function () { document.getElementById('pwdc-input').focus(); }, 30);
+  }
+  function closePwdConfirm() {
+    pwdcModal.classList.remove('show');
+  }
+  function submitPwdConfirm() {
+    var v = document.getElementById('pwdc-input').value;
+    var field = document.getElementById('pwdc-field');
+    if (!v || v !== DEMO_PASSWORD) {
+      field.classList.add('has-error');
+      field.querySelector('.err-msg').textContent =
+        !v ? '비밀번호를 입력해 주세요.' : '비밀번호가 일치하지 않습니다.';
+      return;
+    }
+    closePwdConfirm();
+    prefillEditForm();
+    switchView('edit');
+  }
+
+  document.getElementById('pwdc-close').addEventListener('click', closePwdConfirm);
+  document.getElementById('pwdc-cancel').addEventListener('click', closePwdConfirm);
+  document.getElementById('pwdc-confirm').addEventListener('click', submitPwdConfirm);
+  pwdcModal.addEventListener('click', function (e) {
+    if (e.target === pwdcModal) closePwdConfirm();
+  });
+  document.getElementById('pwdc-input').addEventListener('input', function () {
+    document.getElementById('pwdc-field').classList.remove('has-error');
+  });
+  document.getElementById('pwdc-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') submitPwdConfirm();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && pwdcModal.classList.contains('show')) closePwdConfirm();
+  });
+
+  function prefillEditForm() {
+    document.getElementById('ef-name').value = PROFILE.name;
+    document.getElementById('ef-email').value = PROFILE.email;
+    document.getElementById('ef-phone').value = PROFILE.phone;
+    document.getElementById('ef-rank').value = PROFILE.rank;
+    document.getElementById('ef-dept').value = PROFILE.dept;
+    document.getElementById('consent-marketing').checked = !!PROFILE.consent.marketing;
+    document.getElementById('consent-sms').checked = !!PROFILE.consent.sms;
+    document.getElementById('consent-email').checked = !!PROFILE.consent.email;
+  }
+
+  function saveEdit() {
+    var phone = document.getElementById('ef-phone').value.trim();
+    if (!phone) {
+      if (window.NotifyUI) NotifyUI.warn('전화번호를 입력해 주세요.', '입력 오류');
+      return;
+    }
+    PROFILE.phone = phone;
+    PROFILE.rank = document.getElementById('ef-rank').value.trim() || PROFILE.rank;
+    PROFILE.dept = document.getElementById('ef-dept').value;
+    PROFILE.consent.marketing = document.getElementById('consent-marketing').checked;
+    PROFILE.consent.sms = document.getElementById('consent-sms').checked;
+    PROFILE.consent.email = document.getElementById('consent-email').checked;
+
+    renderProfile();
+    switchView('main');
+    if (window.NotifyUI) NotifyUI.toast('회원정보가 저장되었습니다.', '변경 완료', { type: 'success' });
+  }
+
+  document.getElementById('btn-edit-cancel').addEventListener('click', function () {
+    switchView('main');
+  });
+  document.getElementById('btn-edit-save').addEventListener('click', saveEdit);
+
+  // 마케팅 동의 해제 시 하위 SMS/Email 자동 해제
+  document.getElementById('consent-marketing').addEventListener('change', function () {
+    if (!this.checked) {
+      document.getElementById('consent-sms').checked = false;
+      document.getElementById('consent-email').checked = false;
+    }
+  });
+
   // ── 버튼 이벤트 ──
   document.getElementById('btn-change-pwd').addEventListener('click', openPwdModal);
-  document.getElementById('btn-edit-profile').addEventListener('click', function () {
-    if (window.NotifyUI) NotifyUI.info('회원정보 수정 기능은 준비 중입니다.', '안내');
-  });
+  document.getElementById('btn-edit-profile').addEventListener('click', openPwdConfirm);
   document.getElementById('btn-request-storage').addEventListener('click', function () {
     if (window.NotifyUI) NotifyUI.info('스토리지 증량 신청 폼은 준비 중입니다.\n급한 경우 도로관리과 담당자에게 문의해 주세요.', '스토리지 증량 신청');
   });
