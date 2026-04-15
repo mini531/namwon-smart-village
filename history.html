@@ -72,11 +72,21 @@
       align-items: center;
       gap: 14px;
       transition: all var(--transition);
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      width: 100%;
     }
 
     .summary-card:hover {
       box-shadow: 0 4px 16px rgba(15,37,64,0.08);
       transform: translateY(-1px);
+      border-color: var(--color-primary);
+    }
+
+    .summary-card:focus {
+      outline: 2px solid rgba(200, 16, 46, 0.3);
+      outline-offset: 2px;
     }
 
     .summary-icon {
@@ -453,7 +463,7 @@
 
     <!-- 통계 요약 -->
     <div class="summary-strip" id="summary-strip">
-      <div class="summary-card">
+      <button type="button" class="summary-card" data-kpi="all">
         <div class="summary-icon blue">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
@@ -461,8 +471,8 @@
           <div class="label">총 탐지</div>
           <div class="value"><span id="sum-total">0</span><span class="unit">건</span></div>
         </div>
-      </div>
-      <div class="summary-card">
+      </button>
+      <button type="button" class="summary-card" data-kpi="severity:high">
         <div class="summary-icon red">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         </div>
@@ -470,8 +480,8 @@
           <div class="label">고위험</div>
           <div class="value"><span id="sum-high">0</span><span class="unit">건</span></div>
         </div>
-      </div>
-      <div class="summary-card">
+      </button>
+      <button type="button" class="summary-card" data-kpi="status:미처리">
         <div class="summary-icon orange">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>
@@ -479,8 +489,8 @@
           <div class="label">미처리</div>
           <div class="value"><span id="sum-unprocessed">0</span><span class="unit">건</span></div>
         </div>
-      </div>
-      <div class="summary-card">
+      </button>
+      <button type="button" class="summary-card" data-kpi="model:orthophoto">
         <div class="summary-icon purple">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
         </div>
@@ -488,8 +498,8 @@
           <div class="label">정사영상</div>
           <div class="value"><span id="sum-ortho">0</span><span class="unit">건</span></div>
         </div>
-      </div>
-      <div class="summary-card">
+      </button>
+      <button type="button" class="summary-card" data-kpi="model:camera">
         <div class="summary-icon green">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
         </div>
@@ -497,7 +507,7 @@
           <div class="label">카메라</div>
           <div class="value"><span id="sum-cam">0</span><span class="unit">건</span></div>
         </div>
-      </div>
+      </button>
     </div>
 
     <!-- 탭 스트립 -->
@@ -775,6 +785,32 @@
         }
       }
       applyFilter();
+
+      // 상단 KPI 카드 클릭 → 탐지 뷰 + 해당 필터 적용
+      document.querySelectorAll('.summary-card[data-kpi]').forEach(function (card) {
+        card.addEventListener('click', function () {
+          var spec = card.dataset.kpi;
+          var sev = document.getElementById('filter-severity');
+          var stat = document.getElementById('filter-status');
+          var modelSel = document.getElementById('filter-model');
+          // 우선 기존 필터 초기화 (KPI 는 단일 축 필터)
+          if (sev) sev.value = '';
+          if (stat) stat.value = '';
+          if (modelSel) modelSel.value = '';
+          if (spec && spec !== 'all') {
+            var parts = spec.split(':');
+            var key = parts[0], val = parts[1];
+            if (key === 'severity' && sev) sev.value = val;
+            if (key === 'status' && stat) stat.value = val;
+            if (key === 'model' && modelSel) modelSel.value = val;
+          }
+          switchView('detections');
+          currentPage = 1;
+          applyFilter();
+          var anchor = document.getElementById('view-detections');
+          if (anchor && anchor.scrollIntoView) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
     }).catch(function (err) {
       console.error('데이터 로드 실패:', err);
       renderEmptyState('데이터를 불러올 수 없습니다.');
