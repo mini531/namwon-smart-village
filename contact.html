@@ -16,7 +16,8 @@
       padding-top: var(--header-height);
       height: 100vh;
       background: var(--color-page-bg);
-      display: block;
+      display: flex;
+      flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
     }
@@ -27,24 +28,26 @@
       min-width: 0;
       margin: 0 auto;
       padding: 24px 32px 56px;
+      flex: 1 0 auto;
     }
+
+    #footer-include { flex-shrink: 0; }
 
     .page-header {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       margin-bottom: 22px;
       gap: 16px;
     }
     .page-title-wrap h1 {
-      font-size: 24px;
-      font-weight: 800;
+      font-size: 22px;
+      font-weight: 700;
       color: var(--color-text);
       display: flex;
       align-items: center;
       gap: 10px;
       margin-bottom: 4px;
-      letter-spacing: -0.3px;
     }
     .page-title-wrap h1 svg { color: var(--color-primary); }
     .page-title-wrap p {
@@ -52,38 +55,190 @@
       color: var(--color-text-muted);
     }
 
-    /* 뷰 토글 탭 */
+    /* 뷰 토글 탭 — history.html 과 동일한 라운드 카드 스타일 */
     .view-tabs {
       display: flex;
-      gap: 2px;
-      border-bottom: 1px solid var(--color-border);
-      margin-bottom: 20px;
+      gap: 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 6px;
+      margin-bottom: 18px;
+      max-width: 420px;
+      font-family: inherit;
     }
     .view-tab {
-      padding: 12px 20px;
-      background: none;
-      border: none;
-      border-bottom: 2px solid transparent;
-      font-size: 14px;
-      font-weight: 700;
+      flex: 1;
+      padding: 10px 18px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
       color: var(--color-text-muted);
       cursor: pointer;
+      border-radius: 6px;
+      border: none;
+      background: none;
       font-family: inherit;
-      transition: all 0.15s;
+      transition: all 0.15s ease;
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: -1px;
+      justify-content: center;
+      gap: 7px;
     }
-    .view-tab:hover { color: var(--color-text); }
     .view-tab.active {
-      color: var(--color-primary);
-      border-bottom-color: var(--color-primary);
+      background: var(--color-primary);
+      color: #fff;
+    }
+    .view-tab:hover:not(.active) {
+      background: var(--color-page-bg);
+      color: var(--color-text);
     }
     .view-tab svg { flex-shrink: 0; }
+    .view-tab .inq-count-badge {
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0.9;
+    }
 
     .view-panel { display: none; }
     .view-panel.active { display: block; }
+
+    /* ── 문의 상세 ── */
+    .detail-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 28px 32px 32px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .detail-header {
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 22px;
+    }
+    .detail-header h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--color-text);
+      line-height: 1.4;
+      margin-bottom: 10px;
+      letter-spacing: -0.2px;
+    }
+    .detail-header .detail-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+    .detail-header .detail-meta .meta-sep {
+      width: 1px;
+      height: 12px;
+      background: var(--color-border);
+    }
+
+    .detail-section {
+      margin-bottom: 24px;
+    }
+    .detail-section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .detail-section-head .ds-marker {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .detail-section-head .ds-marker.a {
+      background: var(--color-surface-2);
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-primary);
+    }
+    .detail-section-head .ds-label {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--color-text);
+    }
+    .detail-section-head .ds-sub {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      margin-left: auto;
+    }
+    .detail-section-body {
+      padding: 18px 20px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--color-text);
+      white-space: pre-line;
+    }
+    .detail-section.answer .detail-section-body {
+      background: #FBEEF0;
+      border-color: rgba(200, 16, 46, 0.2);
+    }
+    .detail-section.pending .detail-section-body {
+      color: var(--color-text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 28px 20px;
+    }
+
+    .detail-attach-list {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .detail-attach-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 13px;
+    }
+    .detail-attach-item svg { flex-shrink: 0; color: var(--color-text-muted); }
+    .detail-attach-item .da-name { flex: 1; min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .detail-attach-item .da-size { font-size: 12px; color: var(--color-text-muted); flex-shrink: 0; }
+
+    .detail-foot {
+      display: flex;
+      justify-content: center;
+      margin-top: 24px;
+    }
+    .detail-list-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 26px;
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-border);
+      color: var(--color-text);
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .detail-list-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
     /* ── 등록 폼 ── */
     .form-card {
@@ -307,10 +462,10 @@
       font-family: inherit;
       transition: all 0.15s;
     }
-    .date-range .quick-btn:hover:not(.active) { border-color: var(--color-primary); color: var(--color-primary); }
+    .date-range .quick-btn:hover:not(.active) { border-color: var(--color-text); color: var(--color-text); }
     .date-range .quick-btn.active {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
+      background: var(--color-text);
+      border-color: var(--color-text);
       color: #fff;
     }
 
@@ -545,6 +700,45 @@
       <div class="pagination" id="pagination"></div>
     </section>
 
+    <!-- 문의 상세 -->
+    <section class="view-panel" id="panel-detail">
+      <div class="detail-card">
+        <div class="detail-header">
+          <h2 id="dv-title">-</h2>
+          <div class="detail-meta">
+            <span id="dv-status"></span>
+            <span class="meta-sep"></span>
+            <span id="dv-date">-</span>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-head">
+            <span class="ds-marker">Q</span>
+            <span class="ds-label">문의 내용</span>
+          </div>
+          <div class="detail-section-body" id="dv-content"></div>
+          <div class="detail-attach-list" id="dv-attach" style="display:none;"></div>
+        </div>
+
+        <div class="detail-section answer" id="dv-answer-wrap">
+          <div class="detail-section-head">
+            <span class="ds-marker a">A</span>
+            <span class="ds-label">답변</span>
+            <span class="ds-sub" id="dv-answered-at"></span>
+          </div>
+          <div class="detail-section-body" id="dv-answer"></div>
+        </div>
+      </div>
+
+      <div class="detail-foot">
+        <button type="button" class="detail-list-btn" id="btn-detail-back">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          목록
+        </button>
+      </div>
+    </section>
+
   </div>
 
   <div id="footer-include"></div>
@@ -565,10 +759,12 @@
     {
       id: 101,
       title: 'AI 추론 보고서 활용 방법 문의',
-      content: '월간 보고서에서 정사영상 분석 결과만 골라서 출력할 수 있나요?',
+      content: '월간 보고서에서 정사영상 분석 결과만 골라서 출력할 수 있나요?\n카메라 영상 분석과 정사영상 분석 결과를 분리해서 따로 보고서를 만들고 싶은데, 현재는 두 모델이 합쳐진 형태로만 출력되는 것 같습니다.',
       status: 'replied',
       createdAt: '2025-11-25T10:00:59',
-      attachments: []
+      attachments: [],
+      answer: '안녕하세요, 도로관리과입니다.\n\n보고서 생성 메뉴에서 모델 종류 필터를 "정사영상" 또는 "카메라" 로 지정하시면 해당 모델의 분석 결과만 포함된 보고서가 생성됩니다.\n\n1) 상단 메뉴 > 보고서 > 보고서 생성\n2) 기본 설정 > 모델 종류 > "정사영상" 선택\n3) 기간·지역·보고서 유형 선택 후 "보고서 생성" 클릭\n4) PDF 다운로드 버튼으로 저장\n\n추가 문의 사항은 언제든지 남겨주세요.',
+      answeredAt: '2025-11-26T09:12:00'
     }
   ];
 
@@ -614,12 +810,15 @@
 
   // ── 뷰 전환 ──
   function switchView(view) {
+    // 탭 UI 는 form/list 만 노출 (detail 은 숨은 뷰)
     document.querySelectorAll('.view-tab').forEach(function (t) {
       t.classList.toggle('active', t.dataset.view === view);
     });
     document.querySelectorAll('.view-panel').forEach(function (p) {
       p.classList.toggle('active', p.id === 'panel-' + view);
     });
+    var tabsEl = document.querySelector('.view-tabs');
+    if (tabsEl) tabsEl.style.display = (view === 'detail') ? 'none' : '';
     if (view === 'list') {
       state.page = 1;
       renderList();
@@ -773,14 +972,54 @@
         '<td><span class="inquiry-title">' + escapeHtml(inq.title) + '</span></td>' +
         '<td class="col-status"><span class="status-pill ' + pillClass + '">' + pillText + '</span></td>' +
         '<td class="col-date">' + fmtDateTime(inq.createdAt) + '</td>';
-      tr.addEventListener('click', function () {
-        // 상세 보기는 향후 구현 (demo: toast)
-        if (window.NotifyUI) NotifyUI.toast(inq.title, inq.status === 'replied' ? '답변 완료' : '답변 대기');
-      });
+      (function (item) {
+        tr.addEventListener('click', function () { openDetail(item); });
+      })(inq);
       tbody.appendChild(tr);
     });
 
     renderPagination(totalPages);
+  }
+
+  function openDetail(inq) {
+    var pillClass = inq.status === 'replied' ? 'replied' : 'pending';
+    var pillText = inq.status === 'replied' ? '답변 완료' : '답변 대기';
+    document.getElementById('dv-title').textContent = inq.title;
+    document.getElementById('dv-status').innerHTML = '<span class="status-pill ' + pillClass + '">' + pillText + '</span>';
+    document.getElementById('dv-date').textContent = '등록 ' + fmtDateTime(inq.createdAt);
+    document.getElementById('dv-content').textContent = inq.content || '';
+
+    var attachWrap = document.getElementById('dv-attach');
+    attachWrap.innerHTML = '';
+    if (inq.attachments && inq.attachments.length) {
+      attachWrap.style.display = 'flex';
+      inq.attachments.forEach(function (a) {
+        var item = document.createElement('div');
+        item.className = 'detail-attach-item';
+        item.innerHTML =
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>' +
+          '<span class="da-name">' + escapeHtml(a.name) + '</span>' +
+          '<span class="da-size">' + (typeof a.size === 'number' ? formatFileSize(a.size) : a.size) + '</span>';
+        attachWrap.appendChild(item);
+      });
+    } else {
+      attachWrap.style.display = 'none';
+    }
+
+    var ansWrap = document.getElementById('dv-answer-wrap');
+    var ansBody = document.getElementById('dv-answer');
+    var ansAt = document.getElementById('dv-answered-at');
+    if (inq.status === 'replied' && inq.answer) {
+      ansWrap.classList.remove('pending');
+      ansBody.textContent = inq.answer;
+      ansAt.textContent = inq.answeredAt ? '답변 ' + fmtDateTime(inq.answeredAt) : '';
+    } else {
+      ansWrap.classList.add('pending');
+      ansBody.textContent = '담당자가 확인 후 답변 드릴 예정입니다. 답변까지 영업일 기준 1-2일 소요됩니다.';
+      ansAt.textContent = '';
+    }
+
+    switchView('detail');
   }
 
   function renderPagination(totalPages) {
@@ -894,6 +1133,9 @@
     resetForm();
     switchView('form');
   });
+
+  // 상세 뷰 목록 버튼
+  document.getElementById('btn-detail-back').addEventListener('click', function () { switchView('list'); });
 
   // 초기 렌더
   document.getElementById('inq-count-badge').textContent = '(' + state.inquiries.length + ')';
