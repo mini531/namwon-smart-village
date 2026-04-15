@@ -256,7 +256,7 @@
       var analyzed = job.analyzed_at.substring(0, 10).replace(/-/g, '.');
       tbody.insertAdjacentHTML('beforeend',
         '<tr>' +
-        '<td style="font-family:monospace;color:#64748B;font-size:11px;">' + job.job_id + '</td>' +
+        '<td style="font-family:monospace;color:#64748B;font-size:12px;">' + job.job_id + '</td>' +
         '<td style="font-weight:600;">' + (job.source_label || job.source_name) + '</td>' +
         '<td style="font-family:monospace;">' + captured + '</td>' +
         '<td style="font-family:monospace;">' + analyzed + '</td>' +
@@ -340,7 +340,7 @@
         '<td style="font-family:monospace;color:#64748B;">' + d.id + '</td>' +
         '<td style="font-weight:600;">' + d.class_ko + '</td>' +
         '<td style="text-align:center;color:' + sevCol[d.severity] + ';font-weight:700;">' + sevKo[d.severity] + '</td>' +
-        '<td style="font-size:11px;">' + d.address + '</td>' +
+        '<td style="font-size:12px;">' + d.address + '</td>' +
         '<td style="font-family:monospace;">' + date + '</td>' +
         '<td style="font-weight:700;color:#C8102E;">' + conf + '</td>' +
         '<td>' + d.status + '</td>' +

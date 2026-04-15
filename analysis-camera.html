@@ -30,6 +30,7 @@
 
     /* ── 좌측 설정 패널 ── */
     .side-panel {
+      width: auto;
       border-right: 1px solid var(--color-border);
       background: var(--color-surface);
       overflow-y: auto;
@@ -368,16 +369,17 @@
     }
 
     /* 결과 리스트 (뷰어 하단) - 가로 스크롤 카드 리스트 */
-    .result-section {
+    .viewer-area > .result-section {
       background: var(--color-surface);
       border-top: 1px solid var(--color-border);
       flex-shrink: 0;
-      height: 200px;
+      height: 244px;
       display: flex;
       flex-direction: column;
+      width: 100%;
     }
 
-    .result-tabs {
+    .result-section .result-tabs {
       display: flex;
       padding: 0 20px;
       border-bottom: 1px solid var(--color-border);
@@ -385,7 +387,7 @@
       flex-shrink: 0;
     }
 
-    .result-tab {
+    .result-section .result-tab {
       padding: 13px 16px;
       font-size: 13px;
       color: var(--color-text-muted);
@@ -396,15 +398,16 @@
       font-weight: 600;
     }
 
-    .result-tab.active {
+    .result-section .result-tab.active {
       color: var(--color-primary);
       border-bottom-color: var(--color-primary);
       font-weight: 700;
     }
 
-    .result-tab:hover:not(.active) { color: var(--color-text); }
+    .result-section .result-tab:hover:not(.active) { color: var(--color-text); }
 
-    .result-panel {
+    .viewer-area .result-section > .result-panel {
+      width: auto;
       padding: 14px 20px;
       overflow-x: auto;
       overflow-y: hidden;
@@ -412,15 +415,18 @@
       min-height: 0;
       background: var(--color-surface);
       display: flex;
-      gap: 10px;
+      flex-direction: row;
+      gap: 12px;
       align-items: stretch;
+      border-left: none;
+      border-top: none;
       scrollbar-width: thin;
     }
 
-    .result-panel::-webkit-scrollbar { height: 8px; }
-    .result-panel::-webkit-scrollbar-thumb { background: #CED4DA; border-radius: 4px; }
+    .viewer-area .result-section > .result-panel::-webkit-scrollbar { height: 8px; }
+    .viewer-area .result-section > .result-panel::-webkit-scrollbar-thumb { background: #CED4DA; border-radius: 4px; }
 
-    .result-card {
+    .result-section .result-card {
       background: var(--color-surface);
       border: 1.5px solid var(--color-border);
       border-radius: 8px;
@@ -431,13 +437,13 @@
       cursor: pointer;
       transition: all 0.15s;
       flex-shrink: 0;
-      width: 180px;
+      width: 190px;
       overflow: hidden;
     }
 
-    .result-card-thumb {
+    .result-section .result-card-thumb {
       width: 100%;
-      height: 90px;
+      height: 96px;
       background: #1a2535;
       display: block;
       border-bottom: 1px solid var(--color-border);

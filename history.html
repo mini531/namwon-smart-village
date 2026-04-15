@@ -146,7 +146,7 @@
     .filter-field { display: flex; flex-direction: column; }
 
     .filter-field label {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--color-text-muted);
       text-transform: uppercase;
@@ -241,7 +241,7 @@
     }
 
     .job-class-chip {
-      font-size: 11px;
+      font-size: 12px;
       padding: 2px 8px;
       background: var(--color-page-bg);
       border: 1px solid var(--color-border);
@@ -352,7 +352,7 @@
     }
 
     .conf-bar-cell .pct {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--color-text-muted);
       font-weight: 600;
       width: 32px;
@@ -464,7 +464,7 @@
     }
 
     .modal-info-grid .info-item .label {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--color-text-muted);
       text-transform: uppercase;
@@ -496,7 +496,7 @@
     }
 
     .m-action-title {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--color-text-muted);
       text-transform: uppercase;
@@ -616,7 +616,7 @@
     }
 
     .m-history-log {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--color-text-muted);
       background: var(--color-surface-2);
       border-radius: 6px;
@@ -1064,8 +1064,8 @@
 
     allJobs.forEach(function (job) {
       var modelBadge = job.source_type === 'orthophoto'
-        ? '<span class="badge badge-primary" style="font-size:11px;">정사영상</span>'
-        : '<span class="badge" style="font-size:11px;">카메라</span>';
+        ? '<span class="badge badge-primary" style="font-size:12px;">정사영상</span>'
+        : '<span class="badge" style="font-size:12px;">카메라</span>';
 
       var captured = job.captured_at.replace(/-/g, '.');
       var analyzed = job.analyzed_at.substring(0, 10).replace(/-/g, '.');
@@ -1078,7 +1078,7 @@
         }).join('');
 
       var highMark = job.high_count > 0
-        ? '<div style="font-size:11px;color:var(--color-primary);font-weight:700;margin-top:2px;">고위험 ' + job.high_count + '건</div>'
+        ? '<div style="font-size:12px;color:var(--color-primary);font-weight:700;margin-top:2px;">고위험 ' + job.high_count + '건</div>'
         : '';
 
       var tr = document.createElement('tr');
@@ -1086,8 +1086,8 @@
       tr.innerHTML =
         '<td style="font-family:monospace;color:var(--color-text-muted);font-size:12px;font-weight:600;">' + job.job_id + '</td>' +
         '<td class="job-source-cell" title="' + job.source_name + '">' + (job.source_label || job.source_name) +
-          '<div style="font-size:11px;color:var(--color-text-muted);font-weight:400;margin-top:1px;font-family:monospace;">' + job.source_name + '</div></td>' +
-        '<td>' + modelBadge + '<div style="font-size:11px;color:var(--color-text-muted);margin-top:2px;">' + job.model + ' ' + job.model_version + '</div></td>' +
+          '<div style="font-size:12px;color:var(--color-text-muted);font-weight:400;margin-top:1px;font-family:monospace;">' + job.source_name + '</div></td>' +
+        '<td>' + modelBadge + '<div style="font-size:12px;color:var(--color-text-muted);margin-top:2px;">' + job.model + ' ' + job.model_version + '</div></td>' +
         '<td style="font-size:12px;font-family:monospace;color:var(--color-text-muted);">' + captured + '</td>' +
         '<td style="font-size:12px;font-family:monospace;color:var(--color-text-muted);">' + analyzed + '</td>' +
         '<td style="text-align:center;white-space:nowrap;"><div style="font-size:18px;font-weight:800;color:var(--color-text);">' + job.detection_count + '</div>' + highMark + '</td>' +

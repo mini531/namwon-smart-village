@@ -189,7 +189,7 @@ ul, ol { list-style: none; }
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.5);
 }
 
@@ -1303,35 +1303,176 @@ select {
   .db-right-stack { width: 250px; right: 60px; top: 10px; }
 }
 
+/* 모바일 패널 드로어: 기본은 숨김, FAB 토글로 열림 */
 @media (max-width: 900px) {
+  .db-left-stack,
+  .db-right-stack {
+    position: fixed;
+    top: calc(var(--header-height) + 8px);
+    bottom: 64px;
+    width: min(88vw, 360px);
+    max-width: 360px;
+    max-height: none;
+    padding: 8px;
+    margin: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    pointer-events: all;
+    background: rgba(14, 18, 24, 0.92);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+    z-index: 1500;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, visibility 0.2s ease;
+    visibility: hidden;
+    opacity: 0;
+  }
   .db-left-stack {
     left: 8px;
-    right: 8px;
-    width: auto;
-    max-width: none;
-    top: 8px;
-    max-height: 38vh;
+    right: auto;
+    transform: translateX(-12px);
   }
   .db-right-stack {
     right: 8px;
-    left: 8px;
-    width: auto;
-    top: auto;
-    bottom: 14px;
-    max-height: 28vh;
-    overflow-y: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 8px;
+    left: auto;
+    top: calc(var(--header-height) + 8px);
+    transform: translateX(12px);
   }
-  .db-right-stack > .glass-card { flex: 1 1 140px; min-width: 0; }
+  .db-left-stack.mobile-open,
+  .db-right-stack.mobile-open {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .map-panel-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1450;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+  .map-panel-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  /* 우측 도구 바가 열려도 오른쪽 패널은 아래로 밀지 않음 (드로어로 띄우므로) */
+  .map-wrapper.search-active .db-right-stack,
+  .map-wrapper.submenu-active .db-right-stack {
+    right: 8px;
+  }
+}
+
+/* 데스크톱에서는 FAB / 백드롭 / 드로어 헤더 숨김 */
+.map-mobile-fab { display: none; }
+.mobile-drawer-head { display: none; }
+
+@media (max-width: 900px) {
+  .map-mobile-fab {
+    display: flex;
+    position: fixed;
+    top: calc(var(--header-height) + 12px);
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(14, 18, 24, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.92);
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 1420;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+    padding: 0;
+  }
+  .map-mobile-fab:active { transform: scale(0.94); }
+  .map-mobile-fab:hover { background: rgba(30, 36, 44, 0.96); }
+  .map-mobile-fab svg { width: 24px; height: 24px; }
+  .map-mobile-fab .fab-label {
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(14, 18, 24, 0.9);
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .map-mobile-fab-left { left: 12px; }
+  .map-mobile-fab-right { right: 78px; }
+  .map-mobile-fab.active {
+    background: var(--color-primary);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+  /* 패널이 열려 있을 때는 FAB 숨김 (배경/ESC/닫기 버튼으로 닫음) */
+  .map-wrapper.panel-open .map-mobile-fab { display: none; }
+
+  /* 드로어 상단 헤더 (닫기 버튼 포함) */
+  .mobile-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px 12px;
+    margin: 0 0 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    position: sticky;
+    top: 0;
+    background: rgba(14, 18, 24, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 2;
+    margin-left: -8px;
+    margin-right: -8px;
+    padding-left: 14px;
+    padding-right: 10px;
+  }
+  .mobile-drawer-head .mdh-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.92);
+    letter-spacing: -0.2px;
+  }
+  .mobile-drawer-head .mdh-close {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    padding: 0;
+  }
+  .mobile-drawer-head .mdh-close:hover,
+  .mobile-drawer-head .mdh-close:active {
+    background: rgba(255, 255, 255, 0.18);
+  }
+  .glass-card-header { padding: 10px 12px; }
+  .glass-card-body { padding: 10px 12px !important; }
 }
 
 @media (max-width: 640px) {
-  .db-left-stack { max-height: 32vh; }
-  .db-right-stack { max-height: 24vh; bottom: 8px; }
-  .glass-card-header { padding: 10px 12px; }
-  .glass-card-body { padding: 10px 12px !important; }
+  .db-left-stack,
+  .db-right-stack {
+    bottom: 58px;
+    width: min(92vw, 340px);
+  }
+  .map-mobile-fab { width: 48px; height: 48px; border-radius: 12px; }
+  .map-mobile-fab svg { width: 22px; height: 22px; }
+  .map-mobile-fab-right { right: 70px; }
 }
 
 /* 글래스 카드 */
@@ -1446,7 +1587,7 @@ select {
 }
 
 .task-current-label {
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.45);
   font-weight: 600;
   text-transform: uppercase;
@@ -1463,7 +1604,7 @@ select {
 }
 
 .task-current-meta {
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.55);
   display: flex;
   align-items: center;
@@ -1504,7 +1645,7 @@ select {
 .gc-section:last-child { border-bottom: none; }
 
 .gc-section-title {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
@@ -1529,7 +1670,7 @@ select {
 }
 
 .gc-kpi .k-label {
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.55);
   font-weight: 600;
   text-transform: uppercase;
@@ -1575,7 +1716,7 @@ select {
 
 .gc-layer-count {
   margin-left: auto;
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.45);
   font-weight: 600;
   font-family: 'Inter', monospace;
@@ -1686,6 +1827,36 @@ select {
 }
 
 .glass-bottombar .bb-spacer { flex: 1; }
+
+/* =========================================================
+   측정/그리기 툴팁 라벨 (지도 오버레이)
+   ========================================================= */
+.map-tool-tooltip {
+  background: rgba(14, 18, 24, 0.92);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.map-tool-tooltip.measure-tooltip {
+  color: #FFE8EA;
+  border-color: rgba(200, 16, 46, 0.55);
+}
+.map-tool-tooltip.measure-tooltip.static {
+  background: rgba(200, 16, 46, 0.92);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.map-tool-tooltip.active {
+  background: rgba(200, 16, 46, 0.85);
+  color: #fff;
+}
 
 /* =========================================================
    우측 도구 바 (레퍼런스: clean/national)
@@ -1844,7 +2015,7 @@ select {
 .bm-icon svg { width: 20px; height: 20px; }
 
 .bm-label {
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 2px;
   font-weight: 600;
   white-space: nowrap;
@@ -2015,13 +2186,13 @@ select {
 }
 
 .res-item-sub {
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: 4px;
 }
 
 .res-item-addr {
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.78);
   display: flex;
   align-items: center;
@@ -2032,7 +2203,7 @@ select {
   display: inline-flex;
   align-items: center;
   padding: 2px 7px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   border-radius: 3px;
   flex-shrink: 0;
@@ -2049,7 +2220,7 @@ select {
 }
 
 .res-item-meta {
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.5);
 }
 
@@ -2079,7 +2250,7 @@ select {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.55);
   text-decoration: none;
   font-weight: 600;
@@ -2104,7 +2275,7 @@ select {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.7);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   border-radius: 5px;
   cursor: pointer;
@@ -2746,7 +2917,7 @@ select {
   align-items: center;
   justify-content: center;
   color: rgba(255,255,255,0.5);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 /* =========================================================
@@ -2972,7 +3143,7 @@ body.mobile-nav-open .gnb-backdrop {
 @media (max-width: 1100px) {
   .gnb-header .logo { min-width: 160px; padding: 0 16px; }
   .menu-item > a { padding: 0 12px; }
-  .menu-item > a .nav-label { font-size: 11px; }
+  .menu-item > a .nav-label { font-size: 12px; }
   .gnb-header .sub-menu { gap: 14px; padding: 0 16px; }
 }
 

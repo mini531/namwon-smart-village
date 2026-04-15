@@ -632,6 +632,258 @@ var NamwonMap = (function () {
   var STATUS_CLASS = { '미처리': 'unprocessed', '처리중': 'processing', '완료': 'done' };
 
   /* -------------------------------------------------------
+     측정/그리기 도구 실제 구현
+  ------------------------------------------------------- */
+  var _mapToolState = new WeakMap();
+
+  function _getToolState(map) {
+    var s = _mapToolState.get(map);
+    if (s) return s;
+    s = {
+      measureSource: null,
+      measureLayer: null,
+      drawSource: null,
+      drawLayer: null,
+      activeInteraction: null,
+      measureOverlays: [],
+      activeTooltipEl: null,
+      activeTooltipOverlay: null,
+      pointerMoveKey: null
+    };
+    _mapToolState.set(map, s);
+    return s;
+  }
+
+  function _measureStyle() {
+    return new ol.style.Style({
+      fill: new ol.style.Fill({ color: 'rgba(200, 16, 46, 0.18)' }),
+      stroke: new ol.style.Stroke({ color: '#C8102E', width: 2.4, lineDash: [6, 4] }),
+      image: new ol.style.Circle({
+        radius: 5,
+        fill: new ol.style.Fill({ color: '#C8102E' }),
+        stroke: new ol.style.Stroke({ color: '#ffffff', width: 2 })
+      })
+    });
+  }
+
+  function _drawStyle() {
+    return new ol.style.Style({
+      fill: new ol.style.Fill({ color: 'rgba(45, 125, 210, 0.22)' }),
+      stroke: new ol.style.Stroke({ color: '#2D7DD2', width: 2.6 }),
+      image: new ol.style.Circle({
+        radius: 6,
+        fill: new ol.style.Fill({ color: '#2D7DD2' }),
+        stroke: new ol.style.Stroke({ color: '#ffffff', width: 2 })
+      })
+    });
+  }
+
+  function _ensureMeasureLayer(map) {
+    var s = _getToolState(map);
+    if (s.measureLayer) return s;
+    s.measureSource = new ol.source.Vector();
+    s.measureLayer = new ol.layer.Vector({
+      source: s.measureSource,
+      style: _measureStyle(),
+      zIndex: 900,
+      properties: { name: 'measure-layer' }
+    });
+    map.addLayer(s.measureLayer);
+    return s;
+  }
+
+  function _ensureDrawLayer(map) {
+    var s = _getToolState(map);
+    if (s.drawLayer) return s;
+    s.drawSource = new ol.source.Vector();
+    s.drawLayer = new ol.layer.Vector({
+      source: s.drawSource,
+      style: _drawStyle(),
+      zIndex: 899,
+      properties: { name: 'draw-layer' }
+    });
+    map.addLayer(s.drawLayer);
+    return s;
+  }
+
+  function _removeActiveInteraction(map) {
+    var s = _getToolState(map);
+    if (s.activeInteraction) {
+      map.removeInteraction(s.activeInteraction);
+      s.activeInteraction = null;
+    }
+    if (s.pointerMoveKey) {
+      ol.Observable.unByKey(s.pointerMoveKey);
+      s.pointerMoveKey = null;
+    }
+    if (s.activeTooltipOverlay) {
+      map.removeOverlay(s.activeTooltipOverlay);
+      s.activeTooltipOverlay = null;
+      s.activeTooltipEl = null;
+    }
+  }
+
+  function _formatLength(line) {
+    var length = ol.sphere.getLength(line);
+    if (length >= 1000) return (length / 1000).toFixed(2) + ' km';
+    return length.toFixed(1) + ' m';
+  }
+
+  function _formatArea(polygon) {
+    var area = ol.sphere.getArea(polygon);
+    if (area >= 1e6) return (area / 1e6).toFixed(2) + ' km²';
+    if (area >= 1e4) return (area / 1e4).toFixed(2) + ' ha';
+    return area.toFixed(1) + ' m²';
+  }
+
+  function _formatRadius(circle) {
+    // 반경: OL 투영 좌표계 상 거리 → 근사 변환 (EPSG:3857 지역 왜곡 작음)
+    var center = circle.getCenter();
+    var edge = center.slice();
+    edge[0] += circle.getRadius();
+    var line = new ol.geom.LineString([center, edge]);
+    var m = ol.sphere.getLength(line);
+    if (m >= 1000) return (m / 1000).toFixed(2) + ' km';
+    return m.toFixed(1) + ' m';
+  }
+
+  function _createTooltip(map, className) {
+    var el = document.createElement('div');
+    el.className = 'map-tool-tooltip ' + (className || '');
+    var overlay = new ol.Overlay({
+      element: el,
+      offset: [0, -12],
+      positioning: 'bottom-center',
+      stopEvent: false,
+      insertFirst: false
+    });
+    map.addOverlay(overlay);
+    return { el: el, overlay: overlay };
+  }
+
+  function _startMeasure(map, mode) {
+    var s = _ensureMeasureLayer(map);
+    _removeActiveInteraction(map);
+
+    var type = mode === 'area' ? 'Polygon' : mode === 'radius' ? 'Circle' : 'LineString';
+    var draw = new ol.interaction.Draw({
+      source: s.measureSource,
+      type: type,
+      style: _measureStyle()
+    });
+    s.activeInteraction = draw;
+    map.addInteraction(draw);
+
+    var tip = _createTooltip(map, 'measure-tooltip active');
+    s.activeTooltipEl = tip.el;
+    s.activeTooltipOverlay = tip.overlay;
+    tip.el.textContent = mode === 'area' ? '첫 지점을 클릭' : mode === 'radius' ? '중심점을 클릭' : '시작점을 클릭';
+
+    var sketch = null;
+    var listener = null;
+
+    draw.on('drawstart', function (evt) {
+      sketch = evt.feature;
+      listener = sketch.getGeometry().on('change', function (e) {
+        var geom = e.target;
+        var coord, text;
+        if (geom instanceof ol.geom.Polygon) {
+          text = _formatArea(geom);
+          coord = geom.getInteriorPoint().getCoordinates();
+        } else if (geom instanceof ol.geom.LineString) {
+          text = _formatLength(geom);
+          coord = geom.getLastCoordinate();
+        } else if (geom instanceof ol.geom.Circle) {
+          text = '반경 ' + _formatRadius(geom);
+          coord = geom.getCenter();
+        }
+        if (tip.el && text && coord) {
+          tip.el.textContent = text;
+          tip.overlay.setPosition(coord);
+        }
+      });
+    });
+
+    draw.on('drawend', function (evt) {
+      var geom = evt.feature.getGeometry();
+      var text, coord;
+      if (geom instanceof ol.geom.Polygon) {
+        text = _formatArea(geom);
+        coord = geom.getInteriorPoint().getCoordinates();
+      } else if (geom instanceof ol.geom.LineString) {
+        text = _formatLength(geom);
+        coord = geom.getLastCoordinate();
+      } else if (geom instanceof ol.geom.Circle) {
+        text = '반경 ' + _formatRadius(geom);
+        coord = geom.getCenter();
+      }
+
+      // 영구 라벨 오버레이 생성
+      var labelEl = document.createElement('div');
+      labelEl.className = 'map-tool-tooltip measure-tooltip static';
+      labelEl.textContent = text;
+      var labelOverlay = new ol.Overlay({
+        element: labelEl,
+        offset: [0, -8],
+        positioning: 'bottom-center',
+        stopEvent: false
+      });
+      labelOverlay.setPosition(coord);
+      map.addOverlay(labelOverlay);
+      s.measureOverlays.push(labelOverlay);
+
+      if (listener) ol.Observable.unByKey(listener);
+      sketch = null;
+
+      // 활성 툴팁 제거하고 새 측정 준비
+      if (s.activeTooltipOverlay) {
+        map.removeOverlay(s.activeTooltipOverlay);
+        s.activeTooltipOverlay = null;
+        s.activeTooltipEl = null;
+      }
+      _removeActiveInteraction(map);
+    });
+  }
+
+  function _clearMeasure(map) {
+    var s = _getToolState(map);
+    _removeActiveInteraction(map);
+    if (s.measureSource) s.measureSource.clear();
+    if (s.measureOverlays.length) {
+      s.measureOverlays.forEach(function (ov) { map.removeOverlay(ov); });
+      s.measureOverlays = [];
+    }
+  }
+
+  function _startDraw(map, mode) {
+    var s = _ensureDrawLayer(map);
+    _removeActiveInteraction(map);
+
+    var typeMap = { point: 'Point', line: 'LineString', area: 'Polygon', circle: 'Circle' };
+    var type = typeMap[mode];
+    if (!type) return;
+
+    var draw = new ol.interaction.Draw({
+      source: s.drawSource,
+      type: type,
+      style: _drawStyle()
+    });
+    s.activeInteraction = draw;
+    map.addInteraction(draw);
+
+    draw.on('drawend', function () {
+      // 그리기 한 번 완료 후 자동 해제 (연속 그리기 방지, 원하면 유지 가능)
+      _removeActiveInteraction(map);
+    });
+  }
+
+  function _clearDraw(map) {
+    var s = _getToolState(map);
+    _removeActiveInteraction(map);
+    if (s.drawSource) s.drawSource.clear();
+  }
+
+  /* -------------------------------------------------------
      지도 공통 도구/검색/하단바 셸 생성
      - 각 페이지의 .map-wrapper 내부에 공통 UI 구조 주입
      - 우측 도구(검색/배경지도/측정/그리기/내보내기/줌)
@@ -875,18 +1127,32 @@ var NamwonMap = (function () {
       });
     });
 
-    // 측정/그리기 (시뮬레이션)
+    // 측정/그리기 실제 구현
     wrapper.querySelectorAll('#measure-menu .bm-item').forEach(function (item) {
       item.addEventListener('click', function () {
-        var m = { clear: '취소', distance: '거리 측정', area: '면적 측정', radius: '반경 측정' }[item.dataset.measure];
-        if (window.NotifyUI) NotifyUI.info(m + ' 모드로 전환되었습니다. (시뮬레이션)', '측정 도구');
+        var mode = item.dataset.measure;
+        if (mode === 'clear') {
+          _clearMeasure(map);
+          if (window.NotifyUI) NotifyUI.info('측정이 취소되었습니다', '측정 도구');
+        } else {
+          _startMeasure(map, mode);
+          var label = { distance: '거리', area: '면적', radius: '반경' }[mode];
+          if (window.NotifyUI) NotifyUI.info('지도를 클릭하여 ' + label + '을(를) 측정하세요. 더블클릭으로 완료', label + ' 측정');
+        }
         closeAllSubmenus();
       });
     });
     wrapper.querySelectorAll('#draw-menu .bm-item').forEach(function (item) {
       item.addEventListener('click', function () {
-        var m = { clear: '취소', point: '점', line: '선', area: '면', circle: '원' }[item.dataset.draw];
-        if (window.NotifyUI) NotifyUI.info(m + ' 그리기 모드로 전환되었습니다. (시뮬레이션)', '그리기 도구');
+        var mode = item.dataset.draw;
+        if (mode === 'clear') {
+          _clearDraw(map);
+          if (window.NotifyUI) NotifyUI.info('그리기가 모두 삭제되었습니다', '그리기 도구');
+        } else {
+          _startDraw(map, mode);
+          var label = { point: '점', line: '선', area: '면', circle: '원' }[mode];
+          if (window.NotifyUI) NotifyUI.info('지도를 클릭하여 ' + label + '을(를) 그리세요', label + ' 그리기');
+        }
         closeAllSubmenus();
       });
     });
