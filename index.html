@@ -23,15 +23,15 @@
 
     /* ── 상단 공지 스트립 (한 줄) ── */
     .notice-strip {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
+      background: #0F2540;
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: var(--border-radius-lg);
       padding: 12px 20px;
       margin-bottom: 22px;
       display: flex;
       align-items: center;
       gap: 14px;
-      box-shadow: 0 1px 3px rgba(15,37,64,0.04);
+      box-shadow: 0 2px 8px rgba(15,37,64,0.25);
     }
 
     .notice-strip-tag {
@@ -39,42 +39,51 @@
       align-items: center;
       gap: 6px;
       padding: 5px 11px;
-      background: #F1F3F5;
-      color: var(--color-primary);
+      background: rgba(255,255,255,0.12);
+      color: #fff;
       border-radius: 4px;
       font-size: 12px;
       font-weight: 700;
       flex-shrink: 0;
-      border: 1px solid #E9ECEF;
+      border: none;
     }
 
     .notice-strip-text {
       flex: 1;
       min-width: 0;
       font-size: 15px;
-      color: var(--color-text);
+      color: rgba(255,255,255,0.92);
       font-weight: 500;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .notice-strip-text:hover {
+      color: #fff;
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
 
     .notice-strip-date {
       font-size: 13px;
-      color: var(--color-text-muted);
+      color: rgba(255,255,255,0.6);
       font-weight: 500;
       flex-shrink: 0;
     }
 
     .notice-strip-more {
-      color: var(--color-text-muted);
+      color: rgba(255,255,255,0.75);
       font-size: 13px;
       flex-shrink: 0;
       padding-left: 14px;
-      border-left: 1px solid var(--color-border);
+      border-left: 1px solid rgba(255,255,255,0.14);
     }
 
-    .notice-strip-more:hover { color: var(--color-primary); }
+    .notice-strip-more:hover { color: #fff; }
 
     /* ── 페이지 타이틀 ── */
     .dash-title {
@@ -132,7 +141,7 @@
         linear-gradient(180deg, rgba(15,37,64,0) 0%, rgba(15,37,64,0) 50%, rgba(15,37,64,0.75) 68%, rgba(15,37,64,0.96) 88%, rgba(15,37,64,0.98) 100%),
         url('assets/images/hero.png');
       background-size: cover;
-      background-position: 50% 42%;
+      background-position: 50% 80%;
       background-repeat: no-repeat;
       box-shadow: 0 6px 24px rgba(15,37,64,0.12);
     }
@@ -252,11 +261,13 @@
     }
 
     .dash-card-header {
-      padding: 18px 22px;
+      padding: 16px 22px;
+      min-height: 60px;
       border-bottom: 1px solid var(--color-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      box-sizing: border-box;
     }
 
     .dash-card-title {

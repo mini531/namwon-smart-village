@@ -9,38 +9,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/report-sheet.css">
   <style>
-    body { overflow: hidden; }
-
     .page-body {
       padding-top: var(--header-height);
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      background: var(--color-page-bg);
     }
 
     .history-layout {
+      flex: 1;
       display: grid;
       grid-template-columns: 340px 1fr;
-      flex: 1;
+      align-items: start;
       min-height: 0;
-      overflow: hidden;
     }
 
-    /* ── 좌측 목록 ── */
+    /* ── 좌측 목록 패널 ── */
     .history-list-panel {
       background: var(--color-surface);
       border-right: 1px solid var(--color-border);
+      padding: 22px 20px 28px;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-    }
-
-    .history-list-header {
-      padding: 22px 24px 18px;
-      border-bottom: 1px solid var(--color-border);
-      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100%;
+      max-height: calc(100vh - var(--header-height));
+      overflow-y: auto;
+      min-height: 0;
     }
 
     .history-list-title {
@@ -52,7 +51,6 @@
       gap: 10px;
       margin-bottom: 4px;
     }
-
     .history-list-title svg { color: var(--color-primary); }
 
     .history-list-sub {
@@ -78,14 +76,13 @@
       font-family: inherit;
       text-decoration: none;
       transition: all 0.15s;
+      margin-bottom: 14px;
     }
-
     .new-report-btn:hover { background: var(--color-primary-dark); }
 
     .history-list-body {
       flex: 1;
-      overflow-y: auto;
-      padding: 12px 16px;
+      min-height: 0;
     }
 
     .saved-card {
@@ -98,12 +95,10 @@
       transition: all 0.15s;
       position: relative;
     }
-
     .saved-card:hover {
       border-color: #343A40;
       background: #FAFAFB;
     }
-
     .saved-card.active {
       border-color: var(--color-primary);
       background: #FBEEF0;
@@ -120,7 +115,6 @@
       font-weight: 700;
       margin-bottom: 8px;
     }
-
     .saved-card.active .saved-card-badge {
       background: #fff;
       color: var(--color-primary);
@@ -132,6 +126,7 @@
       color: var(--color-text);
       line-height: 1.3;
       margin-bottom: 6px;
+      padding-right: 26px;
     }
 
     .saved-card-meta {
@@ -158,7 +153,6 @@
       opacity: 0;
       transition: all 0.15s;
     }
-
     .saved-card:hover .saved-card-del { opacity: 1; }
     .saved-card-del:hover {
       background: #F1F3F5;
@@ -166,114 +160,127 @@
     }
 
     .empty-list {
-      padding: 60px 20px;
+      padding: 50px 20px;
       text-align: center;
       color: var(--color-text-muted);
     }
-
     .empty-list svg {
       opacity: 0.3;
       margin-bottom: 14px;
     }
-
     .empty-list p {
       font-size: 13px;
       line-height: 1.6;
     }
 
-    /* ── 우측 뷰어 ── */
-    .history-viewer {
-      background: var(--color-page-bg);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .viewer-toolbar {
-      padding: 14px 24px;
-      background: var(--color-surface);
-      border-bottom: 1px solid var(--color-border);
+    /* ── 우측 미리보기 툴바 ── */
+    .preview-toolbar {
+      max-width: 820px;
+      margin: 0 auto 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-shrink: 0;
+      gap: 10px;
+      flex-wrap: wrap;
     }
-
-    .viewer-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--color-text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .viewer-title svg { color: var(--color-primary); }
-
-    .viewer-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    #report-iframe {
-      flex: 1;
-      width: 100%;
-      border: none;
-      background: var(--color-page-bg);
-    }
-
-    .viewer-placeholder {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
+    .preview-toolbar .tb-label {
+      font-size: 13px;
       color: var(--color-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 7px;
     }
 
-    .viewer-placeholder svg {
-      opacity: 0.25;
-      margin-bottom: 16px;
+    /* ── 모바일 2단계 마법사 ── */
+    .mobile-step-bar { display: none; }
+    .mobile-back-btn { display: none; }
+
+    @media (max-width: 1100px) {
+      .history-layout { grid-template-columns: 280px 1fr; }
     }
 
-    .viewer-placeholder p {
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 1024px) {
-      .history-layout {
-        grid-template-columns: 280px 1fr;
-      }
-      .history-list-header { padding: 16px 16px 14px; }
-      .history-list-body { padding: 10px 12px; }
-    }
-
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .history-layout {
         grid-template-columns: 1fr;
-        grid-template-rows: minmax(180px, 38vh) 1fr;
+        display: block;
       }
       .history-list-panel {
+        position: static;
+        height: auto;
+        max-height: none;
+        overflow: visible;
         border-right: 0;
         border-bottom: 1px solid var(--color-border);
+        padding: 16px 18px 22px;
       }
-      .viewer-toolbar {
-        padding: 10px 12px;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-      .viewer-actions { flex-wrap: wrap; gap: 6px; }
-      .viewer-title { font-size: 14px; }
-    }
+      .report-preview-area { overflow: visible; }
 
-    @media (max-width: 480px) {
-      .viewer-toolbar { padding: 10px 10px; }
-      .viewer-title { width: 100%; }
-      .viewer-actions { width: 100%; }
-      .viewer-actions .btn { flex: 1; justify-content: center; font-size: 12px; padding: 7px 10px; }
-      .history-list-header { padding: 14px 14px 12px; }
-      .new-report-btn { padding: 9px 12px; font-size: 13px; }
+      /* 상단 단계 바 */
+      .mobile-step-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: var(--color-surface);
+        border-bottom: 1px solid var(--color-border);
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--color-text-muted);
+      }
+      .mobile-step-bar .step {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .mobile-step-bar .step .num {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--color-border);
+        color: var(--color-text-muted);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .mobile-step-bar .step.active { color: var(--color-primary); }
+      .mobile-step-bar .step.active .num {
+        background: var(--color-primary);
+        color: #fff;
+      }
+      .mobile-step-bar .step.done .num {
+        background: var(--color-text);
+        color: #fff;
+      }
+      .mobile-step-bar .arrow {
+        flex: 1;
+        height: 1px;
+        background: var(--color-border);
+      }
+
+      .mobile-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: var(--color-surface);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--border-radius);
+        color: var(--color-text);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-bottom: 12px;
+      }
+      .mobile-back-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+      body:not(.history-step-2) .history-preview-area { display: none; }
+      body.history-step-2 .history-list-panel { display: none; }
+      body.history-step-2 .mobile-step-bar .step-1 { color: var(--color-text-muted); }
+      body.history-step-2 .mobile-step-bar .step-1 .num { background: var(--color-text); color: #fff; }
+      body.history-step-2 .mobile-step-bar .step-2 { color: var(--color-primary); }
+      body.history-step-2 .mobile-step-bar .step-2 .num { background: var(--color-primary); color: #fff; }
     }
   </style>
 </head>
@@ -282,101 +289,197 @@
 <div id="header-include"></div>
 
 <div class="page-body">
+
+  <!-- 모바일 단계 표시 (≤900px에서만 보임) -->
+  <div class="mobile-step-bar" role="tablist" aria-label="보고서 이력 단계">
+    <span class="step step-1 active"><span class="num">1</span>목록</span>
+    <span class="arrow"></span>
+    <span class="step step-2"><span class="num">2</span>미리보기</span>
+  </div>
+
   <div class="history-layout">
 
-    <!-- 좌측 목록 -->
+    <!-- 좌측: 저장된 보고서 목록 -->
     <aside class="history-list-panel">
-      <div class="history-list-header">
-        <div class="history-list-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          보고서 생성 이력
-        </div>
-        <div class="history-list-sub">저장된 보고서를 클릭하여 열람·재다운로드</div>
-        <a href="report.html" class="new-report-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          새 보고서 생성
-        </a>
+      <div class="history-list-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        보고서 생성 이력
       </div>
+      <div class="history-list-sub">저장된 보고서를 클릭하여 열람·재다운로드</div>
+      <a href="report.html" class="new-report-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        새 보고서 생성
+      </a>
       <div class="history-list-body" id="saved-list"></div>
     </aside>
 
-    <!-- 우측 뷰어 -->
-    <main class="history-viewer">
-      <div class="viewer-toolbar">
-        <div class="viewer-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <span id="viewer-title-text">보고서 미리보기</span>
+    <!-- 우측: 보고서 미리보기 -->
+    <main class="report-preview-area history-preview-area">
+
+      <div class="preview-toolbar">
+        <div class="tb-label">
+          <button type="button" class="mobile-back-btn" id="mobile-back-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            목록
+          </button>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span id="viewer-title-text">좌측 목록에서 보고서를 선택하세요</span>
         </div>
-        <div class="viewer-actions">
-          <button class="btn btn-ghost btn-sm" id="btn-open-full" disabled>전체 화면</button>
-          <button class="btn btn-primary btn-sm" id="btn-download-pdf" disabled>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary btn-sm" id="pdf-download-btn" disabled onclick="downloadReport()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             PDF 다운로드
           </button>
         </div>
       </div>
 
-      <div class="viewer-placeholder" id="viewer-placeholder">
+      <!-- 플레이스홀더 -->
+      <div id="report-placeholder" class="empty-preview">
         <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <p>좌측 목록에서 보고서를 선택하세요</p>
       </div>
 
-      <iframe id="report-iframe" style="display:none;"></iframe>
+      <!-- 보고서 시트 (ReportCore가 채워줌) -->
+      <div id="report-sheet" class="report-sheet" style="display:none;">
+        <div class="report-sheet-header">
+          <div class="report-meta">NAMWON GEOVISION PLATFORM</div>
+          <h1>남원시 도로 안전관리 탐지 보고서</h1>
+          <div class="sub" id="rs-subtitle">-</div>
+          <div class="info-row">
+            <div>보고 기간: <strong id="rs-period">–</strong></div>
+            <div>대상 지역: <strong id="rs-region">–</strong></div>
+            <div>생성 일시: <strong id="rs-generated">–</strong></div>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <div class="report-section-title">1. 탐지 현황 요약</div>
+          <div class="report-kpi-grid">
+            <div class="report-kpi"><div class="label">총 탐지 건수</div><div class="value"><span id="rs-total">0</span><span class="unit">건</span></div></div>
+            <div class="report-kpi"><div class="label">고위험 건수</div><div class="value"><span id="rs-high">0</span><span class="unit">건</span></div></div>
+            <div class="report-kpi"><div class="label">미처리 건수</div><div class="value"><span id="rs-unprocessed">0</span><span class="unit">건</span></div></div>
+            <div class="report-kpi"><div class="label">처리 완료</div><div class="value"><span id="rs-done">0</span><span class="unit">건</span></div></div>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <div class="report-section-title">2. 클래스별 탐지 분포</div>
+          <div class="chart-grid">
+            <div class="chart-box">
+              <div class="chart-box-title">탐지 클래스 (건수)</div>
+              <div class="chart-canvas-wrap tall"><canvas id="chart-class"></canvas></div>
+            </div>
+            <div class="chart-box">
+              <div class="chart-box-title">심각도 분포</div>
+              <div class="chart-canvas-wrap tall"><canvas id="chart-severity"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <div class="report-section-title">3. 작업별 탐지 현황</div>
+          <div class="report-table-wrap">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th style="width:110px;">작업 ID</th>
+                  <th>원본 영상</th>
+                  <th style="white-space:nowrap;">촬영일</th>
+                  <th style="white-space:nowrap;">분석일</th>
+                  <th style="width:70px;text-align:center;">탐지</th>
+                  <th style="width:80px;text-align:center;">고위험</th>
+                </tr>
+              </thead>
+              <tbody id="rs-job-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <div class="report-section-title">4. 지역별 발생 현황</div>
+          <div class="region-stack">
+            <div class="chart-box">
+              <div class="chart-box-title">지역별 세부 내역</div>
+              <div class="report-table-wrap">
+                <table class="report-table region-table" id="rs-region-table">
+                  <thead>
+                    <tr>
+                      <th class="col-region">지역</th>
+                      <th class="col-num">전체</th>
+                      <th class="col-num">고위험</th>
+                      <th class="col-num">미처리</th>
+                      <th class="col-rate">처리율</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rs-region-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="chart-box">
+              <div class="chart-box-title">행정동별 탐지 건수</div>
+              <div class="chart-canvas-wrap"><canvas id="chart-region"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <div class="report-section-title">5. 월별 탐지 추세</div>
+          <div class="chart-box">
+            <div class="chart-box-title">기간별 탐지 건수 변화</div>
+            <div class="chart-canvas-wrap"><canvas id="chart-monthly"></canvas></div>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <div class="report-section-title" id="rs-list-title">6. 탐지 객체 목록</div>
+          <div class="report-table-wrap">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th style="width:80px;">ID</th>
+                  <th>탐지 클래스</th>
+                  <th style="width:70px;text-align:center;">심각도</th>
+                  <th>위치</th>
+                  <th style="width:100px;">탐지일</th>
+                  <th style="width:80px;text-align:right;">신뢰도</th>
+                  <th style="width:80px;text-align:center;">상태</th>
+                </tr>
+              </thead>
+              <tbody id="rs-high-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="report-section">
+          <div class="report-section-title">7. 종합 의견 및 권고사항</div>
+          <textarea class="opinion-textarea" id="rs-opinion-input" readonly placeholder="저장된 종합 의견이 없습니다."></textarea>
+        </div>
+      </div>
     </main>
+
   </div>
+
+  <div id="footer-include"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="assets/js/layout.js"></script>
+<script src="assets/js/report-core.js"></script>
 <script>
 (function () {
   'use strict';
-  var STORAGE_KEY = 'namwon-saved-reports';
+
   var currentReportId = null;
 
-  function getSavedReports() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-    catch (e) { return []; }
-  }
-
-  function deleteReport(reportId) {
-    var list = getSavedReports().filter(function (r) { return r.id !== reportId; });
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
-    if (currentReportId === reportId) {
-      currentReportId = null;
-      document.getElementById('report-iframe').style.display = 'none';
-      document.getElementById('viewer-placeholder').style.display = 'flex';
-      document.getElementById('viewer-title-text').textContent = '보고서 미리보기';
-      document.getElementById('btn-download-pdf').disabled = true;
-    }
-    renderList();
-  }
-
-  function loadReport(reportId) {
-    var reports = getSavedReports();
-    var report = reports.find(function (r) { return r.id === reportId; });
-    if (!report) return;
-
-    currentReportId = reportId;
-
-    // 활성 카드 표시
-    document.querySelectorAll('.saved-card').forEach(function (c) {
-      c.classList.toggle('active', c.dataset.id === reportId);
-    });
-
-    // iframe에 로드 (embed 모드)
-    var iframe = document.getElementById('report-iframe');
-    iframe.src = 'report.html?embed=1&id=' + encodeURIComponent(reportId);
-    iframe.style.display = 'block';
-    document.getElementById('viewer-placeholder').style.display = 'none';
-
-    document.getElementById('viewer-title-text').textContent = report.title || '보고서';
-    document.getElementById('btn-download-pdf').disabled = false;
-    document.getElementById('btn-open-full').disabled = false;
+  function goHistoryStep(step) {
+    document.body.classList.toggle('history-step-2', step === 2);
   }
 
   function renderList() {
     var wrap = document.getElementById('saved-list');
-    var reports = getSavedReports();
+    var reports = ReportCore.getSavedReports();
 
     if (reports.length === 0) {
       wrap.innerHTML =
@@ -390,7 +493,7 @@
     wrap.innerHTML = '';
     reports.forEach(function (r) {
       var typeLabel = r.sourceType === 'orthophoto' ? '정사영상' : '카메라';
-      var savedAt = r.savedAt.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+      var savedAt = (r.savedAt || '').replace('T', ' ').substring(0, 16).replace(/-/g, '.');
       var periodStart = (r.periodStart || '').replace(/-/g, '.');
       var periodEnd = (r.periodEnd || '').replace(/-/g, '.');
       var jobCount = (r.selectedJobIds || []).length;
@@ -417,42 +520,105 @@
 
       card.querySelector('.saved-card-del').addEventListener('click', function (e) {
         e.stopPropagation();
-        NotifyUI.confirm(
-          '이 저장된 보고서를 삭제하시겠습니까?',
-          function () { deleteReport(r.id); },
-          { title: '보고서 삭제', okText: '삭제' }
-        );
+        if (window.NotifyUI && NotifyUI.confirm) {
+          NotifyUI.confirm(
+            '이 저장된 보고서를 삭제하시겠습니까?',
+            function () { handleDelete(r.id); },
+            { title: '보고서 삭제', okText: '삭제' }
+          );
+        } else if (confirm('이 저장된 보고서를 삭제하시겠습니까?')) {
+          handleDelete(r.id);
+        }
       });
 
       wrap.appendChild(card);
     });
   }
 
-  // 상단 액션 버튼
-  document.getElementById('btn-open-full').addEventListener('click', function () {
-    if (!currentReportId) return;
-    window.open('report.html?id=' + encodeURIComponent(currentReportId), '_blank');
+  function handleDelete(reportId) {
+    ReportCore.deleteReport(reportId);
+    if (currentReportId === reportId) {
+      currentReportId = null;
+      document.getElementById('report-sheet').style.display = 'none';
+      document.getElementById('report-placeholder').style.display = 'block';
+      document.getElementById('pdf-download-btn').disabled = true;
+      document.getElementById('viewer-title-text').textContent = '좌측 목록에서 보고서를 선택하세요';
+    }
+    renderList();
+  }
+
+  function loadReport(reportId) {
+    var reports = ReportCore.getSavedReports();
+    var report = reports.find(function (r) { return r.id === reportId; });
+    if (!report) return;
+
+    currentReportId = reportId;
+
+    document.querySelectorAll('.saved-card').forEach(function (c) {
+      c.classList.toggle('active', c.dataset.id === reportId);
+    });
+
+    var result = ReportCore.renderReport({
+      sourceType: report.sourceType,
+      periodStart: report.periodStart,
+      periodEnd: report.periodEnd,
+      reportType: report.reportType,
+      selectedJobIds: report.selectedJobIds,
+      opinion: report.opinion || ''
+    });
+
+    if (!result.ok) {
+      if (window.NotifyUI) NotifyUI.warn(result.reason);
+      return;
+    }
+
+    document.getElementById('report-placeholder').style.display = 'none';
+    document.getElementById('report-sheet').style.display = 'block';
+    document.getElementById('pdf-download-btn').disabled = false;
+    document.getElementById('viewer-title-text').textContent = report.title || '보고서';
+
+    if (window.matchMedia('(max-width: 900px)').matches) goHistoryStep(2);
+  }
+
+  window.downloadReport = function () {
+    var sheet = document.getElementById('report-sheet');
+    var btn = document.getElementById('pdf-download-btn');
+    var originalHtml = btn ? btn.innerHTML : '';
+    ReportCore.downloadPDF(sheet,
+      function () {
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> PDF 생성 중...';
+        }
+      },
+      function () {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+        }
+      }
+    );
+  };
+
+  // 모바일 뒤로가기
+  document.getElementById('mobile-back-btn').addEventListener('click', function () {
+    goHistoryStep(1);
   });
 
-  document.getElementById('btn-download-pdf').addEventListener('click', function () {
-    if (!currentReportId) return;
-    var iframe = document.getElementById('report-iframe');
-    try {
-      if (iframe.contentWindow && iframe.contentWindow.downloadReport) {
-        iframe.contentWindow.downloadReport();
-      } else {
-        NotifyUI.info('보고서를 로드 중입니다. 잠시 후 다시 시도해주세요.');
-      }
-    } catch (e) {
-      NotifyUI.error('PDF 다운로드 중 오류가 발생했습니다.');
+  // 데스크톱 복귀 시 단계 초기화
+  window.addEventListener('resize', function () {
+    if (!window.matchMedia('(max-width: 900px)').matches) goHistoryStep(1);
+  });
+
+  // 초기: 데이터 로드 후 목록 렌더
+  ReportCore.loadData().then(function () {
+    renderList();
+    // 데스크톱이면 첫 번째 보고서 자동 선택
+    if (!window.matchMedia('(max-width: 900px)').matches) {
+      var first = ReportCore.getSavedReports()[0];
+      if (first) setTimeout(function () { loadReport(first.id); }, 50);
     }
   });
-
-  renderList();
-
-  // 첫 번째 보고서 자동 선택
-  var first = getSavedReports()[0];
-  if (first) setTimeout(function () { loadReport(first.id); }, 100);
 })();
 </script>
 </body>
