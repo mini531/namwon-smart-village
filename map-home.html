@@ -542,6 +542,68 @@
   </div>
 </div>
 
+<!-- 탐지 상세 모달 (history.html 과 동일 구조) -->
+<div class="modal-backdrop" id="detail-modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        탐지 정보
+      </div>
+      <button class="close-btn" id="detail-close-btn">×</button>
+    </div>
+    <div class="modal-body">
+      <canvas class="modal-thumb" id="detail-thumb" width="500" height="180"></canvas>
+      <div class="modal-info-grid">
+        <div class="info-item"><div class="label">탐지 ID</div><div class="value" id="dm-id">-</div></div>
+        <div class="info-item"><div class="label">탐지 클래스</div><div class="value" id="dm-class">-</div></div>
+        <div class="info-item"><div class="label">신뢰도</div><div class="value" id="dm-conf">-</div></div>
+        <div class="info-item"><div class="label">심각도</div><div class="value" id="dm-severity">-</div></div>
+        <div class="info-item full"><div class="label">위치</div><div class="value" id="dm-addr">-</div></div>
+        <div class="info-item"><div class="label">위도</div><div class="value" id="dm-lat">-</div></div>
+        <div class="info-item"><div class="label">경도</div><div class="value" id="dm-lng">-</div></div>
+        <div class="info-item"><div class="label">탐지 일시</div><div class="value" id="dm-date">-</div></div>
+        <div class="info-item"><div class="label">처리 상태</div><div class="value" id="dm-status">-</div></div>
+        <div class="info-item full"><div class="label">원본 파일</div><div class="value" id="dm-file">-</div></div>
+      </div>
+
+      <div class="m-action-section">
+        <div class="m-action-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          처리 상태 변경
+        </div>
+        <div class="m-status-steps">
+          <button class="m-status-step" data-status="미처리">
+            <span class="m-step-dot unprocessed"></span>
+            <span class="m-step-label">미처리</span>
+          </button>
+          <div class="m-step-line"></div>
+          <button class="m-status-step" data-status="처리중">
+            <span class="m-step-dot processing"></span>
+            <span class="m-step-label">처리중</span>
+          </button>
+          <div class="m-step-line"></div>
+          <button class="m-status-step" data-status="완료">
+            <span class="m-step-dot done"></span>
+            <span class="m-step-label">완료</span>
+          </button>
+        </div>
+        <div class="m-action-field">
+          <label>조치 메모 (선택)</label>
+          <textarea id="dm-note" placeholder="예) 4/15 현장 확인 · 긴급 보수 요청 · 자재 주문 완료 등"></textarea>
+        </div>
+        <div id="dm-history-log" class="m-history-log"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" id="detail-back-btn">← 이전으로</button>
+      <div class="mf-spacer"></div>
+      <button class="btn btn-ghost btn-sm" id="detail-cancel-btn">닫기</button>
+      <button class="btn btn-primary btn-sm" id="detail-save-btn">저장</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/ol@v7.5.2/dist/ol.js"></script>
 <script src="assets/js/layout.js"></script>
 <script src="assets/js/map.js"></script>
@@ -569,6 +631,13 @@
   ]).then(function (results) {
     detectionsData = results[0];
     jobsData = results[1];
+    // 이력 관리에서 저장한 처리 상태 오버라이드 반영
+    try {
+      var overrides = JSON.parse(localStorage.getItem('namwon-detection-overrides') || '{}');
+      detectionsData.detections.forEach(function (d) {
+        if (overrides[d.id]) d.status = overrides[d.id];
+      });
+    } catch (e) {}
     // 기본 선택: 진입 타입에 따라 가장 최근 작업 1건 선택
     // (orthophoto는 50GB+ 대용량이므로 1건만)
     var preferType = initialType === 'all' ? 'camera' : initialType;
@@ -637,8 +706,39 @@
       if (e.target === statusModal) statusModal.classList.remove('show');
     });
 
+    // 탐지 상세 모달 이벤트
+    initDetailModal();
+
     // 모바일 패널 드로어 토글
     initMobilePanelToggles();
+  }
+
+  function initDetailModal() {
+    var modal = document.getElementById('detail-modal');
+    if (!modal) return;
+
+    document.getElementById('detail-close-btn').addEventListener('click', closeDetailModal);
+    document.getElementById('detail-cancel-btn').addEventListener('click', closeDetailModal);
+    document.getElementById('detail-save-btn').addEventListener('click', saveDetailProcessing);
+    document.getElementById('detail-back-btn').addEventListener('click', backToStatusModal);
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) closeDetailModal();
+    });
+
+    document.querySelectorAll('#detail-modal .m-status-step').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        detailPending = btn.dataset.status;
+        document.querySelectorAll('#detail-modal .m-status-step').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+      });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('show')) {
+        closeDetailModal();
+      }
+    });
   }
 
   function initMobilePanelToggles() {
@@ -713,6 +813,8 @@
     else mq.addListener(handler);
   }
 
+  var _statusModalDets = [];
+
   function openStatusModal(status) {
     var dets = getActiveDetections().filter(function (d) { return d.status === status; });
     document.getElementById('status-modal-title').textContent = status + ' 탐지 목록';
@@ -721,6 +823,7 @@
 
     var tbody = document.getElementById('status-modal-tbody');
     tbody.innerHTML = '';
+    _statusModalDets = [];
     if (dets.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--color-text-muted);">해당 상태의 탐지가 없습니다.</td></tr>';
     } else {
@@ -729,21 +832,163 @@
       dets.sort(function (a, b) {
         var order = { high: 0, medium: 1, low: 2 };
         return order[a.severity] - order[b.severity];
-      }).forEach(function (d) {
+      }).forEach(function (d, i) {
+        _statusModalDets.push(d);
         var date = d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
-        tbody.insertAdjacentHTML('beforeend',
-          '<tr>' +
+        var tr = document.createElement('tr');
+        tr.className = 'clickable-row';
+        tr.dataset.detIdx = i;
+        tr.innerHTML =
           '<td style="color:var(--color-text-muted);font-size:12px;">' + d.id + '</td>' +
           '<td style="font-weight:600;">' + d.class_ko + '</td>' +
           '<td style="color:' + sevCol[d.severity] + ';font-weight:700;">' + sevKo[d.severity] + '</td>' +
           '<td style="font-size:12px;">' + d.address + '</td>' +
           '<td style="font-size:12px;color:var(--color-text-muted);">' + date + '</td>' +
-          '<td style="font-weight:700;">' + (d.confidence * 100).toFixed(0) + '%</td>' +
-          '</tr>'
-        );
+          '<td style="font-weight:700;">' + (d.confidence * 100).toFixed(0) + '%</td>';
+        tr.addEventListener('click', function () {
+          openDetailModal(d, { fromStatus: true });
+        });
+        tbody.appendChild(tr);
       });
     }
     document.getElementById('status-modal').classList.add('show');
+  }
+
+  // ── 탐지 상세 모달 (처리 상태 변경) ──
+  var OVERRIDE_KEY = 'namwon-detection-overrides';
+  var LOG_KEY = 'namwon-detection-logs';
+  var SEVERITY_BADGE = { high: 'badge-high', medium: 'badge-medium', low: 'badge-low' };
+  var STATUS_BADGE = { '미처리': 'badge-unprocessed', '처리중': 'badge-processing', '완료': 'badge-done' };
+  var SEVERITY_KO_MAP = { high: '고위험', medium: '주의', low: '양로' };
+  var detailCurrent = null;
+  var detailPending = null;
+  var detailCameFromStatus = false;
+
+  function getOverrides() {
+    try { return JSON.parse(localStorage.getItem(OVERRIDE_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+  function setOverride(id, status) {
+    var o = getOverrides();
+    o[id] = status;
+    try { localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o)); } catch (e) {}
+  }
+  function getLogs() {
+    try { return JSON.parse(localStorage.getItem(LOG_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+  function appendLog(id, action, note) {
+    var logs = getLogs();
+    if (!logs[id]) logs[id] = [];
+    logs[id].push({ at: new Date().toISOString(), action: action, note: note || '' });
+    try { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); } catch (e) {}
+  }
+
+  function openDetailModal(d, opts) {
+    opts = opts || {};
+    detailCurrent = d;
+    detailPending = d.status;
+    detailCameFromStatus = !!opts.fromStatus;
+
+    var sevKo = { high: '고위험', medium: '주의', low: '양호' };
+    document.getElementById('dm-id').textContent = d.id;
+    document.getElementById('dm-class').textContent = d.class_ko + ' (' + d.class_en + ')';
+    document.getElementById('dm-conf').textContent = Math.round(d.confidence * 100) + '%';
+    document.getElementById('dm-severity').innerHTML =
+      '<span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + sevKo[d.severity] + '</span>';
+    document.getElementById('dm-addr').textContent = d.address;
+    document.getElementById('dm-lat').textContent = d.lat.toFixed(6);
+    document.getElementById('dm-lng').textContent = d.lng.toFixed(6);
+    document.getElementById('dm-date').textContent = d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+    document.getElementById('dm-status').innerHTML =
+      '<span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span>';
+    document.getElementById('dm-file').textContent = d.image_file || '-';
+
+    var canvas = document.getElementById('detail-thumb');
+    var isCamera = d.model_type === 'camera';
+    if (isCamera) {
+      drawCameraFrame(canvas, d);
+    } else if (NamwonMap && NamwonMap.drawBoundingBox) {
+      NamwonMap.drawBoundingBox(canvas, d, 500, 180);
+    }
+
+    document.querySelectorAll('#detail-modal .m-status-step').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.status === d.status);
+    });
+
+    document.getElementById('dm-note').value = '';
+
+    var logEl = document.getElementById('dm-history-log');
+    var logs = getLogs()[d.id] || [];
+    if (logs.length === 0) {
+      logEl.innerHTML = '';
+    } else {
+      logEl.innerHTML = logs.slice().reverse().map(function (l) {
+        var t = l.at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+        return '<div class="m-history-log-item"><time>' + t + '</time><span>' + l.action + (l.note ? ' · ' + l.note : '') + '</span></div>';
+      }).join('');
+    }
+
+    // 이전으로 버튼은 처리 상태 모달에서 진입한 경우에만 노출
+    document.getElementById('detail-back-btn').style.display = detailCameFromStatus ? 'inline-flex' : 'none';
+
+    document.getElementById('detail-modal').classList.add('show');
+    // 처리 상태 모달은 뒤에 그대로 둔다 (백 버튼으로 돌아가기)
+  }
+
+  function closeDetailModal() {
+    document.getElementById('detail-modal').classList.remove('show');
+    detailCurrent = null;
+  }
+
+  function backToStatusModal() {
+    closeDetailModal();
+    // 상태 모달은 열린 상태 유지 (닫히지 않음)
+  }
+
+  function saveDetailProcessing() {
+    if (!detailCurrent) return;
+    var newStatus = detailPending;
+    var note = document.getElementById('dm-note').value.trim();
+
+    if (newStatus === detailCurrent.status && !note) {
+      if (window.NotifyUI) NotifyUI.toast('변경 사항이 없습니다', '알림');
+      return;
+    }
+
+    var oldStatus = detailCurrent.status;
+    detailCurrent.status = newStatus;
+    setOverride(detailCurrent.id, newStatus);
+
+    if (oldStatus !== newStatus) {
+      appendLog(detailCurrent.id, oldStatus + ' → ' + newStatus, note);
+    } else if (note) {
+      appendLog(detailCurrent.id, '메모 추가', note);
+    }
+
+    // UI 갱신
+    document.getElementById('dm-status').innerHTML =
+      '<span class="badge ' + STATUS_BADGE[newStatus] + '">' + newStatus + '</span>';
+
+    var logs = getLogs()[detailCurrent.id] || [];
+    document.getElementById('dm-history-log').innerHTML = logs.slice().reverse().map(function (l) {
+      var t = l.at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+      return '<div class="m-history-log-item"><time>' + t + '</time><span>' + l.action + (l.note ? ' · ' + l.note : '') + '</span></div>';
+    }).join('');
+
+    document.getElementById('dm-note').value = '';
+
+    // 지도 KPI / 처리상태 카드 / 상태 모달 다시 그림
+    updateKPI();
+    // 상태 모달이 열려있다면 현재 상태로 다시 렌더
+    var statusModal = document.getElementById('status-modal');
+    if (statusModal.classList.contains('show')) {
+      var currentTitle = document.getElementById('status-modal-title').textContent;
+      var m = currentTitle.match(/^(\S+)/);
+      if (m) openStatusModal(m[1]);
+    }
+
+    if (window.NotifyUI) NotifyUI.toast('처리 상태가 저장되었습니다', '저장 완료');
   }
 
   function renderLegend() {
