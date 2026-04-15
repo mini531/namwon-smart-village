@@ -348,11 +348,14 @@
       font-weight: 700;
     }
 
-    .edit-actions {
+    /* 문의 등록 form-actions 와 동일한 룩 */
+    .form-actions {
       display: flex;
       justify-content: flex-end;
       gap: 8px;
-      margin-top: 4px;
+      padding-top: 18px;
+      border-top: 1px solid var(--color-border);
+      margin-top: 22px;
     }
 
     /* 2열 그리드 (스토리지) */
@@ -528,8 +531,8 @@
     @media (max-width: 720px) {
       .mypage-container { padding: 18px 14px 40px; }
       .card-body { padding: 18px 16px; }
-      .edit-actions { flex-direction: column-reverse; }
-      .edit-actions .btn { width: 100%; }
+      .form-actions { flex-direction: column-reverse; }
+      .form-actions .btn { width: 100%; }
       .profile-grid {
         grid-template-columns: 1fr;
         padding: 10px 0;
@@ -771,12 +774,12 @@
             <span class="cc-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
             <span class="cc-text"><span class="cc-tag">선택</span>광고성 정보 Email 수신 동의</span>
           </label>
-        </div>
-      </div>
 
-      <div class="edit-actions">
-        <button type="button" class="btn btn-ghost" id="btn-edit-cancel">취소</button>
-        <button type="button" class="btn btn-primary" id="btn-edit-save">저장</button>
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" id="btn-edit-cancel">취소</button>
+            <button type="button" class="btn btn-primary" id="btn-edit-save">저장</button>
+          </div>
+        </div>
       </div>
     </section>
 
