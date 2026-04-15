@@ -149,8 +149,59 @@
       margin-top: 6px;
       font-weight: 600;
     }
-    .pwd-field.has-error input[type="password"] { border-color: var(--color-primary); }
+    .pwd-field.has-error input[type="password"],
+    .pwd-field.has-error input[type="number"],
+    .pwd-field.has-error textarea { border-color: var(--color-primary); }
     .pwd-field.has-error .err-msg { display: block; }
+    .pwd-field input[type="number"],
+    .pwd-field textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      color: var(--color-text);
+      font-family: inherit;
+      outline: none;
+      background: var(--color-surface);
+      transition: border-color 0.15s;
+    }
+    .pwd-field textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+    .pwd-field input[type="number"]:focus,
+    .pwd-field textarea:focus { border-color: var(--color-primary); }
+
+    /* 스토리지 용량 프리셋 버튼 */
+    .sr-preset {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .sr-preset-btn {
+      padding: 6px 12px;
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-border);
+      color: var(--color-text);
+      border-radius: var(--border-radius);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .sr-preset-btn:hover {
+      border-color: var(--color-text);
+      color: var(--color-text);
+    }
+    .sr-preset-btn.active {
+      background: var(--color-text);
+      border-color: var(--color-text);
+      color: #fff;
+    }
 
     /* ── 뷰 토글 ── */
     .mp-view { display: none; }
@@ -734,6 +785,42 @@
   <div id="footer-include"></div>
 </div>
 
+<!-- 스토리지 증량 신청 모달 -->
+<div class="modal-backdrop" id="storage-modal">
+  <div class="modal-card" style="width: 480px;">
+    <div class="modal-head">
+      <div class="title">스토리지 증량 신청</div>
+      <button class="close-btn" id="sr-close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="pwd-field" id="sr-field-capacity">
+        <label>신청 용량 (GB) <span class="req">*</span></label>
+        <div class="sr-preset">
+          <button type="button" class="sr-preset-btn" data-gb="32">32</button>
+          <button type="button" class="sr-preset-btn" data-gb="64">64</button>
+          <button type="button" class="sr-preset-btn" data-gb="128">128</button>
+          <button type="button" class="sr-preset-btn" data-gb="256">256</button>
+          <button type="button" class="sr-preset-btn" data-gb="512">512</button>
+          <button type="button" class="sr-preset-btn" data-gb="1024">1024</button>
+          <button type="button" class="sr-preset-btn" data-gb="custom">직접 입력</button>
+        </div>
+        <input type="number" id="sr-capacity" min="10" max="10240" step="1" placeholder="GB 단위로 입력" style="margin-top:10px;">
+        <div class="err-msg">10GB 이상 10240GB 이하의 용량을 입력해 주세요.</div>
+      </div>
+      <div class="pwd-field" id="sr-field-reason">
+        <label>신청 사유 <span class="req">*</span></label>
+        <textarea id="sr-reason" rows="5" placeholder="신청 사유를 입력해 주세요."></textarea>
+        <div class="err-msg">신청 사유를 입력해 주세요.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <div class="mf-spacer"></div>
+      <button type="button" class="btn btn-ghost" id="sr-cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="sr-save">저장</button>
+    </div>
+  </div>
+</div>
+
 <!-- 비밀번호 확인 모달 (회원정보 수정 진입용) -->
 <div class="modal-backdrop" id="pwdc-modal">
   <div class="modal-card" style="width: 440px;">
@@ -1094,9 +1181,101 @@
   // ── 버튼 이벤트 ──
   document.getElementById('btn-change-pwd').addEventListener('click', openPwdModal);
   document.getElementById('btn-edit-profile').addEventListener('click', openPwdConfirm);
-  document.getElementById('btn-request-storage').addEventListener('click', function () {
-    if (window.NotifyUI) NotifyUI.info('스토리지 증량 신청 폼은 준비 중입니다.\n급한 경우 도로관리과 담당자에게 문의해 주세요.', '스토리지 증량 신청');
+  // ── 스토리지 증량 신청 모달 ──
+  var srModal = document.getElementById('storage-modal');
+  function openStorageModal() {
+    document.getElementById('sr-capacity').value = '';
+    document.getElementById('sr-reason').value = '';
+    document.getElementById('sr-field-capacity').classList.remove('has-error');
+    document.getElementById('sr-field-reason').classList.remove('has-error');
+    document.querySelectorAll('.sr-preset-btn').forEach(function (b) { b.classList.remove('active'); });
+    srModal.classList.add('show');
+  }
+  function closeStorageModal() { srModal.classList.remove('show'); }
+
+  function saveStorageRequest() {
+    var capVal = document.getElementById('sr-capacity').value;
+    var cap = Number(capVal);
+    var reason = document.getElementById('sr-reason').value.trim();
+    var capField = document.getElementById('sr-field-capacity');
+    var reasonField = document.getElementById('sr-field-reason');
+    var ok = true;
+
+    var capValid = capVal !== '' && !isNaN(cap) && cap >= 10 && cap <= 10240;
+    capField.classList.toggle('has-error', !capValid);
+    if (!capValid) ok = false;
+
+    reasonField.classList.toggle('has-error', !reason);
+    if (!reason) ok = false;
+
+    if (!ok) return;
+
+    var now = new Date();
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var iso = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) +
+      'T' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+
+    STORAGE_HISTORY.unshift({
+      capacity: cap,
+      reason: reason,
+      requestedAt: iso,
+      status: 'pending',
+      note: '검토 중'
+    });
+    renderHistory();
+    closeStorageModal();
+    if (window.NotifyUI) NotifyUI.toast(cap + 'GB 증량 신청이 접수되었습니다.', '신청 완료', { type: 'success' });
+  }
+
+  document.getElementById('sr-close').addEventListener('click', closeStorageModal);
+  document.getElementById('sr-cancel').addEventListener('click', closeStorageModal);
+  document.getElementById('sr-save').addEventListener('click', saveStorageRequest);
+  srModal.addEventListener('click', function (e) {
+    if (e.target === srModal) closeStorageModal();
   });
+  document.getElementById('sr-capacity').addEventListener('input', function () {
+    document.getElementById('sr-field-capacity').classList.remove('has-error');
+    // 숫자 직접 입력 시 프리셋 active 해제
+    var v = Number(this.value);
+    var matched = false;
+    document.querySelectorAll('.sr-preset-btn').forEach(function (b) {
+      var bv = b.dataset.gb;
+      if (bv !== 'custom' && Number(bv) === v) {
+        b.classList.add('active');
+        matched = true;
+      } else {
+        b.classList.remove('active');
+      }
+    });
+    if (!matched && this.value !== '') {
+      var customBtn = document.querySelector('.sr-preset-btn[data-gb="custom"]');
+      if (customBtn) customBtn.classList.add('active');
+    }
+  });
+
+  document.querySelectorAll('.sr-preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.sr-preset-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var gb = btn.dataset.gb;
+      var input = document.getElementById('sr-capacity');
+      if (gb === 'custom') {
+        input.value = '';
+        input.focus();
+      } else {
+        input.value = gb;
+      }
+      document.getElementById('sr-field-capacity').classList.remove('has-error');
+    });
+  });
+  document.getElementById('sr-reason').addEventListener('input', function () {
+    document.getElementById('sr-field-reason').classList.remove('has-error');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && srModal.classList.contains('show')) closeStorageModal();
+  });
+
+  document.getElementById('btn-request-storage').addEventListener('click', openStorageModal);
 
   // ── 초기 렌더 ──
   renderProfile();
