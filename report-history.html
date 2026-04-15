@@ -11,22 +11,27 @@
   <link rel="stylesheet" href="assets/css/menu.css">
   <link rel="stylesheet" href="assets/css/report-sheet.css">
   <style>
+    html, body { overflow: hidden; }
+
     .page-body {
       padding-top: var(--header-height);
-      height: auto;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      height: 100vh;
       background: var(--color-page-bg);
+      display: block;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .history-layout {
-      flex: 1;
       display: grid;
       grid-template-columns: 340px 1fr;
+      gap: 0;
       align-items: start;
       min-height: 0;
+      height: auto;
+      overflow: visible;
     }
+    .history-layout > .history-preview-area { min-width: 0; }
 
     /* ── 좌측 목록 패널 ── */
     .history-list-panel {
@@ -201,14 +206,9 @@
     }
 
     @media (max-width: 900px) {
-      .page-body {
-        min-height: 0;
-        display: block;
-      }
       .history-layout {
         grid-template-columns: 1fr;
         display: block;
-        flex: none;
       }
       .history-list-panel {
         position: static;
