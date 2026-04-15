@@ -986,7 +986,7 @@
         '<td style="font-size:12px;">' + d.address + '</td>' +
         '<td style="font-size:12px;">' + d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.') + '</td>' +
         '<td><span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span></td>' +
-        '<td class="col-actions"><button class="row-action-btn" data-id="' + d.id + '">자세히</button></td>';
+        '<td class="col-actions"><button class="row-action-btn" data-id="' + d.id + '">처리</button></td>';
 
       tr.querySelector('.row-action-btn').addEventListener('click', function () {
         openModal(d);
