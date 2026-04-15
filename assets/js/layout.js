@@ -224,15 +224,23 @@
         item.classList.remove('hover-open');
       });
 
-      // 1차 메뉴명 클릭 시 드롭다운의 첫 번째 링크로 이동
+      // 1차 메뉴명 클릭 시 드롭다운의 첫 번째 링크로 이동 (링크 없으면 드롭다운 닫기)
       var mainLink = item.querySelector(':scope > a');
       if (mainLink) {
         mainLink.addEventListener('click', function (e) {
+          var hasOwnHref = mainLink.getAttribute('href') && mainLink.getAttribute('href') !== '#';
+          if (hasOwnHref) return; // 정상 내비 허용
+
           var firstDropLink = item.querySelector('.dropdown .dropdown-link[href]:not([href="#"])');
           if (firstDropLink) {
             e.preventDefault();
             window.location.href = firstDropLink.getAttribute('href');
+            return;
           }
+          // 이동할 곳이 없으면: 펼쳐진 드롭다운 강제로 닫고 포커스 해제
+          e.preventDefault();
+          menuItems.forEach(function (i) { i.classList.remove('hover-open'); });
+          if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
         });
       }
     });
@@ -244,6 +252,13 @@
         menuItems.forEach(function (i) { i.classList.remove('hover-open'); });
       });
     }
+
+    // 문서 아무 곳이나 클릭 시 열려있는 드롭다운 닫기 (레이어 잔상 방지)
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.menu-item[data-menu]')) {
+        menuItems.forEach(function (i) { i.classList.remove('hover-open'); });
+      }
+    });
   }
 
   /* -------------------------------------------------------

@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문의하기 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <style>
+    html, body { overflow: hidden; }
+
+    .page-body {
+      padding-top: var(--header-height);
+      height: 100vh;
+      background: var(--color-page-bg);
+      display: block;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .contact-container {
+      width: 100%;
+      max-width: 1380px;
+      min-width: 0;
+      margin: 0 auto;
+      padding: 24px 32px 56px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      gap: 16px;
+    }
+    .page-title-wrap h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+    .page-title-wrap h1 svg { color: var(--color-primary); }
+    .page-title-wrap p {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    /* 뷰 토글 탭 */
+    .view-tabs {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 20px;
+    }
+    .view-tab {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: -1px;
+    }
+    .view-tab:hover { color: var(--color-text); }
+    .view-tab.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+    .view-tab svg { flex-shrink: 0; }
+
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    /* ── 등록 폼 ── */
+    .form-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 28px 32px 24px;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    .form-card h2 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-text);
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--color-border);
+      letter-spacing: -0.2px;
+    }
+
+    .form-field {
+      margin-bottom: 18px;
+    }
+
+    .form-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 7px;
+    }
+    .form-field label .req {
+      color: var(--color-primary);
+      margin-left: 3px;
+    }
+    .form-field label .opt {
+      color: var(--color-text-muted);
+      font-weight: 600;
+      font-size: 12px;
+      margin-left: 4px;
+    }
+
+    .form-field input[type="text"],
+    .form-field textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      color: var(--color-text);
+      font-family: inherit;
+      outline: none;
+      background: var(--color-surface);
+      transition: border-color 0.15s;
+    }
+
+    .form-field input[type="text"]:focus,
+    .form-field textarea:focus { border-color: var(--color-primary); }
+
+    .form-field textarea {
+      min-height: 240px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .form-field.has-error input[type="text"],
+    .form-field.has-error textarea { border-color: var(--color-primary); }
+    .form-field .error-msg {
+      display: none;
+      font-size: 12px;
+      color: var(--color-primary);
+      margin-top: 6px;
+      font-weight: 600;
+    }
+    .form-field.has-error .error-msg { display: block; }
+
+    /* 파일 업로드 */
+    .file-upload {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .file-drop {
+      border: 1.5px dashed var(--color-border);
+      border-radius: var(--border-radius);
+      padding: 20px 16px;
+      text-align: center;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--color-surface-2);
+    }
+    .file-drop:hover,
+    .file-drop.drag-over {
+      border-color: var(--color-primary);
+      background: #FBEEF0;
+      color: var(--color-primary);
+    }
+    .file-drop svg { display: block; margin: 0 auto 8px; }
+    .file-drop .fd-hint {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .file-drop .fd-sub {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .file-list-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 13px;
+    }
+    .file-list-item svg { flex-shrink: 0; color: var(--color-text-muted); }
+    .file-list-item .fli-name {
+      flex: 1;
+      min-width: 0;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .file-list-item .fli-size {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .file-list-item .fli-remove {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: none;
+      background: none;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .file-list-item .fli-remove:hover { background: #F1F3F5; color: var(--color-primary); }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-top: 18px;
+      border-top: 1px solid var(--color-border);
+      margin-top: 24px;
+    }
+
+    /* ── 목록 화면 ── */
+    .filter-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 16px;
+    }
+    .filter-row {
+      display: grid;
+      grid-template-columns: 130px minmax(0, 1.4fr) minmax(0, 1.8fr) auto;
+      gap: 12px;
+      align-items: end;
+    }
+    .filter-field { display: flex; flex-direction: column; min-width: 0; }
+    .filter-field label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      margin-bottom: 6px;
+    }
+    .filter-field select,
+    .filter-field input[type="text"],
+    .filter-field input[type="date"] {
+      padding: 9px 12px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 13px;
+      color: var(--color-text);
+      outline: none;
+      background: var(--color-surface);
+      font-family: inherit;
+      width: 100%;
+    }
+    .filter-field select:focus,
+    .filter-field input:focus { border-color: var(--color-primary); }
+
+    .date-range {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .date-range > input[type="date"] { flex: 1; min-width: 130px; }
+    .date-range .sep { color: var(--color-text-muted); font-weight: 700; }
+    .date-range .quick-btn {
+      padding: 7px 12px;
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-border);
+      color: var(--color-text);
+      border-radius: var(--border-radius);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .date-range .quick-btn:hover:not(.active) { border-color: var(--color-primary); color: var(--color-primary); }
+    .date-range .quick-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .list-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+    }
+    .list-head {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .list-head .th-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--color-text);
+    }
+
+    .inquiry-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .inquiry-table thead th {
+      background: #FAFBFC;
+      color: var(--color-text-muted);
+      padding: 12px 18px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .inquiry-table thead th.col-status { width: 120px; text-align: center; }
+    .inquiry-table thead th.col-date { width: 180px; text-align: center; }
+
+    .inquiry-table tbody tr {
+      border-bottom: 1px solid #F1F3F5;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .inquiry-table tbody tr:last-child { border-bottom: none; }
+    .inquiry-table tbody tr:hover { background: #FAFBFC; }
+    .inquiry-table tbody td {
+      padding: 14px 18px;
+      color: var(--color-text);
+    }
+    .inquiry-table tbody td.col-status { text-align: center; }
+    .inquiry-table tbody td.col-date {
+      text-align: center;
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+    .inquiry-title {
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .status-pill {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+    }
+    .status-pill.pending {
+      background: #FFF8F9;
+      border-color: rgba(200,16,46,0.35);
+      color: var(--color-primary);
+    }
+    .status-pill.replied {
+      background: #F1F3F5;
+      border-color: var(--color-border);
+      color: #495057;
+    }
+
+    .pagination { margin: 18px 0 4px; min-height: 34px; }
+    .page-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+      border-color: var(--color-border);
+    }
+
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+    .empty-state svg { opacity: 0.35; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    @media (max-width: 1024px) {
+      .filter-row { grid-template-columns: 1fr 1fr; }
+      .filter-row .filter-field.wide { grid-column: span 2; }
+      .filter-actions { grid-column: span 2; justify-content: flex-end; }
+    }
+    @media (max-width: 720px) {
+      .contact-container { padding: 18px 14px 40px; }
+      .form-card { padding: 20px 18px 18px; }
+      .filter-row { grid-template-columns: 1fr; }
+      .filter-actions { grid-column: auto; }
+      .inquiry-table thead th.col-status,
+      .inquiry-table tbody td.col-status { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="contact-container">
+
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          문의하기
+        </h1>
+        <p>Namwon GeoVision 이용 중 궁금하신 점을 남겨주세요. 담당자가 확인 후 답변 드립니다.</p>
+      </div>
+    </div>
+
+    <div class="view-tabs">
+      <button type="button" class="view-tab active" data-view="form">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        문의 등록
+      </button>
+      <button type="button" class="view-tab" data-view="list">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        내 문의 목록 <span class="inq-count-badge" id="inq-count-badge" style="font-weight:700;color:var(--color-text-muted);">(0)</span>
+      </button>
+    </div>
+
+    <!-- 문의 등록 폼 -->
+    <section class="view-panel active" id="panel-form">
+      <div class="form-card">
+        <h2>문의 등록</h2>
+
+        <div class="form-field" id="field-title">
+          <label>제목 <span class="req">*</span></label>
+          <input type="text" id="inq-title" placeholder="문의 제목을 입력하세요 (최대 60자)" maxlength="60">
+          <div class="error-msg">제목을 입력해 주세요.</div>
+        </div>
+
+        <div class="form-field" id="field-content">
+          <label>내용 <span class="req">*</span></label>
+          <textarea id="inq-content" placeholder="문의하실 내용을 구체적으로 작성해 주세요.&#10;기능 관련 문의라면 어느 메뉴·어느 단계에서 발생했는지 함께 적어주시면 빠른 답변에 도움이 됩니다."></textarea>
+          <div class="error-msg">문의 내용을 입력해 주세요.</div>
+        </div>
+
+        <div class="form-field">
+          <label>첨부 파일 <span class="opt">(선택)</span></label>
+          <div class="file-upload">
+            <label class="file-drop" id="file-drop">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div class="fd-hint">클릭하거나 파일을 끌어다 놓아 업로드</div>
+              <div class="fd-sub">이미지 · PDF · 문서 (최대 10MB, 5개까지)</div>
+              <input type="file" id="inq-files" multiple style="display:none;" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.hwp,.txt">
+            </label>
+            <div class="file-list" id="file-list"></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-form-cancel">취소</button>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-form-save">저장</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 내 문의 목록 -->
+    <section class="view-panel" id="panel-list">
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="filter-field">
+            <label>상태</label>
+            <select id="filter-status">
+              <option value="">전체</option>
+              <option value="pending">답변 대기</option>
+              <option value="replied">답변 완료</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label>제목</label>
+            <input type="text" id="filter-keyword" placeholder="제목 검색">
+          </div>
+          <div class="filter-field wide">
+            <label>등록일</label>
+            <div class="date-range">
+              <input type="date" id="filter-from">
+              <span class="sep">~</span>
+              <input type="date" id="filter-to">
+              <button type="button" class="quick-btn active" data-period="0">전체</button>
+              <button type="button" class="quick-btn" data-period="1">1개월</button>
+              <button type="button" class="quick-btn" data-period="3">3개월</button>
+              <button type="button" class="quick-btn" data-period="6">6개월</button>
+              <button type="button" class="quick-btn" data-period="12">12개월</button>
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-filter-reset">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+              초기화
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-filter-apply">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              검색
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="list-card">
+        <div class="list-head">
+          <div class="th-title">문의 목록</div>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-new-inquiry">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            등록
+          </button>
+        </div>
+        <table class="inquiry-table">
+          <thead>
+            <tr>
+              <th>제목</th>
+              <th class="col-status">상태</th>
+              <th class="col-date">등록 일시</th>
+            </tr>
+          </thead>
+          <tbody id="inq-tbody"></tbody>
+        </table>
+      </div>
+
+      <div id="empty-state-wrap"></div>
+      <div class="pagination" id="pagination"></div>
+    </section>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'namwon-inquiries';
+  var PAGE_SIZE = 10;
+  var MAX_FILES = 5;
+  var MAX_SIZE_MB = 10;
+
+  // 초기 샘플 데이터 (현장 공무원 맥락)
+  var SEED = [
+    {
+      id: 101,
+      title: 'AI 추론 보고서 활용 방법 문의',
+      content: '월간 보고서에서 정사영상 분석 결과만 골라서 출력할 수 있나요?',
+      status: 'replied',
+      createdAt: '2025-11-25T10:00:59',
+      attachments: []
+    }
+  ];
+
+  var state = {
+    inquiries: loadInquiries(),
+    pendingFiles: [],
+    filter: { status: '', keyword: '', from: '', to: '', quick: 0 },
+    page: 1
+  };
+
+  function loadInquiries() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return SEED.slice();
+  }
+
+  function saveInquiries() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.inquiries)); }
+    catch (e) {}
+  }
+
+  function fmtDateTime(iso) {
+    if (!iso) return '';
+    var s = iso.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+    return s;
+  }
+
+  function escapeHtml(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  }
+
+  // ── 뷰 전환 ──
+  function switchView(view) {
+    document.querySelectorAll('.view-tab').forEach(function (t) {
+      t.classList.toggle('active', t.dataset.view === view);
+    });
+    document.querySelectorAll('.view-panel').forEach(function (p) {
+      p.classList.toggle('active', p.id === 'panel-' + view);
+    });
+    if (view === 'list') {
+      state.page = 1;
+      renderList();
+    }
+    document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  // ── 폼 ──
+  function resetForm() {
+    document.getElementById('inq-title').value = '';
+    document.getElementById('inq-content').value = '';
+    state.pendingFiles = [];
+    renderFileList();
+    document.getElementById('field-title').classList.remove('has-error');
+    document.getElementById('field-content').classList.remove('has-error');
+  }
+
+  function renderFileList() {
+    var el = document.getElementById('file-list');
+    el.innerHTML = '';
+    state.pendingFiles.forEach(function (f, i) {
+      var item = document.createElement('div');
+      item.className = 'file-list-item';
+      item.innerHTML =
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>' +
+        '<span class="fli-name">' + escapeHtml(f.name) + '</span>' +
+        '<span class="fli-size">' + formatFileSize(f.size) + '</span>' +
+        '<button type="button" class="fli-remove" aria-label="삭제"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+      item.querySelector('.fli-remove').addEventListener('click', function () {
+        state.pendingFiles.splice(i, 1);
+        renderFileList();
+      });
+      el.appendChild(item);
+    });
+  }
+
+  function handleFiles(fileList) {
+    var newOnes = Array.prototype.slice.call(fileList);
+    newOnes.forEach(function (f) {
+      if (state.pendingFiles.length >= MAX_FILES) {
+        if (window.NotifyUI) NotifyUI.warn('첨부 파일은 최대 ' + MAX_FILES + '개까지 등록할 수 있습니다.', '첨부 제한');
+        return;
+      }
+      if (f.size > MAX_SIZE_MB * 1024 * 1024) {
+        if (window.NotifyUI) NotifyUI.warn(f.name + ' 파일이 ' + MAX_SIZE_MB + 'MB 를 초과합니다.', '용량 초과');
+        return;
+      }
+      state.pendingFiles.push({ name: f.name, size: f.size });
+    });
+    renderFileList();
+  }
+
+  function validateForm() {
+    var title = document.getElementById('inq-title').value.trim();
+    var content = document.getElementById('inq-content').value.trim();
+    var ok = true;
+    document.getElementById('field-title').classList.toggle('has-error', !title);
+    document.getElementById('field-content').classList.toggle('has-error', !content);
+    if (!title || !content) ok = false;
+    return ok;
+  }
+
+  function saveInquiry() {
+    if (!validateForm()) return;
+    var title = document.getElementById('inq-title').value.trim();
+    var content = document.getElementById('inq-content').value.trim();
+    var now = new Date();
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var iso = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) +
+      'T' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+    state.inquiries.unshift({
+      id: Date.now(),
+      title: title,
+      content: content,
+      status: 'pending',
+      createdAt: iso,
+      attachments: state.pendingFiles.slice()
+    });
+    saveInquiries();
+    if (window.NotifyUI) NotifyUI.toast('문의가 등록되었습니다. 답변은 영업일 기준 1-2일 내 제공됩니다.', '등록 완료');
+    resetForm();
+    switchView('list');
+  }
+
+  // ── 목록 ──
+  function applyQuickPeriod(months) {
+    var now = new Date();
+    var to = now.toISOString().substring(0, 10);
+    var from = '';
+    if (months > 0) {
+      var fromDate = new Date(now);
+      fromDate.setMonth(fromDate.getMonth() - months);
+      from = fromDate.toISOString().substring(0, 10);
+    }
+    document.getElementById('filter-from').value = from;
+    document.getElementById('filter-to').value = months > 0 ? to : '';
+    state.filter.from = from;
+    state.filter.to = months > 0 ? to : '';
+    state.filter.quick = months;
+    document.querySelectorAll('.date-range .quick-btn').forEach(function (b) {
+      b.classList.toggle('active', Number(b.dataset.period) === months);
+    });
+  }
+
+  function getFiltered() {
+    var list = state.inquiries.slice();
+    if (state.filter.status) list = list.filter(function (n) { return n.status === state.filter.status; });
+    if (state.filter.keyword) {
+      var kw = state.filter.keyword.toLowerCase();
+      list = list.filter(function (n) { return n.title.toLowerCase().indexOf(kw) !== -1; });
+    }
+    if (state.filter.from) {
+      list = list.filter(function (n) { return n.createdAt.substring(0, 10) >= state.filter.from; });
+    }
+    if (state.filter.to) {
+      list = list.filter(function (n) { return n.createdAt.substring(0, 10) <= state.filter.to; });
+    }
+    list.sort(function (a, b) { return b.createdAt.localeCompare(a.createdAt); });
+    return list;
+  }
+
+  function renderList() {
+    var all = getFiltered();
+    var tbody = document.getElementById('inq-tbody');
+    var emptyWrap = document.getElementById('empty-state-wrap');
+    tbody.innerHTML = '';
+    emptyWrap.innerHTML = '';
+
+    document.getElementById('inq-count-badge').textContent = '(' + state.inquiries.length + ')';
+
+    if (all.length === 0) {
+      emptyWrap.innerHTML =
+        '<div class="empty-state">' +
+          '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+          '<p>등록된 문의가 없습니다.</p>' +
+        '</div>';
+      document.getElementById('pagination').innerHTML = '';
+      return;
+    }
+
+    var totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+    if (state.page > totalPages) state.page = totalPages;
+    var startIdx = (state.page - 1) * PAGE_SIZE;
+    var pageItems = all.slice(startIdx, startIdx + PAGE_SIZE);
+
+    pageItems.forEach(function (inq) {
+      var tr = document.createElement('tr');
+      var pillClass = inq.status === 'replied' ? 'replied' : 'pending';
+      var pillText = inq.status === 'replied' ? '답변 완료' : '답변 대기';
+      tr.innerHTML =
+        '<td><span class="inquiry-title">' + escapeHtml(inq.title) + '</span></td>' +
+        '<td class="col-status"><span class="status-pill ' + pillClass + '">' + pillText + '</span></td>' +
+        '<td class="col-date">' + fmtDateTime(inq.createdAt) + '</td>';
+      tr.addEventListener('click', function () {
+        // 상세 보기는 향후 구현 (demo: toast)
+        if (window.NotifyUI) NotifyUI.toast(inq.title, inq.status === 'replied' ? '답변 완료' : '답변 대기');
+      });
+      tbody.appendChild(tr);
+    });
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    var cont = document.getElementById('pagination');
+    cont.innerHTML = '';
+    function mkBtn(label, page, opts) {
+      opts = opts || {};
+      var b = document.createElement('button');
+      b.className = 'page-btn';
+      if (opts.active) b.classList.add('active');
+      b.textContent = label;
+      if (opts.disabled) b.disabled = true;
+      else b.addEventListener('click', function () {
+        state.page = page;
+        renderList();
+      });
+      cont.appendChild(b);
+    }
+    mkBtn('‹', state.page - 1, { disabled: state.page <= 1 });
+    for (var p = 1; p <= totalPages; p++) {
+      mkBtn(String(p), p, { active: p === state.page });
+    }
+    mkBtn('›', state.page + 1, { disabled: state.page >= totalPages });
+  }
+
+  // ── 이벤트 바인딩 ──
+  document.querySelectorAll('.view-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () { switchView(tab.dataset.view); });
+  });
+
+  document.getElementById('btn-form-save').addEventListener('click', saveInquiry);
+  document.getElementById('btn-form-cancel').addEventListener('click', function () {
+    if (window.NotifyUI) {
+      NotifyUI.confirm('작성 중인 내용이 모두 삭제됩니다. 계속하시겠습니까?', function () {
+        resetForm();
+      }, { title: '작성 취소', okText: '취소', cancelText: '돌아가기', type: 'danger' });
+    } else {
+      resetForm();
+    }
+  });
+
+  // 파일 업로드
+  var fileInput = document.getElementById('inq-files');
+  var fileDrop = document.getElementById('file-drop');
+  fileInput.addEventListener('change', function () {
+    handleFiles(fileInput.files);
+    fileInput.value = '';
+  });
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    fileDrop.addEventListener(ev, function (e) {
+      e.preventDefault();
+      fileDrop.classList.add('drag-over');
+    });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    fileDrop.addEventListener(ev, function (e) {
+      e.preventDefault();
+      fileDrop.classList.remove('drag-over');
+    });
+  });
+  fileDrop.addEventListener('drop', function (e) {
+    if (e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+  });
+
+  // 실시간 에러 제거
+  document.getElementById('inq-title').addEventListener('input', function () {
+    document.getElementById('field-title').classList.remove('has-error');
+  });
+  document.getElementById('inq-content').addEventListener('input', function () {
+    document.getElementById('field-content').classList.remove('has-error');
+  });
+
+  // 필터
+  document.querySelectorAll('.date-range .quick-btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      applyQuickPeriod(Number(b.dataset.period));
+    });
+  });
+  ['filter-from', 'filter-to'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', function () {
+      state.filter.quick = -1;
+      document.querySelectorAll('.date-range .quick-btn').forEach(function (b) { b.classList.remove('active'); });
+    });
+  });
+
+  document.getElementById('btn-filter-apply').addEventListener('click', function () {
+    state.filter.status = document.getElementById('filter-status').value;
+    state.filter.keyword = document.getElementById('filter-keyword').value.trim();
+    state.filter.from = document.getElementById('filter-from').value;
+    state.filter.to = document.getElementById('filter-to').value;
+    state.page = 1;
+    renderList();
+  });
+  document.getElementById('btn-filter-reset').addEventListener('click', function () {
+    document.getElementById('filter-status').value = '';
+    document.getElementById('filter-keyword').value = '';
+    document.getElementById('filter-from').value = '';
+    document.getElementById('filter-to').value = '';
+    state.filter = { status: '', keyword: '', from: '', to: '', quick: 0 };
+    document.querySelectorAll('.date-range .quick-btn').forEach(function (b) {
+      b.classList.toggle('active', Number(b.dataset.period) === 0);
+    });
+    state.page = 1;
+    renderList();
+  });
+  document.getElementById('filter-keyword').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') document.getElementById('btn-filter-apply').click();
+  });
+
+  document.getElementById('btn-new-inquiry').addEventListener('click', function () {
+    resetForm();
+    switchView('form');
+  });
+
+  // 초기 렌더
+  document.getElementById('inq-count-badge').textContent = '(' + state.inquiries.length + ')';
+})();
+</script>
+</body>
+</html>
