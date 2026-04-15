@@ -248,17 +248,17 @@
       margin-top: 24px;
     }
 
-    /* ── 목록 화면 ── */
-    .filter-card {
+    /* ── 목록 화면 (history 스타일 동일) ── */
+    .filter-panel {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
       border-radius: var(--border-radius-lg);
-      padding: 16px 18px;
-      margin-bottom: 16px;
+      padding: 18px 22px;
+      margin-bottom: 18px;
     }
     .filter-row {
       display: grid;
-      grid-template-columns: 130px minmax(0, 1.4fr) minmax(0, 1.8fr) auto;
+      grid-template-columns: 150px minmax(0, 1.2fr) minmax(0, 2fr) auto;
       gap: 12px;
       align-items: end;
     }
@@ -267,12 +267,14 @@
       font-size: 12px;
       font-weight: 700;
       color: var(--color-text-muted);
-      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
     }
     .filter-field select,
     .filter-field input[type="text"],
     .filter-field input[type="date"] {
-      padding: 9px 12px;
+      padding: 8px 11px;
       border: 1.5px solid var(--color-border);
       border-radius: var(--border-radius);
       font-size: 13px;
@@ -283,18 +285,18 @@
       width: 100%;
     }
     .filter-field select:focus,
-    .filter-field input:focus { border-color: var(--color-primary); }
+    .filter-field input:focus { border-color: var(--color-accent); }
 
     .date-range {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
     .date-range > input[type="date"] { flex: 1; min-width: 130px; }
     .date-range .sep { color: var(--color-text-muted); font-weight: 700; }
     .date-range .quick-btn {
-      padding: 7px 12px;
+      padding: 7px 11px;
       background: var(--color-surface);
       border: 1.5px solid var(--color-border);
       color: var(--color-text);
@@ -312,68 +314,44 @@
       color: #fff;
     }
 
-    .filter-actions {
-      display: flex;
-      gap: 8px;
-    }
+    .filter-actions { display: flex; gap: 6px; }
 
-    .list-card {
+    /* 테이블 카드 — history 와 동일 */
+    .table-card {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
       border-radius: var(--border-radius-lg);
       overflow: hidden;
     }
-    .list-head {
-      padding: 14px 18px;
+    .table-head {
+      padding: 14px 22px;
       border-bottom: 1px solid var(--color-border);
-      background: var(--color-surface-2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-head .th-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      gap: 8px;
     }
-    .list-head .th-title {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--color-text);
-    }
-
-    .inquiry-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    .inquiry-table thead th {
-      background: #FAFBFC;
-      color: var(--color-text-muted);
-      padding: 12px 18px;
-      text-align: left;
-      font-weight: 700;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      border-bottom: 1px solid var(--color-border);
-    }
-    .inquiry-table thead th.col-status { width: 120px; text-align: center; }
-    .inquiry-table thead th.col-date { width: 180px; text-align: center; }
-
-    .inquiry-table tbody tr {
-      border-bottom: 1px solid #F1F3F5;
-      cursor: pointer;
-      transition: background 0.12s;
-    }
-    .inquiry-table tbody tr:last-child { border-bottom: none; }
-    .inquiry-table tbody tr:hover { background: #FAFBFC; }
-    .inquiry-table tbody td {
-      padding: 14px 18px;
-      color: var(--color-text);
-    }
-    .inquiry-table tbody td.col-status { text-align: center; }
-    .inquiry-table tbody td.col-date {
+    .table-head .th-title svg { color: var(--color-primary); }
+    .table-wrap { overflow-x: auto; }
+    .data-table { margin: 0; }
+    .data-table th, .data-table td { font-size: 13px; }
+    .data-table th { white-space: nowrap; }
+    .data-table .col-status { width: 120px; text-align: center; }
+    .data-table .col-date { width: 180px; text-align: center; }
+    .data-table tbody tr { cursor: pointer; }
+    .data-table tbody tr:hover { background: #FAFBFC; }
+    .data-table td.col-date {
       text-align: center;
-      font-size: 13px;
       color: var(--color-text-muted);
     }
+    .data-table td.col-status { text-align: center; }
     .inquiry-title {
       font-weight: 700;
       color: var(--color-text);
@@ -498,7 +476,7 @@
 
     <!-- 내 문의 목록 -->
     <section class="view-panel" id="panel-list">
-      <div class="filter-card">
+      <div class="filter-panel">
         <div class="filter-row">
           <div class="filter-field">
             <label>상태</label>
@@ -512,7 +490,7 @@
             <label>제목</label>
             <input type="text" id="filter-keyword" placeholder="제목 검색">
           </div>
-          <div class="filter-field wide">
+          <div class="filter-field">
             <label>등록일</label>
             <div class="date-range">
               <input type="date" id="filter-from">
@@ -538,24 +516,29 @@
         </div>
       </div>
 
-      <div class="list-card">
-        <div class="list-head">
-          <div class="th-title">문의 목록</div>
+      <div class="table-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            문의 목록
+          </div>
           <button type="button" class="btn btn-primary btn-sm" id="btn-new-inquiry">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             등록
           </button>
         </div>
-        <table class="inquiry-table">
-          <thead>
-            <tr>
-              <th>제목</th>
-              <th class="col-status">상태</th>
-              <th class="col-date">등록 일시</th>
-            </tr>
-          </thead>
-          <tbody id="inq-tbody"></tbody>
-        </table>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>제목</th>
+                <th class="col-status">상태</th>
+                <th class="col-date">등록 일시</th>
+              </tr>
+            </thead>
+            <tbody id="inq-tbody"></tbody>
+          </table>
+        </div>
       </div>
 
       <div id="empty-state-wrap"></div>
