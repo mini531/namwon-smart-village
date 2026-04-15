@@ -370,10 +370,32 @@
       font-size: 12px;
       color: var(--color-text-muted);
     }
+    .form-footer .ff-contact {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: #F1F3F5;
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--color-text);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .form-footer .ff-contact svg { color: var(--color-primary); flex-shrink: 0; }
+    .form-footer .ff-contact strong {
+      font-weight: 800;
+      color: var(--color-text);
+      letter-spacing: -0.2px;
+    }
+    .form-footer .ff-contact .ff-c-sub {
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
     .form-footer .ff-links {
       display: inline-flex;
       gap: 12px;
-      margin-bottom: 8px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -386,6 +408,27 @@
     .form-footer .ff-links a:hover { color: var(--color-primary); }
     .form-footer .ff-links a:hover strong { color: var(--color-primary); }
     .form-footer .ff-sep { color: var(--color-border); }
+    .form-footer .ff-orgs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 10px;
+      padding-top: 14px;
+      border-top: 1px solid var(--color-border);
+    }
+    .form-footer .ff-orgs img {
+      height: 22px;
+      width: auto;
+      opacity: 0.65;
+      transition: opacity 0.2s;
+    }
+    .form-footer .ff-orgs img:hover { opacity: 1; }
+    .form-footer .ff-orgs .org-divider {
+      width: 1px;
+      height: 18px;
+      background: var(--color-border);
+    }
     .form-footer .ff-copy { font-size: 11px; color: #9BA3AD; }
 
     /* ───────── 반응형 ───────── */
@@ -521,12 +564,22 @@
       </div>
 
       <div class="form-footer">
+        <div class="ff-contact">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+          문의 <strong>063-713-1218</strong>
+          <span class="ff-c-sub">· 평일 09:00~18:00</span>
+        </div>
         <div class="ff-links">
           <a href="#" id="link-privacy"><strong>개인정보처리방침</strong></a>
           <span class="ff-sep">|</span>
           <a href="#" id="link-terms">이용약관</a>
           <span class="ff-sep">|</span>
           <a href="#" id="link-email-reject">이메일무단수집거부</a>
+        </div>
+        <div class="ff-orgs">
+          <img src="assets/images/logo_namwon.png" alt="남원시">
+          <span class="org-divider"></span>
+          <img src="assets/images/lx_logo.svg" alt="LX 한국국토정보공사">
         </div>
         <div class="ff-copy">© 2026 Namwon Smart Village</div>
       </div>
