@@ -413,7 +413,7 @@
     }
     .filter-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr) auto;
+      grid-template-columns: 140px minmax(0, 1fr) minmax(0, 3fr) auto;
       gap: 12px;
       align-items: end;
     }
@@ -446,17 +446,17 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       min-width: 0;
     }
     .date-range > input[type="date"] {
-      flex: 1 1 130px;
-      min-width: 120px;
-      max-width: 170px;
+      flex: 1 1 100px;
+      min-width: 0;
+      max-width: 150px;
     }
     .date-range .sep { color: var(--color-text-muted); font-weight: 700; flex-shrink: 0; }
     .date-range .quick-btn {
-      padding: 6px 10px;
+      padding: 6px 9px;
       background: var(--color-surface);
       border: 1.5px solid var(--color-border);
       color: var(--color-text);
@@ -467,6 +467,7 @@
       font-family: inherit;
       transition: all 0.15s;
       flex-shrink: 0;
+      white-space: nowrap;
     }
     .date-range .quick-btn:hover:not(.active) { border-color: var(--color-text); color: var(--color-text); }
     .date-range .quick-btn.active {
