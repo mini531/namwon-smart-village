@@ -113,6 +113,45 @@
       gap: 8px;
     }
 
+    /* 비밀번호 변경 폼 */
+    .pwd-field {
+      margin-bottom: 16px;
+    }
+    .pwd-field:last-child { margin-bottom: 0; }
+    .pwd-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 7px;
+    }
+    .pwd-field label .req {
+      color: var(--color-primary);
+      margin-left: 3px;
+    }
+    .pwd-field input[type="password"] {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      color: var(--color-text);
+      font-family: inherit;
+      outline: none;
+      background: var(--color-surface);
+      transition: border-color 0.15s;
+    }
+    .pwd-field input[type="password"]:focus { border-color: var(--color-primary); }
+    .pwd-field .err-msg {
+      display: none;
+      font-size: 12px;
+      color: var(--color-primary);
+      margin-top: 6px;
+      font-weight: 600;
+    }
+    .pwd-field.has-error input[type="password"] { border-color: var(--color-primary); }
+    .pwd-field.has-error .err-msg { display: block; }
+
     /* 2열 그리드 (스토리지) */
     .two-col {
       display: grid;
@@ -448,6 +487,38 @@
   <div id="footer-include"></div>
 </div>
 
+<!-- 비밀번호 변경 모달 -->
+<div class="modal-backdrop" id="pwd-modal">
+  <div class="modal-card" style="width: 460px;">
+    <div class="modal-head">
+      <div class="title">비밀번호 변경</div>
+      <button class="close-btn" id="pwd-close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="pwd-field" id="pwd-field-current">
+        <label>현재 비밀번호 <span class="req">*</span></label>
+        <input type="password" id="pwd-current" autocomplete="current-password" placeholder="현재 사용 중인 비밀번호를 입력하세요">
+        <div class="err-msg">현재 비밀번호를 입력해 주세요.</div>
+      </div>
+      <div class="pwd-field" id="pwd-field-new">
+        <label>새 비밀번호 <span class="req">*</span></label>
+        <input type="password" id="pwd-new" autocomplete="new-password" placeholder="영문·숫자·특수문자 조합 8자 이상">
+        <div class="err-msg">영문·숫자·특수문자를 조합해 8자 이상 입력해 주세요.</div>
+      </div>
+      <div class="pwd-field" id="pwd-field-confirm">
+        <label>새 비밀번호 확인 <span class="req">*</span></label>
+        <input type="password" id="pwd-confirm" autocomplete="new-password" placeholder="새 비밀번호를 다시 입력하세요">
+        <div class="err-msg">새 비밀번호가 일치하지 않습니다.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <div class="mf-spacer"></div>
+      <button type="button" class="btn btn-ghost" id="pwd-cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="pwd-save">저장</button>
+    </div>
+  </div>
+</div>
+
 <script src="assets/js/layout.js"></script>
 <script>
 (function () {
@@ -567,10 +638,80 @@
     });
   }
 
-  // ── 버튼 이벤트 ──
-  document.getElementById('btn-change-pwd').addEventListener('click', function () {
-    if (window.NotifyUI) NotifyUI.info('비밀번호 변경 기능은 준비 중입니다.', '안내');
+  // ── 비밀번호 변경 모달 ──
+  var pwdModal = document.getElementById('pwd-modal');
+
+  function openPwdModal() {
+    ['pwd-current', 'pwd-new', 'pwd-confirm'].forEach(function (id) {
+      document.getElementById(id).value = '';
+    });
+    ['pwd-field-current', 'pwd-field-new', 'pwd-field-confirm'].forEach(function (id) {
+      document.getElementById(id).classList.remove('has-error');
+    });
+    pwdModal.classList.add('show');
+    setTimeout(function () { document.getElementById('pwd-current').focus(); }, 30);
+  }
+
+  function closePwdModal() {
+    pwdModal.classList.remove('show');
+  }
+
+  function validatePwd() {
+    var cur = document.getElementById('pwd-current').value;
+    var np = document.getElementById('pwd-new').value;
+    var cf = document.getElementById('pwd-confirm').value;
+    var ok = true;
+
+    var curField = document.getElementById('pwd-field-current');
+    var newField = document.getElementById('pwd-field-new');
+    var cfField = document.getElementById('pwd-field-confirm');
+
+    curField.classList.toggle('has-error', !cur);
+    if (!cur) ok = false;
+
+    // 영문/숫자/특수문자 조합 8자 이상
+    var strong = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(np);
+    newField.classList.toggle('has-error', !strong);
+    if (!strong) ok = false;
+
+    var match = np && np === cf;
+    cfField.classList.toggle('has-error', !match);
+    if (!match) {
+      cfField.querySelector('.err-msg').textContent = '새 비밀번호가 일치하지 않습니다.';
+      ok = false;
+    }
+
+    return ok;
+  }
+
+  function savePwd() {
+    if (!validatePwd()) return;
+    // 데모: 실제 배포본은 서버 호출. 여기선 성공 알림만.
+    closePwdModal();
+    if (window.NotifyUI) NotifyUI.toast('비밀번호가 변경되었습니다. 다음 로그인부터 새 비밀번호를 사용하세요.', '변경 완료', { type: 'success' });
+  }
+
+  document.getElementById('pwd-close').addEventListener('click', closePwdModal);
+  document.getElementById('pwd-cancel').addEventListener('click', closePwdModal);
+  document.getElementById('pwd-save').addEventListener('click', savePwd);
+  pwdModal.addEventListener('click', function (e) {
+    if (e.target === pwdModal) closePwdModal();
   });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && pwdModal.classList.contains('show')) closePwdModal();
+  });
+  // 입력 시 에러 즉시 제거
+  ['pwd-current', 'pwd-new', 'pwd-confirm'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', function () {
+      document.getElementById('pwd-field-' + id.replace('pwd-', '')).classList.remove('has-error');
+    });
+    document.getElementById(id).addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') savePwd();
+    });
+  });
+
+  // ── 버튼 이벤트 ──
+  document.getElementById('btn-change-pwd').addEventListener('click', openPwdModal);
   document.getElementById('btn-edit-profile').addEventListener('click', function () {
     if (window.NotifyUI) NotifyUI.info('회원정보 수정 기능은 준비 중입니다.', '안내');
   });
