@@ -56,10 +56,24 @@ var NamwonMap = (function () {
         center: options.center || NAMWON_CENTER,
         zoom: options.zoom || 14,
         minZoom: 10,
-        maxZoom: 19
+        maxZoom: 19,
+        constrainResolution: false,
+        smoothResolutionConstraint: true
       }),
-      controls: ol.control.defaults.defaults({ attribution: false, zoom: false })
+      controls: ol.control.defaults.defaults({ attribution: false, zoom: false }),
+      interactions: ol.interaction.defaults.defaults({
+        mouseWheelZoom: false,
+        doubleClickZoom: false
+      })
     });
+
+    // 부드러운 마우스 휠 / 더블클릭 줌 — 260ms 애니메이션, 작은 증가폭
+    map.addInteraction(new ol.interaction.MouseWheelZoom({
+      duration: 260,
+      timeout: 60,
+      maxDelta: 1
+    }));
+    map.addInteraction(new ol.interaction.DoubleClickZoom({ duration: 280 }));
 
     return map;
   }
@@ -772,35 +786,42 @@ var NamwonMap = (function () {
       style: _measureStyle()
     });
     s.activeInteraction = draw;
+    s.activeMode = 'measure';
     map.addInteraction(draw);
-
-    var tip = _createTooltip(map, 'measure-tooltip active');
-    s.activeTooltipEl = tip.el;
-    s.activeTooltipOverlay = tip.overlay;
-    tip.el.textContent = mode === 'area' ? '첫 지점을 클릭' : mode === 'radius' ? '중심점을 클릭' : '시작점을 클릭';
 
     var sketch = null;
     var listener = null;
+    var activeTip = null;
+
+    function updateTipFromGeom(geom) {
+      if (!activeTip) return;
+      var coord, text;
+      if (geom instanceof ol.geom.Polygon) {
+        text = _formatArea(geom);
+        coord = geom.getInteriorPoint().getCoordinates();
+      } else if (geom instanceof ol.geom.LineString) {
+        text = _formatLength(geom);
+        coord = geom.getLastCoordinate();
+      } else if (geom instanceof ol.geom.Circle) {
+        text = '반경 ' + _formatRadius(geom);
+        coord = geom.getCenter();
+      }
+      if (text && coord) {
+        activeTip.el.textContent = text;
+        activeTip.overlay.setPosition(coord);
+      }
+    }
 
     draw.on('drawstart', function (evt) {
+      // 각 측정마다 새로운 라이브 툴팁 생성
+      activeTip = _createTooltip(map, 'measure-tooltip active');
+      s.activeTooltipOverlay = activeTip.overlay;
+      s.activeTooltipEl = activeTip.el;
+      activeTip.el.textContent = mode === 'area' ? '클릭하여 꼭지점 추가' : mode === 'radius' ? '드래그하여 반경 설정' : '클릭하여 지점 추가';
+
       sketch = evt.feature;
       listener = sketch.getGeometry().on('change', function (e) {
-        var geom = e.target;
-        var coord, text;
-        if (geom instanceof ol.geom.Polygon) {
-          text = _formatArea(geom);
-          coord = geom.getInteriorPoint().getCoordinates();
-        } else if (geom instanceof ol.geom.LineString) {
-          text = _formatLength(geom);
-          coord = geom.getLastCoordinate();
-        } else if (geom instanceof ol.geom.Circle) {
-          text = '반경 ' + _formatRadius(geom);
-          coord = geom.getCenter();
-        }
-        if (tip.el && text && coord) {
-          tip.el.textContent = text;
-          tip.overlay.setPosition(coord);
-        }
+        updateTipFromGeom(e.target);
       });
     });
 
@@ -833,15 +854,16 @@ var NamwonMap = (function () {
       s.measureOverlays.push(labelOverlay);
 
       if (listener) ol.Observable.unByKey(listener);
+      listener = null;
       sketch = null;
 
-      // 활성 툴팁 제거하고 새 측정 준비
-      if (s.activeTooltipOverlay) {
-        map.removeOverlay(s.activeTooltipOverlay);
+      // 라이브 툴팁만 제거 (interaction은 유지 → 연속 측정 가능)
+      if (activeTip) {
+        map.removeOverlay(activeTip.overlay);
+        activeTip = null;
         s.activeTooltipOverlay = null;
         s.activeTooltipEl = null;
       }
-      _removeActiveInteraction(map);
     });
   }
 
@@ -869,12 +891,9 @@ var NamwonMap = (function () {
       style: _drawStyle()
     });
     s.activeInteraction = draw;
+    s.activeMode = 'draw';
     map.addInteraction(draw);
-
-    draw.on('drawend', function () {
-      // 그리기 한 번 완료 후 자동 해제 (연속 그리기 방지, 원하면 유지 가능)
-      _removeActiveInteraction(map);
-    });
+    // 연속 그리기 유지: 사용자가 취소를 누를 때까지 interaction 활성
   }
 
   function _clearDraw(map) {
@@ -956,7 +975,7 @@ var NamwonMap = (function () {
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3l-9.3-9.3a2 2 0 00-2.8 0L2.3 12.9a2 2 0 000 2.8l9.3 9.3a2 2 0 002.8 0l6.9-6.9a2 2 0 000-2.8z"/><line x1="8.5" y1="11.5" x2="10" y2="10"/><line x1="11.5" y1="14.5" x2="13" y2="13"/><line x1="14.5" y1="17.5" x2="16" y2="16"/></svg>' +
             '</button>' +
             '<div class="rt-submenu measure-menu" id="measure-menu">' +
-              '<div class="bm-item" data-measure="clear"><div class="bm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></div><div class="bm-label">취소</div></div>' +
+              '<div class="bm-item" data-measure="clear"><div class="bm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div class="bm-label">취소</div></div>' +
               '<div class="bm-item" data-measure="distance"><div class="bm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 19L19 5"/></svg></div><div class="bm-label">거리</div></div>' +
               '<div class="bm-item" data-measure="area"><div class="bm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="14" height="14" rx="1"/></svg></div><div class="bm-label">면적</div></div>' +
               '<div class="bm-item" data-measure="radius"><div class="bm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 12h9"/></svg></div><div class="bm-label">반경</div></div>' +
@@ -968,7 +987,7 @@ var NamwonMap = (function () {
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>' +
             '</button>' +
             '<div class="rt-submenu draw-menu" id="draw-menu">' +
-              '<div class="bm-item" data-draw="clear"><div class="bm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/></svg></div><div class="bm-label">취소</div></div>' +
+              '<div class="bm-item" data-draw="clear"><div class="bm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div class="bm-label">취소</div></div>' +
               '<div class="bm-item" data-draw="point"><div class="bm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="6"/></svg></div><div class="bm-label">점</div></div>' +
               '<div class="bm-item" data-draw="line"><div class="bm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 19L19 5"/></svg></div><div class="bm-label">선</div></div>' +
               '<div class="bm-item" data-draw="area"><div class="bm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="14" height="14" rx="1"/></svg></div><div class="bm-label">면</div></div>' +
@@ -1236,11 +1255,19 @@ var NamwonMap = (function () {
       });
     }
 
-    // 줌
+    // 줌 — 부드러운 애니메이션
     var zi = wrapper.querySelector('#btn-zoom-in');
     var zo = wrapper.querySelector('#btn-zoom-out');
-    if (zi) zi.addEventListener('click', function () { map.getView().setZoom(map.getView().getZoom() + 1); });
-    if (zo) zo.addEventListener('click', function () { map.getView().setZoom(map.getView().getZoom() - 1); });
+    function animateZoom(delta) {
+      var view = map.getView();
+      view.animate({
+        zoom: view.getZoom() + delta,
+        duration: 260,
+        easing: function (t) { return 1 - Math.pow(1 - t, 3); }
+      });
+    }
+    if (zi) zi.addEventListener('click', function () { animateZoom(1); });
+    if (zo) zo.addEventListener('click', function () { animateZoom(-1); });
 
     // 바깥 클릭 시 서브메뉴 닫기
     document.addEventListener('click', function (e) {

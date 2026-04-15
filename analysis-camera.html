@@ -368,12 +368,12 @@
       transition: width 0.3s ease;
     }
 
-    /* 결과 리스트 (뷰어 하단) - 가로 스크롤 카드 리스트 */
+    /* 결과 리스트 (뷰어 하단) - 세로 텍스트 목록, 썸네일 없음 */
     .viewer-area > .result-section {
       background: var(--color-surface);
       border-top: 1px solid var(--color-border);
       flex-shrink: 0;
-      height: 244px;
+      height: 320px;
       display: flex;
       flex-direction: column;
       width: 100%;
@@ -385,10 +385,14 @@
       border-bottom: 1px solid var(--color-border);
       background: var(--color-surface-2);
       flex-shrink: 0;
+      gap: 2px;
+      overflow-x: auto;
+      scrollbar-width: none;
     }
+    .result-section .result-tabs::-webkit-scrollbar { display: none; }
 
     .result-section .result-tab {
-      padding: 13px 16px;
+      padding: 13px 14px;
       font-size: 13px;
       color: var(--color-text-muted);
       cursor: pointer;
@@ -396,6 +400,22 @@
       transition: all 0.15s;
       white-space: nowrap;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .result-section .result-tab .rt-count {
+      display: inline-block;
+      background: rgba(15, 25, 40, 0.08);
+      color: var(--color-text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 10px;
+      min-width: 18px;
+      text-align: center;
+      font-family: 'Inter', monospace;
     }
 
     .result-section .result-tab.active {
@@ -403,104 +423,190 @@
       border-bottom-color: var(--color-primary);
       font-weight: 700;
     }
+    .result-section .result-tab.active .rt-count {
+      background: #FBEEF0;
+      color: var(--color-primary);
+    }
 
     .result-section .result-tab:hover:not(.active) { color: var(--color-text); }
 
     .viewer-area .result-section > .result-panel {
       width: auto;
-      padding: 14px 20px;
-      overflow-x: auto;
-      overflow-y: hidden;
+      padding: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
       flex: 1;
       min-height: 0;
       background: var(--color-surface);
-      display: flex;
-      flex-direction: row;
-      gap: 12px;
-      align-items: stretch;
+      display: block;
       border-left: none;
       border-top: none;
       scrollbar-width: thin;
     }
 
-    .viewer-area .result-section > .result-panel::-webkit-scrollbar { height: 8px; }
+    .viewer-area .result-section > .result-panel::-webkit-scrollbar { width: 8px; }
     .viewer-area .result-section > .result-panel::-webkit-scrollbar-thumb { background: #CED4DA; border-radius: 4px; }
 
-    .result-section .result-card {
-      background: var(--color-surface);
-      border: 1.5px solid var(--color-border);
-      border-radius: 8px;
-      padding: 0;
-      margin-bottom: 0;
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-      transition: all 0.15s;
-      flex-shrink: 0;
-      width: 190px;
-      overflow: hidden;
-    }
-
-    .result-section .result-card-thumb {
-      width: 100%;
-      height: 96px;
-      background: #1a2535;
-      display: block;
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    .result-card-body {
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .result-card:hover {
-      border-color: var(--color-primary);
-      background: #FAFAFB;
-    }
-    .result-card.selected {
-      border-color: var(--color-primary);
-      background: #FBEEF0;
-    }
-
-    .result-card-info { flex: 1; min-width: 0; }
-    .result-card-class {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--color-text);
-      margin-bottom: 4px;
-      display: flex;
+    /* 리스트 헤더 (컬럼 라벨) */
+    .result-list-head {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1.4fr) minmax(0, 2fr) 120px 90px;
+      gap: 14px;
       align-items: center;
-    }
-    .result-card-sub { font-size: 12px; color: var(--color-text-muted); }
-    .result-card-sev {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 7px;
+      padding: 8px 20px;
+      background: var(--color-surface-2);
+      border-bottom: 1px solid var(--color-border);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      position: sticky;
+      top: 0;
+      z-index: 2;
     }
 
-    .conf-bar-wrap { flex-shrink: 0; width: 100%; }
-    .conf-bar-lbl {
+    .result-row {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1.4fr) minmax(0, 2fr) 120px 90px;
+      gap: 14px;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #F1F3F5;
+      font-size: 13px;
+      color: var(--color-text);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .result-row:hover { background: #F8F9FA; }
+    .result-row.selected {
+      background: #FBEEF0;
+      box-shadow: inset 3px 0 0 var(--color-primary);
+    }
+    .result-row.no-detect {
+      color: var(--color-text-muted);
+    }
+
+    .result-row .rr-sev {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      justify-self: center;
+    }
+    .result-row .rr-class {
+      font-weight: 700;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+    .result-row.no-detect .rr-class {
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+    .result-row .rr-meta {
       font-size: 12px;
       color: var(--color-text-muted);
-      text-align: right;
-      margin-bottom: 4px;
-      font-family: monospace;
-      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+      font-family: 'Inter', sans-serif;
     }
-    .conf-bar {
+    .result-row .rr-conf {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .result-row .rr-conf-bar {
+      flex: 1;
       height: 5px;
       background: #E9ECEF;
       border-radius: 2px;
       overflow: hidden;
+      min-width: 0;
     }
-    .conf-bar-fill {
+    .result-row .rr-conf-bar > span {
+      display: block;
       height: 100%;
       border-radius: 2px;
+    }
+    .result-row .rr-conf-val {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text);
+      font-family: 'Inter', monospace;
+      min-width: 30px;
+      text-align: right;
+    }
+    .result-row .rr-frame {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-family: 'Inter', monospace;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .result-list-footer {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--color-surface);
+      border-top: 1px solid #F1F3F5;
+    }
+    .result-list-footer .rf-info {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+    .result-list-footer .rf-load-more {
+      padding: 7px 14px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      color: var(--color-text);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .result-list-footer .rf-load-more:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .result-list-empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--color-text-muted);
+      font-size: 13px;
+    }
+
+    /* 컬럼 밀도 — 1024 이하 */
+    @media (max-width: 1024px) {
+      .result-list-head,
+      .result-row {
+        grid-template-columns: 18px minmax(0, 1.2fr) minmax(0, 1.8fr) 100px 72px;
+        gap: 10px;
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+    @media (max-width: 640px) {
+      .result-list-head {
+        display: none;
+      }
+      .result-row {
+        grid-template-columns: 16px minmax(0, 1fr) 70px;
+        gap: 8px;
+        padding: 10px 14px;
+      }
+      .result-row .rr-meta,
+      .result-row .rr-conf { display: none; }
+      .result-row .rr-frame { font-size: 11px; }
     }
 
     /* ── 우측 파이프라인 + 정보 패널 ── */
@@ -874,13 +980,27 @@
       </div>
 
       <div class="result-section" id="result-section" style="display:none;">
-        <div class="result-tabs">
-          <div class="result-tab active" onclick="switchTab(this,'all')">전체 탐지</div>
-          <div class="result-tab" onclick="switchTab(this,'high')">고위험</div>
-          <div class="result-tab" onclick="switchTab(this,'medium')">주의</div>
-          <div class="result-tab" onclick="switchTab(this,'low')">양호</div>
+        <div class="result-tabs" id="result-tabs">
+          <div class="result-tab active" data-tab="all">전체 탐지<span class="rt-count" id="tab-count-all">0</span></div>
+          <div class="result-tab" data-tab="high">고위험<span class="rt-count" id="tab-count-high">0</span></div>
+          <div class="result-tab" data-tab="medium">주의<span class="rt-count" id="tab-count-medium">0</span></div>
+          <div class="result-tab" data-tab="low">양호<span class="rt-count" id="tab-count-low">0</span></div>
+          <div class="result-tab" data-tab="none">탐지 없음<span class="rt-count" id="tab-count-none">0</span></div>
         </div>
-        <div class="result-panel" id="result-cards"></div>
+        <div class="result-panel" id="result-list-panel">
+          <div class="result-list-head">
+            <div></div>
+            <div>클래스</div>
+            <div>주소</div>
+            <div>신뢰도</div>
+            <div>프레임</div>
+          </div>
+          <div id="result-rows"></div>
+        </div>
+        <div class="result-list-footer" id="result-list-footer" style="display:none;">
+          <span class="rf-info" id="rf-info">0 / 0</span>
+          <button type="button" class="rf-load-more" id="rf-load-more">더 보기</button>
+        </div>
       </div>
     </main>
 
@@ -1247,119 +1367,206 @@
     runStep();
   };
 
+  var currentFrames = [];     // 모든 프레임 (탐지+미탐지)
+  var renderedCount = 0;      // 현재 탭에서 이미 렌더된 행 수
+  var PAGE_SIZE = 100;
+
+  function buildFrameList() {
+    // selectedSource.frame_count 기반으로 샘플링된 프레임 목록 생성
+    // 데모용: 총 ~1200 프레임 샘플, 20건 탐지는 랜덤 프레임에 배치
+    var total = 1200;
+    if (selectedSource && selectedSource.frame_count) {
+      // 5fps 샘플링: frame_count / 6 정도
+      total = Math.min(1500, Math.max(300, Math.floor(selectedSource.frame_count / 6)));
+    }
+
+    var cameraDets = allDetections.filter(function (d) { return d.model_type === 'camera'; });
+    // 각 탐지에 가상의 frame index 할당 (균등 분포 흉내)
+    var detFrameIdxSet = {};
+    cameraDets.forEach(function (d, i) {
+      var idx = Math.floor((i + 0.5) * (total / (cameraDets.length + 1)));
+      idx += (i * 37) % 60 - 30; // 약간 흔들기
+      if (idx < 0) idx = 0;
+      if (idx >= total) idx = total - 1;
+      while (detFrameIdxSet[idx] != null) idx = (idx + 1) % total;
+      detFrameIdxSet[idx] = d;
+    });
+
+    // 촬영 시작 시각 (source의 captured_at 또는 기본값)
+    var baseTime = Date.parse((selectedSource && selectedSource.captured_at || '2026-04-15') + 'T08:30:00');
+    if (isNaN(baseTime)) baseTime = Date.parse('2026-04-15T08:30:00');
+    var frameIntervalMs = 200; // 5fps
+
+    var list = [];
+    for (var i = 0; i < total; i++) {
+      var t = new Date(baseTime + i * frameIntervalMs);
+      var timeStr = ('0' + t.getHours()).slice(-2) + ':' +
+                    ('0' + t.getMinutes()).slice(-2) + ':' +
+                    ('0' + t.getSeconds()).slice(-2);
+      var det = detFrameIdxSet[i] || null;
+      list.push({
+        idx: i,
+        frameNo: i + 1,
+        timeStr: timeStr,
+        detection: det,
+        severity: det ? det.severity : null
+      });
+    }
+    return list;
+  }
+
   function finishAnalysis() {
     document.getElementById('analysis-overlay').classList.remove('visible');
     isRunning = false;
     updateAnalyzeBtn();
     document.getElementById('pipeline-status-text').textContent = '분석 완료';
 
-    // 탐지 결과 샘플링 (해당 카메라 source에 맞는 탐지 필터링)
-    currentResults = allDetections.filter(function (d) { return d.model_type === 'camera'; }).slice(0, 8);
+    // 전체 프레임 목록 생성 + 탐지 결과 분리
+    currentFrames = buildFrameList();
+    currentResults = currentFrames
+      .filter(function (f) { return f.detection; })
+      .map(function (f) { return f.detection; });
 
     var canvas = document.getElementById('cam-viewer-canvas');
     drawCameraScene(canvas, currentResults.slice(0, 5));
 
     document.getElementById('result-count').textContent = currentResults.length;
     document.getElementById('result-summary-area').style.display = 'block';
-    renderResultCards('all');
+
+    updateTabCounts();
+    renderResultList('all');
+
     document.getElementById('result-section').style.display = 'flex';
     document.getElementById('gnss-panel').style.display = 'block';
     document.getElementById('caption-section').style.display = 'block';
   }
 
-  function renderResultCards(tab) {
-    var container = document.getElementById('result-cards');
-    container.innerHTML = '';
-    var sevColors = { high: '#C8102E', medium: '#868E96', low: '#CED4DA' };
-    var sevKo = { high: '고위험', medium: '주의', low: '양호' };
-
-    var filtered = tab === 'all'
-      ? currentResults
-      : currentResults.filter(function (d) { return d.severity === tab; });
-
-    if (filtered.length === 0) {
-      container.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.35);padding:20px;font-size:12px;">해당 심각도의 탐지 결과가 없습니다.</div>';
-      return;
-    }
-
-    filtered.slice(0, 20).forEach(function (det, idx) {
-      var col = sevColors[det.severity];
-      var confPct = Math.round(parseFloat(det.confidence) * 100);
-      var card = document.createElement('div');
-      card.className = 'result-card';
-      card.innerHTML =
-        '<canvas class="result-card-thumb" id="rcthumb-' + idx + '" width="180" height="90"></canvas>' +
-        '<div class="result-card-body">' +
-          '<div class="result-card-class"><span class="result-card-sev" style="background:' + col + ';"></span>' + det.class_ko + '</div>' +
-          '<div class="result-card-sub">' + sevKo[det.severity] + ' · 신뢰도 ' + confPct + '%</div>' +
-          '<div class="conf-bar"><div class="conf-bar-fill" style="width:' + confPct + '%;background:' + col + ';"></div></div>' +
-        '</div>';
-
-      card.addEventListener('click', function () {
-        document.querySelectorAll('.result-card').forEach(function (c) { c.classList.remove('selected'); });
-        card.classList.add('selected');
-        showDetectionInfo(det);
-        // 중앙 뷰어에 선택된 프레임 표시
-        var mainCanvas = document.getElementById('cam-viewer-canvas');
-        drawCameraScene(mainCanvas, [det]);
-        document.getElementById('viewer-title').innerHTML =
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>' +
-          (selectedSource ? selectedSource.file_name : '') + ' · ' + det.id;
-      });
-
-      container.appendChild(card);
-
-      // 썸네일 그리기 (지연 실행)
-      setTimeout(function () {
-        var tc = document.getElementById('rcthumb-' + idx);
-        if (tc) drawThumbFrame(tc, det);
-      }, 10);
+  function updateTabCounts() {
+    var counts = { all: 0, high: 0, medium: 0, low: 0, none: 0 };
+    currentFrames.forEach(function (f) {
+      if (f.detection) {
+        counts.all++;
+        if (counts[f.severity] != null) counts[f.severity]++;
+      } else {
+        counts.none++;
+      }
+    });
+    ['all', 'high', 'medium', 'low', 'none'].forEach(function (k) {
+      var el = document.getElementById('tab-count-' + k);
+      if (el) el.textContent = counts[k].toLocaleString();
     });
   }
 
-  function drawThumbFrame(canvas, det) {
-    var ctx = canvas.getContext('2d');
-    var w = canvas.width, h = canvas.height;
+  function getFilteredFrames(tab) {
+    if (tab === 'all') return currentFrames.filter(function (f) { return f.detection; });
+    if (tab === 'none') return currentFrames.filter(function (f) { return !f.detection; });
+    return currentFrames.filter(function (f) { return f.detection && f.severity === tab; });
+  }
 
-    // 하늘
-    var sky = ctx.createLinearGradient(0, 0, 0, h * 0.4);
-    sky.addColorStop(0, '#0d1520');
-    sky.addColorStop(1, '#1e3050');
-    ctx.fillStyle = sky;
-    ctx.fillRect(0, 0, w, h * 0.4);
+  function renderResultList(tab) {
+    var rowsEl = document.getElementById('result-rows');
+    var footer = document.getElementById('result-list-footer');
+    rowsEl.innerHTML = '';
+    renderedCount = 0;
 
-    // 도로
-    ctx.fillStyle = '#2a3444';
-    ctx.fillRect(0, h * 0.4, w, h * 0.6);
+    var filtered = getFilteredFrames(tab);
 
-    // 차선
-    ctx.strokeStyle = 'rgba(255,255,220,0.65)';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([10, 6]);
-    ctx.beginPath();
-    ctx.moveTo(w * 0.5, h * 0.4);
-    ctx.lineTo(w * 0.5, h);
-    ctx.stroke();
-    ctx.setLineDash([]);
+    if (filtered.length === 0) {
+      rowsEl.innerHTML = '<div class="result-list-empty">' +
+        (tab === 'none'
+          ? '모든 프레임에 탐지 결과가 있습니다.'
+          : '해당 조건의 결과가 없습니다.') +
+        '</div>';
+      footer.style.display = 'none';
+      return;
+    }
 
-    // 측면
-    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-    ctx.beginPath();
-    ctx.moveTo(w * 0.15, h); ctx.lineTo(w * 0.4, h * 0.4);
-    ctx.moveTo(w * 0.85, h); ctx.lineTo(w * 0.6, h * 0.4);
-    ctx.stroke();
+    appendRows(tab, filtered);
+    updateFooter(filtered.length);
+  }
 
-    // bbox
-    var col = det.severity === 'high' ? '#C8102E'
-            : det.severity === 'medium' ? '#F4A261'
-            : '#2A9D8F';
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(w * 0.32, h * 0.48, w * 0.36, h * 0.32);
-    ctx.fillStyle = col;
-    ctx.globalAlpha = 0.22;
-    ctx.fillRect(w * 0.32, h * 0.48, w * 0.36, h * 0.32);
-    ctx.globalAlpha = 1;
+  function appendRows(tab, filtered) {
+    var rowsEl = document.getElementById('result-rows');
+    var end = Math.min(filtered.length, renderedCount + PAGE_SIZE);
+    var frag = document.createDocumentFragment();
+    var sevColors = { high: '#C8102E', medium: '#F4A261', low: '#2A9D8F' };
+    var sevKo = { high: '고위험', medium: '주의', low: '양호' };
+
+    for (var i = renderedCount; i < end; i++) {
+      var f = filtered[i];
+      var det = f.detection;
+      var row = document.createElement('div');
+      row.className = 'result-row' + (det ? '' : ' no-detect');
+      row.dataset.frameIdx = f.idx;
+
+      var confPct = det ? Math.round(parseFloat(det.confidence) * 100) : 0;
+      var sevColor = det ? sevColors[f.severity] : '#CED4DA';
+      var className = det ? det.class_ko : '탐지 없음';
+      var addr = det ? det.address : '–';
+      var confHtml = det
+        ? '<div class="rr-conf-bar"><span style="width:' + confPct + '%;background:' + sevColor + ';"></span></div>' +
+          '<div class="rr-conf-val">' + confPct + '%</div>'
+        : '<div class="rr-conf-bar"><span style="width:0%;"></span></div>' +
+          '<div class="rr-conf-val">–</div>';
+
+      row.innerHTML =
+        '<div class="rr-sev" style="background:' + sevColor + ';"></div>' +
+        '<div class="rr-class" title="' + className + (det ? ' · ' + sevKo[f.severity] : '') + '">' + className + '</div>' +
+        '<div class="rr-meta" title="' + addr + '">' + addr + '</div>' +
+        '<div class="rr-conf">' + confHtml + '</div>' +
+        '<div class="rr-frame">#' + f.frameNo + '<br>' + f.timeStr + '</div>';
+
+      row.addEventListener('click', (function (frame) {
+        return function () {
+          document.querySelectorAll('.result-row').forEach(function (r) { r.classList.remove('selected'); });
+          row.classList.add('selected');
+          showFrameInfo(frame);
+        };
+      })(f));
+
+      frag.appendChild(row);
+    }
+    rowsEl.appendChild(frag);
+    renderedCount = end;
+  }
+
+  function updateFooter(totalCount) {
+    var footer = document.getElementById('result-list-footer');
+    var info = document.getElementById('rf-info');
+    var btn = document.getElementById('rf-load-more');
+    footer.style.display = 'flex';
+    info.textContent = renderedCount.toLocaleString() + ' / ' + totalCount.toLocaleString();
+    if (renderedCount >= totalCount) {
+      btn.style.display = 'none';
+    } else {
+      btn.style.display = 'inline-block';
+      var remain = totalCount - renderedCount;
+      btn.textContent = '더 보기 (' + Math.min(PAGE_SIZE, remain) + '건)';
+    }
+  }
+
+  function showFrameInfo(frame) {
+    var mainCanvas = document.getElementById('cam-viewer-canvas');
+    var titleEl = document.getElementById('viewer-title');
+    var iconSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+    var srcName = selectedSource ? selectedSource.file_name : '';
+
+    if (frame.detection) {
+      drawCameraScene(mainCanvas, [frame.detection]);
+      titleEl.innerHTML = iconSvg + srcName + ' · 프레임 #' + frame.frameNo + ' · ' + frame.detection.id;
+      showDetectionInfo(frame.detection);
+    } else {
+      drawCameraScene(mainCanvas, []);
+      titleEl.innerHTML = iconSvg + srcName + ' · 프레임 #' + frame.frameNo + ' · 탐지 없음';
+      // GNSS/캡션 초기화
+      document.getElementById('gnss-lat').textContent = '–';
+      document.getElementById('gnss-lng').textContent = '–';
+      document.getElementById('gnss-addr').textContent = '–';
+      document.getElementById('gnss-time').textContent = '2026.04.15 ' + frame.timeStr;
+      var capEl = document.getElementById('caption-text');
+      capEl.textContent = '이 프레임에서는 이상 객체가 탐지되지 않았습니다.';
+      capEl.classList.add('empty');
+    }
   }
 
   function showDetectionInfo(det) {
@@ -1374,12 +1581,27 @@
     capEl.classList.remove('empty');
   }
 
-  window.switchTab = function (el, tab) {
+  function switchTab(tab) {
     activeTab = tab;
-    document.querySelectorAll('.result-tab').forEach(function (t) { t.classList.remove('active'); });
-    el.classList.add('active');
-    renderResultCards(tab);
-  };
+    document.querySelectorAll('.result-tab').forEach(function (t) {
+      t.classList.toggle('active', t.dataset.tab === tab);
+    });
+    renderResultList(tab);
+  }
+  window.switchTab = switchTab;
+
+  // 탭 클릭 바인딩
+  document.addEventListener('click', function (e) {
+    var tabEl = e.target.closest('.result-tab');
+    if (tabEl && tabEl.dataset.tab) {
+      switchTab(tabEl.dataset.tab);
+      return;
+    }
+    if (e.target.id === 'rf-load-more') {
+      appendRows(activeTab, getFilteredFrames(activeTab));
+      updateFooter(getFilteredFrames(activeTab).length);
+    }
+  });
 })();
 </script>
 </body>
