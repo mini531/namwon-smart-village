@@ -200,9 +200,14 @@
     }
 
     @media (max-width: 900px) {
+      .page-body {
+        min-height: 0;
+        display: block;
+      }
       .history-layout {
         grid-template-columns: 1fr;
         display: block;
+        flex: none;
       }
       .history-list-panel {
         position: static;
