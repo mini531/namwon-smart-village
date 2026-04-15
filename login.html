@@ -416,17 +416,27 @@
       margin-bottom: 10px;
       padding-top: 14px;
       border-top: 1px solid var(--color-border);
+      flex-wrap: wrap;
     }
     .form-footer .ff-orgs img {
-      height: 22px;
       width: auto;
-      opacity: 0.65;
+      opacity: 0.55;
       transition: opacity 0.2s;
+      object-fit: contain;
+      image-rendering: -webkit-optimize-contrast;
     }
-    .form-footer .ff-orgs img:hover { opacity: 1; }
+    .form-footer .ff-orgs img.org-namwon {
+      height: 26px;
+      max-width: 120px;
+    }
+    .form-footer .ff-orgs img.org-lx {
+      height: 13px;
+      max-width: 150px;
+    }
+    .form-footer .ff-orgs img:hover { opacity: 0.95; }
     .form-footer .ff-orgs .org-divider {
       width: 1px;
-      height: 18px;
+      height: 20px;
       background: var(--color-border);
     }
     .form-footer .ff-copy { font-size: 11px; color: #9BA3AD; }
@@ -577,9 +587,9 @@
           <a href="#" id="link-email-reject">이메일무단수집거부</a>
         </div>
         <div class="ff-orgs">
-          <img src="assets/images/logo_namwon.png" alt="남원시">
+          <img class="org-namwon" src="assets/images/logo_namwon.png" alt="남원시">
           <span class="org-divider"></span>
-          <img src="assets/images/lx_logo.svg" alt="LX 한국국토정보공사">
+          <img class="org-lx" src="assets/images/lx_logo.svg" alt="LX 한국국토정보공사">
         </div>
         <div class="ff-copy">© 2026 Namwon Smart Village</div>
       </div>
