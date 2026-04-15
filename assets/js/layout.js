@@ -245,10 +245,17 @@
     return y + '.' + m + '.' + d;
   };
 
-  window.formatDateTime = function (dateStr) {
-    if (!dateStr) return '';
-    var dt = dateStr.replace('T', ' ').substring(0, 16);
-    return dt.replace('-', '.').replace('-', '.');
+  window.formatDateTime = function (date) {
+    if (!date) return '';
+    if (date instanceof Date) {
+      if (isNaN(date)) return '';
+      var pad = function (n) { return String(n).padStart(2, '0'); };
+      return date.getFullYear() + '.' + pad(date.getMonth() + 1) + '.' + pad(date.getDate()) +
+        ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+    }
+    // 문자열 ISO-like → yyyy.mm.dd HH:mm
+    var dt = String(date).replace('T', ' ').substring(0, 16);
+    return dt.replace(/-/g, '.');
   };
 
   /* -------------------------------------------------------

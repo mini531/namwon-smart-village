@@ -20,7 +20,7 @@ var NamwonReport = (function () {
     config.periodEnd = periodEnd ? periodEnd.value : '2026-04-15';
     config.modelType = modelType ? modelType.value : 'all';
     config.region = region ? region.value : '남원시 전체';
-    config.generatedAt = new Date().toLocaleString('ko-KR');
+    config.generatedAt = window.formatDateTime ? window.formatDateTime(new Date()) : new Date().toISOString().substring(0, 16).replace('T', ' ').replace(/-/g, '.');
 
     return config;
   }

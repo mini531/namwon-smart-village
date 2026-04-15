@@ -837,7 +837,7 @@
           </a>
           <a href="report.html" class="btn btn-ghost btn-sm" style="flex:1; justify-content:center;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
-            보고서 출력
+            보고서 생성
           </a>
         </div>
       </div>
@@ -879,7 +879,6 @@
                 <th>위치</th>
                 <th>탐지일</th>
                 <th style="text-align:right;padding-right:22px;">신뢰도</th>
-                <th style="text-align:right;padding-right:22px;">동작</th>
               </tr>
             </thead>
             <tbody id="priority-tbody"></tbody>
@@ -896,64 +895,85 @@
 </div><!-- /page-body -->
 
 <script src="assets/js/layout.js"></script>
+<script src="assets/js/detection-modal.js"></script>
 <script>
 (function () {
-  // 현재 날짜 표시
+  // 현재 날짜 표시 (yyyy.mm.dd)
   var now = new Date();
   var y = now.getFullYear();
   var m = String(now.getMonth() + 1).padStart(2, '0');
   var d = String(now.getDate()).padStart(2, '0');
   document.getElementById('dash-now-date').textContent = y + '.' + m + '.' + d;
 
+  var _allDets = [];
+
   fetch('assets/data/sample-detections.json')
     .then(function (r) { return r.json(); })
     .then(function (json) {
-      var s = json.summary;
-      var dets = json.detections;
-
-      // KPI
-      document.getElementById('kpi-total').textContent = s.total;
-      document.getElementById('kpi-high').textContent = s.high_severity;
-      document.getElementById('kpi-high-pct').textContent = Math.round(s.high_severity / s.total * 100);
-      document.getElementById('kpi-unprocessed').textContent = s.status_counts['미처리'] || 0;
-      document.getElementById('kpi-processing').textContent = s.status_counts['처리중'] || 0;
-      document.getElementById('kpi-done').textContent = s.status_counts['완료'] || 0;
-      document.getElementById('kpi-rate').textContent = Math.round((s.status_counts['완료'] || 0) / s.total * 100);
-
-      // 처리 대기 고위험 탐지 (고위험 + 미처리, 신뢰도 내림차순 상위 6)
-      var overrides = {};
-      try { overrides = JSON.parse(localStorage.getItem('namwon-detection-overrides') || '{}'); } catch (e) {}
-      var priority = dets
-        .map(function (d) { return Object.assign({}, d, { status: overrides[d.id] || d.status }); })
-        .filter(function (d) { return d.severity === 'high' && d.status === '미처리'; })
-        .sort(function (a, b) { return b.confidence - a.confidence; })
-        .slice(0, 6);
-
-      var ptbody = document.getElementById('priority-tbody');
-      if (priority.length === 0) {
-        ptbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--color-text-muted);padding:28px;">처리 대기 중인 고위험 탐지가 없습니다</td></tr>';
-      } else {
-        priority.forEach(function (det) {
-          var modelLabel = det.model_type === 'orthophoto' ? '정사영상' : '카메라';
-          var dateStr = det.detected_at.substring(0, 10).replace(/-/g, '.');
-          var confPct = Math.round(det.confidence * 100);
-          ptbody.insertAdjacentHTML('beforeend',
-            '<tr>' +
-            '<td style="font-size:12px;color:var(--color-text-muted);">' + det.id + '</td>' +
-            '<td style="font-weight:700;">' + det.class_ko + '</td>' +
-            '<td><span class="badge">' + modelLabel + '</span></td>' +
-            '<td style="font-size:12px;color:var(--color-text-muted);">' + det.address + '</td>' +
-            '<td style="font-size:12px;color:var(--color-text-muted);">' + dateStr + '</td>' +
-            '<td style="text-align:right;padding-right:22px;font-weight:700;color:var(--color-primary);">' + confPct + '%</td>' +
-            '<td style="text-align:right;padding-right:14px;"><a href="history.html" class="btn btn-ghost btn-sm">처리</a></td>' +
-            '</tr>'
-          );
-        });
-      }
+      _allDets = json.detections.slice();
+      if (window.DetectionModal) DetectionModal.applyOverridesTo(_allDets);
+      updateKpi();
+      renderPriority();
     })
     .catch(function () {
       console.warn('detections load failed');
     });
+
+  function updateKpi() {
+    var total = _allDets.length;
+    var high = 0, unproc = 0, proc = 0, done = 0;
+    _allDets.forEach(function (d) {
+      if (d.severity === 'high') high++;
+      if (d.status === '미처리') unproc++;
+      else if (d.status === '처리중') proc++;
+      else if (d.status === '완료') done++;
+    });
+    document.getElementById('kpi-total').textContent = total;
+    document.getElementById('kpi-high').textContent = high;
+    document.getElementById('kpi-high-pct').textContent = total ? Math.round(high / total * 100) : 0;
+    document.getElementById('kpi-unprocessed').textContent = unproc;
+    document.getElementById('kpi-processing').textContent = proc;
+    document.getElementById('kpi-done').textContent = done;
+    document.getElementById('kpi-rate').textContent = total ? Math.round(done / total * 100) : 0;
+  }
+
+  function renderPriority() {
+    var priority = _allDets
+      .filter(function (d) { return d.severity === 'high' && d.status === '미처리'; })
+      .sort(function (a, b) { return b.confidence - a.confidence; })
+      .slice(0, 6);
+
+    var ptbody = document.getElementById('priority-tbody');
+    ptbody.innerHTML = '';
+    if (priority.length === 0) {
+      ptbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);padding:28px;">처리 대기 중인 고위험 탐지가 없습니다</td></tr>';
+      return;
+    }
+    priority.forEach(function (det) {
+      var modelLabel = det.model_type === 'orthophoto' ? '정사영상' : '카메라';
+      var dateStr = det.detected_at.substring(0, 10).replace(/-/g, '.');
+      var confPct = Math.round(det.confidence * 100);
+      var tr = document.createElement('tr');
+      tr.className = 'clickable-row';
+      tr.innerHTML =
+        '<td style="font-size:12px;color:var(--color-text-muted);">' + det.id + '</td>' +
+        '<td style="font-weight:700;">' + det.class_ko + '</td>' +
+        '<td><span class="badge">' + modelLabel + '</span></td>' +
+        '<td style="font-size:12px;color:var(--color-text-muted);">' + det.address + '</td>' +
+        '<td style="font-size:12px;color:var(--color-text-muted);">' + dateStr + '</td>' +
+        '<td style="text-align:right;padding-right:22px;font-weight:700;color:var(--color-primary);">' + confPct + '%</td>';
+      tr.addEventListener('click', function () {
+        if (!window.DetectionModal) return;
+        DetectionModal.open(det, {
+          onSave: function () {
+            updateKpi();
+            renderPriority();
+          }
+        });
+      });
+      ptbody.appendChild(tr);
+    });
+  }
 
   // 최근 분석 작업 로드
   fetch('assets/data/sample-jobs.json')

@@ -10,7 +10,7 @@
 - **카메라 AI 추론** (`analysis-camera.html`) — 차량 블랙박스 영상 프레임 기반 객체 탐지 및 GNSS 매핑
 - **탐지 이력 관리** (`history.html`) — 전체 탐지 목록 조회, 필터링, 상세 보기, CSV 내보내기
 - **지도 서비스** (`map-home.html`, `map-orthophoto.html`, `map-camera.html`) — Vworld 기반 탐지 결과 지도
-- **보고서 출력** (`report.html`) — 기간·모델·지역별 보고서 생성 및 PDF 다운로드
+- **보고서 생성** (`report.html`) — 기간·모델·지역별 보고서 생성 및 PDF 다운로드
 
 ## 디자인 시스템
 
@@ -29,7 +29,7 @@ namwon-smart-village/
 ├── analysis-orthophoto.html      # 정사영상 AI 추론
 ├── analysis-camera.html          # 카메라 AI 추론
 ├── history.html                  # 탐지 이력 관리
-├── report.html                   # 보고서 출력
+├── report.html                   # 보고서 생성
 ├── map-home.html                 # 지도 홈
 ├── map-orthophoto.html           # 정사영상 결과 지도
 ├── map-camera.html               # 카메라 결과 지도

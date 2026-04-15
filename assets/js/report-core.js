@@ -375,7 +375,7 @@
     setText('rs-subtitle', sourceTypeLabel + ' AI 분석 ' + typeLabel + ' 보고서 · 대상 작업 ' + selectedJobs.length + '건');
     setText('rs-period', (jobPeriodStart || '').replace(/-/g, '.') + ' ~ ' + (jobPeriodEnd || '').replace(/-/g, '.'));
     setText('rs-region', regions || '남원시');
-    setText('rs-generated', new Date().toLocaleString('ko-KR'));
+    setText('rs-generated', window.formatDateTime ? window.formatDateTime(new Date()) : '');
 
     // KPI
     setText('rs-total', summary.total);

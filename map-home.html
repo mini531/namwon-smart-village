@@ -1223,7 +1223,7 @@
           '<div class="popup-row"><span class="label">신뢰도</span><span class="value">' + det.confidence + '</span></div>' +
           '<div class="popup-row"><span class="label">심각도</span><span class="value">' + NamwonMap.SEVERITY_KO[det.severity] + '</span></div>' +
           '<div class="popup-row"><span class="label">주소</span><span class="value" style="text-align:right;max-width:160px;font-size:12px;">' + det.address + '</span></div>' +
-          '<div class="popup-row"><span class="label">탐지일시</span><span class="value" style="font-size:12px;">' + det.detected_at.replace('T', ' ').substring(0, 16) + '</span></div>' +
+          '<div class="popup-row"><span class="label">탐지일시</span><span class="value" style="font-size:12px;">' + det.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.') + '</span></div>' +
           '<div class="popup-row"><span class="label">상태</span><span class="value">' + det.status + '</span></div>' +
         '</div>';
 
