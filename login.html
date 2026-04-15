@@ -44,41 +44,27 @@
       min-width: 0;
     }
     .brand-header {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-    .brand-logo {
-      width: 44px;
-      height: 44px;
+      gap: 14px;
+      margin-bottom: 32px;
+      padding: 12px 20px;
+      background: var(--color-text);
       border-radius: 12px;
-      background: var(--color-primary);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      box-shadow: 0 8px 20px rgba(200, 16, 46, 0.25);
+      box-shadow: 0 10px 30px rgba(15, 37, 64, 0.12);
     }
-    .brand-name {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.25;
+    .brand-header img {
+      height: 32px;
+      width: auto;
+      display: block;
     }
-    .brand-name .bn-top {
-      font-size: 13px;
-      color: var(--color-text-muted);
+    .brand-header .brand-sub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.65);
       font-weight: 600;
       letter-spacing: -0.2px;
-    }
-    .brand-name .bn-main {
-      font-size: 18px;
-      color: var(--color-text);
-      font-weight: 800;
-      letter-spacing: -0.3px;
+      border-left: 1px solid rgba(255, 255, 255, 0.18);
+      padding-left: 14px;
     }
 
     .brand-hero h1 {
@@ -425,11 +411,8 @@
     <!-- 좌측 브랜딩 + 모델 소개 -->
     <section class="brand-side">
       <div class="brand-header">
-        <div class="brand-logo">N</div>
-        <div class="brand-name">
-          <span class="bn-top">남원시 · 스마트빌리지</span>
-          <span class="bn-main">Namwon GeoVision</span>
-        </div>
+        <img src="assets/images/logo_brand_white_small.png" alt="Namwon GeoVision">
+        <span class="brand-sub">남원시 스마트빌리지</span>
       </div>
 
       <div class="brand-hero">
@@ -527,11 +510,11 @@
 
       <div class="login-footer">
         <div class="lf-links">
-          <a href="notice.html">공지사항</a>
+          <a href="#" id="link-privacy"><strong>개인정보처리방침</strong></a>
           <span class="lf-sep">|</span>
-          <a href="faq.html">자주 묻는 질문</a>
+          <a href="#" id="link-terms">이용약관</a>
           <span class="lf-sep">|</span>
-          <a href="contact.html">문의하기</a>
+          <a href="#" id="link-email-reject">이메일무단수집거부</a>
         </div>
         <div>© 2026 Namwon Smart Village · 전북특별자치도 남원시</div>
       </div>
@@ -587,6 +570,17 @@
   document.getElementById('link-signup').addEventListener('click', function (e) {
     e.preventDefault();
     if (window.NotifyUI) NotifyUI.info('계정 신청은 도로관리과 담당자를 통해 진행됩니다.\n내선 102 로 연락 주세요.', '안내');
+  });
+
+  // 풋터 정책 링크 — 프로토타입은 안내만
+  ['link-privacy', 'link-terms', 'link-email-reject'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      var label = { 'link-privacy': '개인정보처리방침', 'link-terms': '이용약관', 'link-email-reject': '이메일무단수집거부' }[id];
+      if (window.NotifyUI) NotifyUI.info(label + ' 전문은 준비 중입니다.', '안내');
+    });
   });
 
   // 로그인 페이지에서는 헤더/풋터 인클루드 사용 안 함 (layout.js 는 NotifyUI 만 사용)
