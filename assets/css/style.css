@@ -692,7 +692,7 @@ select {
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .data-table th {
@@ -712,14 +712,15 @@ select {
 .data-table th:last-child { border-radius: 0; }
 
 .data-table td {
-  padding: 11px 14px;
+  padding: 12px 14px;
   border-bottom: 1px solid #EEF2F7;
   color: var(--color-text);
   vertical-align: middle;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
-.data-table tbody tr:hover { background: #F8FBFF; }
+.data-table tbody tr:hover { background: #FAFBFC; }
 .data-table tbody tr:last-child td { border-bottom: none; }
 
 /* =========================================================
