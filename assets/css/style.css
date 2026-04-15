@@ -820,6 +820,83 @@ select {
 }
 
 /* =========================================================
+   NotifyUI.toast — 상단 중앙 반투명 글래스 토스트
+   ========================================================= */
+.notify-toast-stack {
+  position: fixed;
+  top: calc(var(--header-height) + 18px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  max-width: calc(100vw - 32px);
+}
+
+.notify-toast {
+  pointer-events: all;
+  background: rgba(14, 18, 24, 0.68);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  color: #fff;
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  min-width: 260px;
+  max-width: 460px;
+  transform: translateY(-18px);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
+  cursor: pointer;
+}
+.notify-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+.notify-toast .nt-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.95);
+}
+.notify-toast .nt-icon svg { width: 22px; height: 22px; }
+.notify-toast .nt-text { min-width: 0; flex: 1; }
+.notify-toast .nt-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+  letter-spacing: -0.1px;
+}
+.notify-toast .nt-msg {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.45;
+}
+.notify-toast.notify-type-info .nt-icon { color: #5EA9FF; }
+.notify-toast.notify-type-success .nt-icon { color: #4ED0A0; }
+.notify-toast.notify-type-warn .nt-icon { color: #F4A261; }
+.notify-toast.notify-type-error .nt-icon { color: #FF6B7A; }
+
+@media (max-width: 640px) {
+  .notify-toast-stack {
+    top: calc(var(--header-height) + 10px);
+    width: calc(100vw - 20px);
+  }
+  .notify-toast { min-width: 0; width: 100%; padding: 11px 14px; }
+  .notify-toast .nt-title { font-size: 13px; }
+  .notify-toast .nt-msg { font-size: 12px; }
+}
+
+/* =========================================================
    NotifyUI — 전역 알림/확인 모달 (alert/confirm 대체)
    ========================================================= */
 .notify-overlay {

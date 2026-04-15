@@ -1133,11 +1133,11 @@ var NamwonMap = (function () {
         var mode = item.dataset.measure;
         if (mode === 'clear') {
           _clearMeasure(map);
-          if (window.NotifyUI) NotifyUI.info('측정이 취소되었습니다', '측정 도구');
+          if (window.NotifyUI) NotifyUI.toast('측정이 취소되었습니다', '측정 도구');
         } else {
           _startMeasure(map, mode);
           var label = { distance: '거리', area: '면적', radius: '반경' }[mode];
-          if (window.NotifyUI) NotifyUI.info('지도를 클릭하여 ' + label + '을(를) 측정하세요. 더블클릭으로 완료', label + ' 측정');
+          if (window.NotifyUI) NotifyUI.toast('지도를 클릭하여 ' + label + '을(를) 측정하세요. 더블클릭으로 완료', label + ' 측정');
         }
         closeAllSubmenus();
       });
@@ -1147,11 +1147,11 @@ var NamwonMap = (function () {
         var mode = item.dataset.draw;
         if (mode === 'clear') {
           _clearDraw(map);
-          if (window.NotifyUI) NotifyUI.info('그리기가 모두 삭제되었습니다', '그리기 도구');
+          if (window.NotifyUI) NotifyUI.toast('그리기가 모두 삭제되었습니다', '그리기 도구');
         } else {
           _startDraw(map, mode);
           var label = { point: '점', line: '선', area: '면', circle: '원' }[mode];
-          if (window.NotifyUI) NotifyUI.info('지도를 클릭하여 ' + label + '을(를) 그리세요', label + ' 그리기');
+          if (window.NotifyUI) NotifyUI.toast('지도를 클릭하여 ' + label + '을(를) 그리세요', label + ' 그리기');
         }
         closeAllSubmenus();
       });

@@ -333,11 +333,56 @@
     setTimeout(function () { newOk.focus(); }, 30);
   }
 
+  /* -------------------------------------------------------
+     NotifyUI.toast - 상단 중앙 반투명 글래스 토스트 (자동 소멸)
+  ------------------------------------------------------- */
+  function showToast(opts) {
+    var stack = document.getElementById('notify-toast-stack');
+    if (!stack) {
+      stack = document.createElement('div');
+      stack.id = 'notify-toast-stack';
+      stack.className = 'notify-toast-stack';
+      document.body.appendChild(stack);
+    }
+    var type = opts.type || 'info';
+    var el = document.createElement('div');
+    el.className = 'notify-toast notify-type-' + type;
+    var iconHtml = ICONS[type] || ICONS.info;
+    var titleHtml = opts.title ? '<div class="nt-title">' + opts.title + '</div>' : '';
+    var msgHtml = '<div class="nt-msg">' + (opts.message || '') + '</div>';
+    el.innerHTML =
+      '<div class="nt-icon">' + iconHtml + '</div>' +
+      '<div class="nt-text">' + titleHtml + msgHtml + '</div>';
+    stack.appendChild(el);
+
+    requestAnimationFrame(function () { el.classList.add('show'); });
+
+    var duration = typeof opts.duration === 'number' ? opts.duration : 2200;
+    var dismissed = false;
+    function dismiss() {
+      if (dismissed) return;
+      dismissed = true;
+      el.classList.remove('show');
+      setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 280);
+    }
+    setTimeout(dismiss, duration);
+    el.addEventListener('click', dismiss);
+  }
+
   window.NotifyUI = {
     info: function (message, title) { showNotify({ type: 'info', title: title || '알림', message: message }); },
     warn: function (message, title) { showNotify({ type: 'warn', title: title || '주의', message: message }); },
     error: function (message, title) { showNotify({ type: 'error', title: title || '오류', message: message }); },
     success: function (message, title) { showNotify({ type: 'success', title: title || '완료', message: message }); },
+    toast: function (message, title, opts) {
+      opts = opts || {};
+      showToast({
+        type: opts.type || 'info',
+        title: title || '',
+        message: message,
+        duration: opts.duration
+      });
+    },
     confirm: function (message, onOk, opts) {
       opts = opts || {};
       showNotify({
