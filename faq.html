@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자주 묻는 질문 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <style>
+    html, body { overflow: hidden; }
+
+    .page-body {
+      padding-top: var(--header-height);
+      height: 100vh;
+      background: var(--color-page-bg);
+      display: block;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .faq-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 32px 56px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      gap: 16px;
+    }
+    .page-title-wrap h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+    .page-title-wrap h1 svg { color: var(--color-primary); }
+    .page-title-wrap p {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    .toolbar {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .tab-strip {
+      display: flex;
+      gap: 4px;
+      background: var(--color-surface-2);
+      border-radius: 8px;
+      padding: 4px;
+      flex-wrap: wrap;
+    }
+    .tab-strip button {
+      padding: 8px 14px;
+      background: none;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .tab-strip button:hover { color: var(--color-text); }
+    .tab-strip button.active {
+      background: var(--color-surface);
+      color: var(--color-primary);
+      box-shadow: 0 1px 3px rgba(15, 37, 64, 0.08);
+    }
+
+    .search-group {
+      position: relative;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 240px;
+      max-width: 380px;
+    }
+    .search-group svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+      pointer-events: none;
+    }
+    .search-group input {
+      width: 100%;
+      padding: 9px 12px 9px 36px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 13px;
+      color: var(--color-text);
+      outline: none;
+      background: var(--color-surface);
+      font-family: inherit;
+    }
+    .search-group input:focus { border-color: var(--color-primary); }
+
+    .faq-count {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .faq-count strong { color: var(--color-primary); }
+
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .faq-item {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .faq-item.open { border-color: var(--color-primary); }
+
+    .faq-q {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 22px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      font-family: inherit;
+      text-align: left;
+      color: var(--color-text);
+      font-size: 15px;
+      font-weight: 700;
+      transition: background 0.12s;
+      outline: none;
+    }
+    .faq-q:hover { background: #FAFBFC; }
+
+    .faq-q-marker {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .faq-q-marker.a { background: var(--color-surface-2); color: var(--color-primary); border: 1.5px solid var(--color-primary); }
+
+    .faq-q-cat {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 12px;
+      background: var(--color-surface-2);
+      color: var(--color-text-muted);
+      letter-spacing: -0.2px;
+      text-transform: uppercase;
+    }
+    .faq-q-cat.general { background: #E9ECEF; color: #495057; }
+    .faq-q-cat.analysis { background: #E8F1FB; color: #1E5A9C; }
+    .faq-q-cat.map { background: #E6F4F1; color: #1F6F63; }
+    .faq-q-cat.report { background: #FFF4E5; color: #A5611B; }
+    .faq-q-cat.account { background: #F3E8FA; color: #5A2E8C; }
+
+    .faq-q-text {
+      flex: 1;
+      min-width: 0;
+      line-height: 1.5;
+    }
+
+    .faq-q-chevron {
+      flex-shrink: 0;
+      transition: transform 0.25s;
+      color: var(--color-text-muted);
+    }
+    .faq-item.open .faq-q-chevron { transform: rotate(180deg); color: var(--color-primary); }
+
+    .faq-a {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.25s ease;
+    }
+    .faq-item.open .faq-a { grid-template-rows: 1fr; }
+
+    .faq-a-inner {
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .faq-a-body {
+      display: flex;
+      gap: 14px;
+      padding: 0 22px 20px 22px;
+      border-top: 1px solid var(--color-border);
+      padding-top: 18px;
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--color-text);
+      white-space: pre-line;
+    }
+
+    .faq-a-body .faq-q-marker { margin-top: 2px; }
+
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+    .empty-state svg { opacity: 0.35; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    @media (max-width: 720px) {
+      .faq-container { padding: 18px 14px 40px; }
+      .toolbar { padding: 12px 14px; }
+      .search-group { width: 100%; max-width: none; margin-left: 0; }
+      .page-title-wrap h1 { font-size: 20px; }
+      .faq-q { padding: 14px 16px; font-size: 14px; }
+      .faq-a-body { padding: 14px 16px 16px; font-size: 13px; }
+      .faq-q-cat { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="faq-container">
+
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          자주 묻는 질문
+        </h1>
+        <p>Namwon GeoVision 사용 중 자주 발생하는 질문과 답변을 확인하세요</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="tab-strip" id="tab-strip">
+        <button type="button" class="active" data-cat="all">전체</button>
+        <button type="button" data-cat="general">일반</button>
+        <button type="button" data-cat="analysis">분석</button>
+        <button type="button" data-cat="map">지도</button>
+        <button type="button" data-cat="report">보고서</button>
+        <button type="button" data-cat="account">계정</button>
+      </div>
+      <div class="search-group">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="질문 검색">
+      </div>
+      <div class="faq-count" id="faq-count">총 <strong>0</strong>개</div>
+    </div>
+
+    <div class="faq-list" id="faq-list"></div>
+    <div id="empty-state-wrap"></div>
+
+    <div id="footer-include"></div>
+  </div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ── FAQ 샘플 데이터 (Namwon GeoVision) ──
+  var FAQS = [
+    {
+      id: 1,
+      category: 'general',
+      q: 'Namwon GeoVision 플랫폼은 어떤 서비스인가요?',
+      a: '남원시가 운영하는 AI 기반 도로 안전관리 플랫폼입니다.\n드론 정사영상과 차량 카메라 영상을 AI 모델로 분석해 포트홀·크랙·표지판 파손 등 이상 객체를 자동 탐지하고, 지도 · 이력 · 보고서로 관리합니다.'
+    },
+    {
+      id: 2,
+      category: 'general',
+      q: '사용 권한은 어떻게 부여받나요?',
+      a: '도로관리과 담당자를 통해 계정 신청 후 관리자가 승인합니다.\n서비스 지원 > 문의하기 메뉴 또는 내선 102 로 문의해 주시기 바랍니다.'
+    },
+    {
+      id: 3,
+      category: 'analysis',
+      q: '정사영상과 카메라 분석은 어떻게 다른가요?',
+      a: '정사영상 분석은 드론으로 촬영한 넓은 구역의 톱뷰 영상을 대상으로 포트홀 · 크랙 · 쓰레기 · 공동의심 등을 탐지합니다. 광역 점검에 적합합니다.\n\n차량 카메라 분석은 순찰 차량의 전방 카메라 영상에서 포트홀 · 분리대 파손 · 표지판 파손 · 불법 주정차 등을 탐지합니다. 상시 · 구간 중심 점검에 적합합니다.'
+    },
+    {
+      id: 4,
+      category: 'analysis',
+      q: '분석이 오래 걸리는데 왜 그런가요?',
+      a: '정사영상은 한 파일당 50GB 이상이며, 카메라 영상은 수천 프레임을 순차적으로 추론하기 때문에 시간이 소요됩니다.\n지도 홈에서 정사영상 작업 다수를 동시에 선택하면 로드 경고가 표시됩니다. 필요한 작업만 선택해 주세요.'
+    },
+    {
+      id: 5,
+      category: 'analysis',
+      q: '탐지된 객체의 신뢰도가 낮으면 어떻게 해야 하나요?',
+      a: '탐지 정보 모달에서 처리 상태를 "처리중"으로 변경하고 현장 확인 후 "완료"로 기록하는 것을 권장합니다.\n오탐으로 판단되면 조치 메모에 "오탐"이라고 남겨 학습 데이터 개선에 반영합니다.'
+    },
+    {
+      id: 6,
+      category: 'map',
+      q: '지도에서 처리 상태를 변경하고 싶습니다.',
+      a: '지도 우측 "처리 상태" 카드에서 미처리 / 처리중 / 완료 중 원하는 상태를 클릭하면 해당 탐지 목록이 열립니다.\n목록에서 개별 행을 클릭하면 탐지 정보 모달이 열리며, 이곳에서 직접 처리 상태를 변경하고 조치 메모를 기록할 수 있습니다.'
+    },
+    {
+      id: 7,
+      category: 'map',
+      q: '지도 측정 · 그리기 도구 사용법이 궁금합니다.',
+      a: '지도 우측 도구 바에서 측정(거리 · 면적 · 반경) 또는 그리기(점 · 선 · 면 · 원)를 선택해 사용할 수 있습니다.\n측정은 클릭으로 지점을 추가하고 더블클릭으로 완료, 그리기는 연속 사용이 가능하며 취소(X) 버튼으로 종료합니다.'
+    },
+    {
+      id: 8,
+      category: 'report',
+      q: '보고서는 어떤 형식으로 제공되나요?',
+      a: '월간 정기 / 주간 현황 / 긴급 이슈 3가지 템플릿을 PDF 로 생성할 수 있습니다.\n보고서 생성 메뉴에서 대상 기간 · 모델 · 지역을 선택하면 자동으로 본문이 구성되며, 수정 후 PDF 다운로드 버튼을 누르면 저장됩니다.'
+    },
+    {
+      id: 9,
+      category: 'report',
+      q: '이전에 만든 보고서를 다시 볼 수 있나요?',
+      a: '보고서 > 보고서 생성 이력 메뉴에서 저장된 보고서 목록을 확인할 수 있습니다. 카드를 클릭하면 미리보기가 다시 열리고, 삭제도 가능합니다.'
+    },
+    {
+      id: 10,
+      category: 'account',
+      q: '비밀번호를 잊어버렸습니다.',
+      a: '로그인 화면의 "비밀번호 재설정" 링크로 임시 비밀번호를 발급받거나, 도로관리과 담당자(내선 102)에게 재설정을 요청해 주세요.'
+    },
+    {
+      id: 11,
+      category: 'account',
+      q: '동시에 여러 명이 같은 탐지를 처리하면 어떻게 되나요?',
+      a: '마지막 저장이 반영됩니다. 다른 담당자가 먼저 변경한 경우 이력 로그에 변경 내역이 기록되므로, 조치 메모를 통해 중복 처리를 방지하시기 바랍니다.'
+    },
+    {
+      id: 12,
+      category: 'general',
+      q: '시스템 점검 일정은 어디서 확인하나요?',
+      a: '공지사항 메뉴의 "점검" 카테고리에서 정기 점검 일정을 확인할 수 있으며, 점검 시작 24시간 전 상단 배너로 재공지됩니다.'
+    }
+  ];
+
+  var CAT_LABEL = {
+    general: '일반', analysis: '분석', map: '지도', report: '보고서', account: '계정'
+  };
+
+  var state = { cat: 'all', keyword: '', openIds: {} };
+
+  function getFiltered() {
+    var list = FAQS.slice();
+    if (state.cat !== 'all') {
+      list = list.filter(function (f) { return f.category === state.cat; });
+    }
+    if (state.keyword) {
+      var kw = state.keyword.toLowerCase();
+      list = list.filter(function (f) {
+        return f.q.toLowerCase().indexOf(kw) !== -1 || f.a.toLowerCase().indexOf(kw) !== -1;
+      });
+    }
+    return list;
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function render() {
+    var list = getFiltered();
+    var wrap = document.getElementById('faq-list');
+    var emptyWrap = document.getElementById('empty-state-wrap');
+    var countEl = document.getElementById('faq-count');
+
+    countEl.innerHTML = '총 <strong>' + list.length + '</strong>개';
+    wrap.innerHTML = '';
+    emptyWrap.innerHTML = '';
+
+    if (list.length === 0) {
+      emptyWrap.innerHTML =
+        '<div class="empty-state">' +
+          '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+          '<p>검색 조건에 맞는 질문이 없습니다.</p>' +
+        '</div>';
+      return;
+    }
+
+    list.forEach(function (f) {
+      var item = document.createElement('div');
+      item.className = 'faq-item' + (state.openIds[f.id] ? ' open' : '');
+      item.innerHTML =
+        '<button type="button" class="faq-q">' +
+          '<span class="faq-q-marker">Q</span>' +
+          '<span class="faq-q-cat ' + f.category + '">' + CAT_LABEL[f.category] + '</span>' +
+          '<span class="faq-q-text">' + escapeHtml(f.q) + '</span>' +
+          '<svg class="faq-q-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>' +
+        '</button>' +
+        '<div class="faq-a">' +
+          '<div class="faq-a-inner">' +
+            '<div class="faq-a-body">' +
+              '<span class="faq-q-marker a">A</span>' +
+              '<div>' + escapeHtml(f.a) + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      item.querySelector('.faq-q').addEventListener('click', function () {
+        if (state.openIds[f.id]) {
+          delete state.openIds[f.id];
+          item.classList.remove('open');
+        } else {
+          state.openIds[f.id] = true;
+          item.classList.add('open');
+        }
+      });
+
+      wrap.appendChild(item);
+    });
+  }
+
+  document.getElementById('tab-strip').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-cat]');
+    if (!btn) return;
+    document.querySelectorAll('#tab-strip button').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    state.cat = btn.dataset.cat;
+    render();
+  });
+
+  var searchInput = document.getElementById('search-input');
+  var searchTimer = null;
+  searchInput.addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () {
+      state.keyword = searchInput.value.trim();
+      render();
+    }, 180);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

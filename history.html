@@ -71,23 +71,21 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      transition: all var(--transition);
+      transition: box-shadow var(--transition), transform var(--transition);
       cursor: pointer;
       font-family: inherit;
       text-align: left;
       width: 100%;
+      outline: none;
     }
 
     .summary-card:hover {
       box-shadow: 0 4px 16px rgba(15,37,64,0.08);
       transform: translateY(-1px);
-      border-color: var(--color-primary);
     }
 
-    .summary-card:focus {
-      outline: 2px solid rgba(200, 16, 46, 0.3);
-      outline-offset: 2px;
-    }
+    .summary-card:focus,
+    .summary-card:focus-visible { outline: none; }
 
     .summary-icon {
       width: 44px;
@@ -807,8 +805,7 @@
           switchView('detections');
           currentPage = 1;
           applyFilter();
-          var anchor = document.getElementById('view-detections');
-          if (anchor && anchor.scrollIntoView) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          card.blur();
         });
       });
     }).catch(function (err) {

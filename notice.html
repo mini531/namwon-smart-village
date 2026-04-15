@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>공지사항 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <style>
+    html, body { overflow: hidden; }
+
+    .page-body {
+      padding-top: var(--header-height);
+      height: 100vh;
+      background: var(--color-page-bg);
+      display: block;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .notice-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 32px 56px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      gap: 16px;
+    }
+
+    .page-title-wrap h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .page-title-wrap h1 svg { color: var(--color-primary); }
+
+    .page-title-wrap p {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    .toolbar {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .tab-strip {
+      display: flex;
+      gap: 4px;
+      background: var(--color-surface-2);
+      border-radius: 8px;
+      padding: 4px;
+    }
+
+    .tab-strip button {
+      padding: 8px 14px;
+      background: none;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .tab-strip button:hover { color: var(--color-text); }
+
+    .tab-strip button.active {
+      background: var(--color-surface);
+      color: var(--color-primary);
+      box-shadow: 0 1px 3px rgba(15, 37, 64, 0.08);
+    }
+
+    .search-group {
+      position: relative;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 240px;
+      max-width: 380px;
+    }
+
+    .search-group svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+      pointer-events: none;
+    }
+
+    .search-group input {
+      width: 100%;
+      padding: 9px 12px 9px 36px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 13px;
+      color: var(--color-text);
+      outline: none;
+      background: var(--color-surface);
+      font-family: inherit;
+    }
+
+    .search-group input:focus { border-color: var(--color-primary); }
+
+    .notice-count {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .notice-count strong { color: var(--color-primary); }
+
+    /* 공지 테이블 */
+    .notice-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+    }
+
+    .notice-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .notice-table thead th {
+      background: var(--color-surface-2);
+      color: var(--color-text-muted);
+      padding: 14px 18px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .notice-table thead th.col-category { width: 120px; }
+    .notice-table thead th.col-date { width: 130px; text-align: right; padding-right: 22px; }
+
+    .notice-table tbody tr {
+      border-bottom: 1px solid #F1F3F5;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    .notice-table tbody tr:last-child { border-bottom: none; }
+    .notice-table tbody tr:hover { background: #FAFBFC; }
+
+    .notice-table tbody td {
+      padding: 14px 18px;
+      color: var(--color-text);
+      vertical-align: middle;
+    }
+
+    .notice-table tbody td.col-date {
+      text-align: right;
+      font-size: 13px;
+      color: var(--color-text-muted);
+      padding-right: 22px;
+    }
+
+    .notice-table tr.pinned {
+      background: #FFF8F9;
+    }
+    .notice-table tr.pinned:hover { background: #FFEEF1; }
+
+    .notice-cat {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: var(--color-surface-2);
+      color: var(--color-text-muted);
+      letter-spacing: -0.2px;
+    }
+    .notice-cat.general { background: #E9ECEF; color: #495057; }
+    .notice-cat.maintenance { background: #FFF4E5; color: #A5611B; }
+    .notice-cat.update { background: #E8F1FB; color: #1E5A9C; }
+    .notice-cat.important { background: #FBEEF0; color: var(--color-primary); }
+
+    .notice-title-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .notice-title-cell .title-txt {
+      font-weight: 700;
+      color: var(--color-text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+    .notice-title-cell .pin-icon {
+      color: var(--color-primary);
+      flex-shrink: 0;
+    }
+    .notice-title-cell .new-badge {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 800;
+      color: #fff;
+      background: var(--color-primary);
+      padding: 1px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.3px;
+    }
+
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+    .empty-state svg { opacity: 0.35; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    /* 페이지네이션 */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .page-btn {
+      min-width: 36px;
+      height: 36px;
+      padding: 0 10px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .page-btn:hover:not(.active):not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+    .page-btn.active {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* 상세 모달 (공용 .modal-* 스타일 재사용, 본문만 커스텀) */
+    .notice-detail-body {
+      padding: 22px 26px 8px;
+    }
+    .notice-detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--color-border);
+      flex-wrap: wrap;
+    }
+    .notice-detail-meta .meta-date {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+    .notice-detail-content {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--color-text);
+      white-space: pre-line;
+    }
+    .notice-detail-content strong { color: var(--color-text); font-weight: 800; }
+    .notice-detail-attach {
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+    }
+    .notice-detail-attach .attach-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 10px;
+    }
+    .notice-detail-attach .attach-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      font-size: 13px;
+      color: var(--color-text);
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+    .notice-detail-attach .attach-item:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    @media (max-width: 720px) {
+      .notice-container { padding: 18px 14px 40px; }
+      .toolbar { padding: 12px 14px; }
+      .search-group { width: 100%; max-width: none; margin-left: 0; }
+      .page-title-wrap h1 { font-size: 20px; }
+      .notice-table thead th.col-category,
+      .notice-table tbody td.col-category { display: none; }
+      .notice-table tbody td { padding: 12px 14px; }
+      .notice-table thead th { padding: 12px 14px; }
+      .notice-table thead th.col-date,
+      .notice-table tbody td.col-date { padding-right: 14px; width: 90px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="notice-container">
+
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          공지사항
+        </h1>
+        <p>Namwon GeoVision 플랫폼 운영 공지 및 업데이트 소식을 확인하세요</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="tab-strip" id="tab-strip">
+        <button type="button" class="active" data-cat="all">전체</button>
+        <button type="button" data-cat="important">중요</button>
+        <button type="button" data-cat="general">일반</button>
+        <button type="button" data-cat="maintenance">점검</button>
+        <button type="button" data-cat="update">업데이트</button>
+      </div>
+      <div class="search-group">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="제목 또는 내용 검색">
+      </div>
+      <div class="notice-count" id="notice-count">총 <strong>0</strong>건</div>
+    </div>
+
+    <div class="notice-card">
+      <table class="notice-table">
+        <thead>
+          <tr>
+            <th class="col-category">구분</th>
+            <th>제목</th>
+            <th class="col-date">등록일</th>
+          </tr>
+        </thead>
+        <tbody id="notice-tbody"></tbody>
+      </table>
+    </div>
+
+    <div id="empty-state-wrap"></div>
+    <div class="pagination" id="pagination"></div>
+
+    <div id="footer-include"></div>
+  </div>
+</div>
+
+<!-- 공지 상세 모달 (공용 .modal-* 재사용) -->
+<div class="modal-backdrop" id="notice-modal">
+  <div class="modal-card" style="width: 640px;">
+    <div class="modal-head">
+      <div class="title" id="nm-title">공지사항</div>
+      <button class="close-btn" id="nm-close">×</button>
+    </div>
+    <div class="notice-detail-body">
+      <div class="notice-detail-meta">
+        <span class="notice-cat" id="nm-cat">일반</span>
+        <span class="meta-date" id="nm-date">-</span>
+      </div>
+      <div class="notice-detail-content" id="nm-content"></div>
+      <div class="notice-detail-attach" id="nm-attach" style="display:none;">
+        <div class="attach-title">첨부 파일</div>
+        <div id="nm-attach-list"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" id="nm-close-foot">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ── 샘플 공지 데이터 (Namwon GeoVision 플랫폼 기준) ──
+  var NOTICES = [
+    {
+      id: 8,
+      category: 'important',
+      title: '고위험 탐지 건 긴급 처리 안내',
+      date: '2026-04-15',
+      pinned: true,
+      new: true,
+      content:
+        '최근 지도 대시보드에서 확인되는 고위험 탐지 건수가 지난 주 대비 12% 증가했습니다.\n' +
+        '도로 관리 담당자께서는 아래 절차에 따라 신속히 처리해 주시기 바랍니다.\n\n' +
+        '1) 이력 관리 메뉴 > 고위험 필터 선택\n' +
+        '2) 현장 확인 후 탐지 정보 모달에서 처리 상태 변경\n' +
+        '3) 조치 메모에 조치 내용 입력 후 저장\n\n' +
+        '긴급 문의: 도로관리과 내선 102',
+      attachments: [
+        { name: '고위험_처리_지침_v1.pdf', size: '1.2MB' }
+      ]
+    },
+    {
+      id: 7,
+      category: 'update',
+      title: '정사영상 AI 모델 v2.1 배포 완료',
+      date: '2026-04-14',
+      pinned: true,
+      new: true,
+      content:
+        'YOLOv8-Road-Ortho 모델이 v2.1 로 업데이트되었습니다.\n\n' +
+        '주요 개선 사항:\n' +
+        '· 포트홀 탐지 정확도 mAP 0.83 → 0.87 (+4%)\n' +
+        '· 크랙 세부 유형 분리 (세로/가로/거북등)\n' +
+        '· 쓰레기·공동 의심 클래스 오탐률 감소\n\n' +
+        '기존 분석 작업에는 영향이 없으며, 새로 실행하는 분석부터 적용됩니다.',
+      attachments: [
+        { name: 'v2.1_release_notes.pdf', size: '860KB' },
+        { name: 'benchmark_report.xlsx', size: '320KB' }
+      ]
+    },
+    {
+      id: 6,
+      category: 'update',
+      title: '카메라 AI 추론 신규 클래스 2종 추가',
+      date: '2026-04-10',
+      pinned: false,
+      new: true,
+      content:
+        '차량 카메라 기반 추론 모델에 다음 2개 클래스가 추가되었습니다.\n\n' +
+        '· 컬러 맨홀 (Color_Manhole) — 미끄럼 사고 예방 대상 식별\n' +
+        '· 불법 주정차 (Illegal_Parking) — 교통 흐름 방해 차량 탐지\n\n' +
+        '분석 실행 메뉴에서 모델 버전을 선택해 사용할 수 있습니다.',
+      attachments: []
+    },
+    {
+      id: 5,
+      category: 'maintenance',
+      title: '시스템 정기점검 안내 (2026.04.20 02:00 ~ 04:00)',
+      date: '2026-04-08',
+      pinned: false,
+      new: false,
+      content:
+        '안정적인 서비스 제공을 위해 아래 일정으로 정기점검을 실시합니다.\n\n' +
+        '· 점검 일시: 2026.04.20 (월) 02:00 ~ 04:00 (2시간)\n' +
+        '· 대상 서비스: 전체 플랫폼 (지도, 분석 실행, 이력 관리, 보고서)\n' +
+        '· 점검 중에는 로그인 및 분석 작업이 일시 중단됩니다.\n\n' +
+        '이용에 불편을 드려 죄송합니다.',
+      attachments: []
+    },
+    {
+      id: 4,
+      category: 'update',
+      title: '추론 이력 조회 메뉴 개편 — 처리 상태 일괄 관리',
+      date: '2026-04-05',
+      pinned: false,
+      new: false,
+      content:
+        '추론 이력 조회 메뉴가 개편되었습니다.\n\n' +
+        '· 상단 KPI 카드 클릭 시 해당 필터로 바로 이동\n' +
+        '· 탐지 정보 모달에서 처리 상태를 직접 변경하고 조치 메모 기록 가능\n' +
+        '· 지도 · 대시보드 · 이력 관리 페이지에서 처리 상태가 자동 동기화',
+      attachments: []
+    },
+    {
+      id: 3,
+      category: 'update',
+      title: '보고서 생성 메뉴 PDF 템플릿 개선',
+      date: '2026-03-28',
+      pinned: false,
+      new: false,
+      content:
+        '월간 / 주간 / 긴급 이슈 보고서 PDF 템플릿의 레이아웃과 차트 가독성이 개선되었습니다.\n' +
+        '기간·모델·지역별 필터를 조합해 보다 세분화된 보고서를 생성할 수 있습니다.',
+      attachments: [
+        { name: 'template_preview.pdf', size: '2.1MB' }
+      ]
+    },
+    {
+      id: 2,
+      category: 'general',
+      title: '지도 검색 성능 개선 및 주소 DB 갱신',
+      date: '2026-03-20',
+      pinned: false,
+      new: false,
+      content:
+        '지도 서비스의 명칭 / 도로명 / 지번 검색 속도가 개선되었고, 남원시 도로명 주소 데이터베이스가 2026년 3월 기준으로 갱신되었습니다.',
+      attachments: []
+    },
+    {
+      id: 1,
+      category: 'general',
+      title: '개인정보 처리방침 개정 안내',
+      date: '2026-03-02',
+      pinned: false,
+      new: false,
+      content:
+        '개인정보 보호법 개정에 따라 Namwon GeoVision 플랫폼 개인정보 처리방침이 2026년 3월 15일부로 일부 개정됩니다.\n' +
+        '변경된 내용은 첨부 파일을 확인해 주시기 바랍니다.',
+      attachments: [
+        { name: '개인정보처리방침_개정본.pdf', size: '540KB' }
+      ]
+    }
+  ];
+
+  var CAT_LABEL = {
+    important: '중요',
+    general: '일반',
+    maintenance: '점검',
+    update: '업데이트'
+  };
+
+  var state = {
+    cat: 'all',
+    keyword: '',
+    page: 1,
+    pageSize: 10
+  };
+
+  function fmtDate(iso) {
+    if (!iso) return '';
+    return iso.replace(/-/g, '.');
+  }
+
+  function getFiltered() {
+    var list = NOTICES.slice();
+    if (state.cat !== 'all') {
+      list = list.filter(function (n) { return n.category === state.cat; });
+    }
+    if (state.keyword) {
+      var kw = state.keyword.toLowerCase();
+      list = list.filter(function (n) {
+        return n.title.toLowerCase().indexOf(kw) !== -1 ||
+          (n.content || '').toLowerCase().indexOf(kw) !== -1;
+      });
+    }
+    // 고정 공지를 최상단으로 정렬하고 나머지는 최신순
+    list.sort(function (a, b) {
+      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+      return b.date.localeCompare(a.date);
+    });
+    return list;
+  }
+
+  function render() {
+    var tbody = document.getElementById('notice-tbody');
+    var emptyWrap = document.getElementById('empty-state-wrap');
+    var countEl = document.getElementById('notice-count');
+
+    var all = getFiltered();
+    countEl.innerHTML = '총 <strong>' + all.length + '</strong>건';
+
+    tbody.innerHTML = '';
+    emptyWrap.innerHTML = '';
+
+    if (all.length === 0) {
+      emptyWrap.innerHTML =
+        '<div class="empty-state">' +
+          '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+          '<p>검색 조건에 맞는 공지사항이 없습니다.</p>' +
+        '</div>';
+      document.getElementById('pagination').innerHTML = '';
+      return;
+    }
+
+    var totalPages = Math.max(1, Math.ceil(all.length / state.pageSize));
+    if (state.page > totalPages) state.page = totalPages;
+    var startIdx = (state.page - 1) * state.pageSize;
+    var pageItems = all.slice(startIdx, startIdx + state.pageSize);
+
+    pageItems.forEach(function (n) {
+      var tr = document.createElement('tr');
+      if (n.pinned) tr.classList.add('pinned');
+      tr.dataset.id = n.id;
+
+      var pinIcon = n.pinned
+        ? '<svg class="pin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-1.5-4.5a2 2 0 01.3-1.9L20 9V5H4v4l2.2 1.6a2 2 0 01.3 1.9L5 17z"/></svg>'
+        : '';
+      var newBadge = n.new ? '<span class="new-badge">NEW</span>' : '';
+
+      tr.innerHTML =
+        '<td class="col-category"><span class="notice-cat ' + n.category + '">' + CAT_LABEL[n.category] + '</span></td>' +
+        '<td>' +
+          '<div class="notice-title-cell">' +
+            pinIcon +
+            '<span class="title-txt">' + escapeHtml(n.title) + '</span>' +
+            newBadge +
+          '</div>' +
+        '</td>' +
+        '<td class="col-date">' + fmtDate(n.date) + '</td>';
+
+      tr.addEventListener('click', function () { openDetail(n); });
+      tbody.appendChild(tr);
+    });
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    var cont = document.getElementById('pagination');
+    cont.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    function mkBtn(label, page, opts) {
+      opts = opts || {};
+      var b = document.createElement('button');
+      b.className = 'page-btn';
+      if (opts.active) b.classList.add('active');
+      b.textContent = label;
+      if (opts.disabled) b.disabled = true;
+      else b.addEventListener('click', function () {
+        state.page = page;
+        render();
+        document.querySelector('.notice-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      cont.appendChild(b);
+    }
+
+    mkBtn('‹', state.page - 1, { disabled: state.page === 1 });
+    for (var p = 1; p <= totalPages; p++) {
+      mkBtn(String(p), p, { active: p === state.page });
+    }
+    mkBtn('›', state.page + 1, { disabled: state.page === totalPages });
+  }
+
+  function openDetail(n) {
+    document.getElementById('nm-title').textContent = n.title;
+    document.getElementById('nm-cat').textContent = CAT_LABEL[n.category];
+    document.getElementById('nm-cat').className = 'notice-cat ' + n.category;
+    document.getElementById('nm-date').textContent = '등록일 ' + fmtDate(n.date);
+    document.getElementById('nm-content').textContent = n.content || '';
+
+    var attachWrap = document.getElementById('nm-attach');
+    var attachList = document.getElementById('nm-attach-list');
+    if (n.attachments && n.attachments.length) {
+      attachWrap.style.display = 'block';
+      attachList.innerHTML = n.attachments.map(function (a) {
+        return '<div class="attach-item">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+          escapeHtml(a.name) + ' <span style="color:var(--color-text-muted);font-weight:600;">(' + a.size + ')</span>' +
+        '</div>';
+      }).join('');
+    } else {
+      attachWrap.style.display = 'none';
+    }
+
+    document.getElementById('notice-modal').classList.add('show');
+  }
+
+  function closeDetail() {
+    document.getElementById('notice-modal').classList.remove('show');
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // 이벤트 바인딩
+  document.getElementById('tab-strip').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-cat]');
+    if (!btn) return;
+    document.querySelectorAll('#tab-strip button').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    state.cat = btn.dataset.cat;
+    state.page = 1;
+    render();
+  });
+
+  var searchInput = document.getElementById('search-input');
+  var searchTimer = null;
+  searchInput.addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () {
+      state.keyword = searchInput.value.trim();
+      state.page = 1;
+      render();
+    }, 180);
+  });
+
+  document.getElementById('nm-close').addEventListener('click', closeDetail);
+  document.getElementById('nm-close-foot').addEventListener('click', closeDetail);
+  document.getElementById('notice-modal').addEventListener('click', function (e) {
+    if (e.target === this) closeDetail();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.getElementById('notice-modal').classList.contains('show')) {
+      closeDetail();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
