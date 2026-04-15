@@ -190,6 +190,19 @@
         link.classList.add('current-page');
       }
     });
+
+    // 우측 보조 메뉴(action-dropdown) 및 툴팁 링크 active 처리
+    // notice.html / faq.html 같은 서비스 지원 하위 페이지가 대상
+    document.querySelectorAll('.sub-menu .action-dropdown').forEach(function (drop) {
+      var tooltipLinks = drop.querySelectorAll('.action-tooltip a');
+      tooltipLinks.forEach(function (link) {
+        var href = link.getAttribute('href');
+        if (href && href.split('/').pop() === currentFile) {
+          link.classList.add('current-page');
+          drop.classList.add('active');
+        }
+      });
+    });
   }
 
   /* -------------------------------------------------------
