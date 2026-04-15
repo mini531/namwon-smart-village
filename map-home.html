@@ -81,22 +81,23 @@
     /* 전체 선택/해제 버튼 */
     .sel-actions {
       display: flex;
-      gap: 6px;
-      margin-top: 4px;
+      gap: 5px;
+      margin-top: 3px;
     }
 
     .sel-btn {
       flex: 1;
-      padding: 9px 10px;
+      padding: 5px 8px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.14);
       color: rgba(255, 255, 255, 0.85);
-      border-radius: 7px;
-      font-size: 13px;
+      border-radius: 6px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
       transition: all 0.15s;
+      line-height: 1.3;
     }
 
     .sel-btn:hover {
@@ -754,32 +755,37 @@
     if (!container) return;
     if (colorMode === 'severity') {
       container.innerHTML =
-        '<div style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">심각도</div>' +
-        '<div class="gc-legend-list">' +
+        '<div class="gc-legend-list" style="flex-direction:row;gap:14px;flex-wrap:wrap;">' +
           '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(200,16,46,0.40);border-color:#C8102E;"></span>고위험</div>' +
           '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(244,162,97,0.38);border-color:#F4A261;"></span>주의</div>' +
           '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(42,157,143,0.36);border-color:#2A9D8F;"></span>양호</div>' +
         '</div>';
     } else {
       container.innerHTML =
-        '<div style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">정사영상 · 파손 클래스</div>' +
-        '<div class="gc-legend-list" style="margin-bottom:14px;">' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(230,57,70,0.40);border-color:#E63946;"></span>포트홀</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(244,162,97,0.38);border-color:#F4A261;"></span>크랙</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(42,157,143,0.38);border-color:#2A9D8F;"></span>보수흔적</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(155,93,229,0.38);border-color:#9B5DE5;"></span>공동의심</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(255,183,3,0.36);border-color:#FFB703;"></span>쓰레기</div>' +
-        '</div>' +
-        '<div style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">카메라 · 탐지 클래스</div>' +
-        '<div class="gc-legend-list">' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#E63946;"></span>포트홀</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#F4A261;"></span>중앙분리대파손</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#2A9D8F;"></span>시선유도봉파손</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#9B5DE5;"></span>보행안전시설파손</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#FFB703;"></span>교통표지판파손</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#00B4D8;"></span>도로차선불량</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#F15BB5;"></span>컬러맨홀</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#8AC926;"></span>불법주정차</div>' +
+        '<div class="gc-legend-two-col">' +
+          '<div>' +
+            '<div class="gc-legend-col-title">정사영상</div>' +
+            '<div class="gc-legend-list">' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(230,57,70,0.40);border-color:#E63946;"></span>포트홀</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(244,162,97,0.38);border-color:#F4A261;"></span>크랙</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(42,157,143,0.38);border-color:#2A9D8F;"></span>보수흔적</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(155,93,229,0.38);border-color:#9B5DE5;"></span>공동의심</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(255,183,3,0.36);border-color:#FFB703;"></span>쓰레기</div>' +
+            '</div>' +
+          '</div>' +
+          '<div>' +
+            '<div class="gc-legend-col-title">카메라</div>' +
+            '<div class="gc-legend-list">' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#E63946;"></span>포트홀</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#F4A261;"></span>중앙분리대</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#2A9D8F;"></span>시선유도봉</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#9B5DE5;"></span>보행시설</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#FFB703;"></span>교통표지판</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#00B4D8;"></span>차선불량</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#F15BB5;"></span>컬러맨홀</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#8AC926;"></span>불법주정차</div>' +
+            '</div>' +
+          '</div>' +
         '</div>';
     }
   }
