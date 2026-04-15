@@ -348,14 +348,20 @@
       font-weight: 700;
     }
 
-    /* 문의 등록 form-actions 와 동일한 룩 */
+    /* 회원정보 수정 액션 바 — 카드 바깥, 흰 배경 취소 버튼 */
     .form-actions {
       display: flex;
       justify-content: flex-end;
       gap: 8px;
-      padding-top: 18px;
-      border-top: 1px solid var(--color-border);
-      margin-top: 22px;
+      margin-top: 6px;
+    }
+    .form-actions .btn-ghost {
+      background: var(--color-surface);
+    }
+    .form-actions .btn-ghost:hover {
+      background: var(--color-surface);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
     }
 
     /* 2열 그리드 (스토리지) */
@@ -774,12 +780,12 @@
             <span class="cc-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
             <span class="cc-text"><span class="cc-tag">선택</span>광고성 정보 Email 수신 동의</span>
           </label>
-
-          <div class="form-actions">
-            <button type="button" class="btn btn-ghost" id="btn-edit-cancel">취소</button>
-            <button type="button" class="btn btn-primary" id="btn-edit-save">저장</button>
-          </div>
         </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="btn-edit-cancel">취소</button>
+        <button type="button" class="btn btn-primary" id="btn-edit-save">저장</button>
       </div>
     </section>
 
