@@ -33,9 +33,13 @@
       border-right: 1px solid var(--color-border);
       background: var(--color-surface);
       overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-gutter: stable;
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
+    .side-panel > * { min-width: 0; }
 
     .side-panel-header {
       padding: 22px 22px 18px;
@@ -69,7 +73,7 @@
     .side-section:last-of-type { border-bottom: none; }
 
     .side-section-title {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--color-text-muted);
       text-transform: uppercase;
@@ -134,7 +138,7 @@
     }
 
     .video-meta {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--color-text-muted);
       margin-top: 2px;
     }
@@ -172,7 +176,7 @@
 
     .model-radio-info { min-width: 0; }
     .model-radio-info .model-radio-name { font-size: 13px; font-weight: 700; color: var(--color-text); }
-    .model-radio-info .model-radio-sub { font-size: 11px; color: var(--color-text-muted); margin-top: 2px; }
+    .model-radio-info .model-radio-sub { font-size: 12px; color: var(--color-text-muted); margin-top: 2px; }
 
     /* 설정 필드 */
     .config-row {
@@ -475,7 +479,7 @@
 
     .conf-bar-wrap { flex-shrink: 0; width: 100%; }
     .conf-bar-lbl {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--color-text-muted);
       text-align: right;
       margin-bottom: 4px;
@@ -560,7 +564,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--color-text-muted);
       position: relative;
@@ -588,8 +592,8 @@
 
     .step-content { flex: 1; min-width: 0; }
     .step-name { font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px; }
-    .step-desc { font-size: 11px; color: var(--color-text-muted); line-height: 1.4; }
-    .step-status { font-size: 11px; font-weight: 600; margin-top: 3px; }
+    .step-desc { font-size: 12px; color: var(--color-text-muted); line-height: 1.4; }
+    .step-status { font-size: 12px; font-weight: 600; margin-top: 3px; }
     .step-status.pending { color: var(--color-text-muted); }
     .step-status.running { color: var(--color-primary); }
     .step-status.done { color: #495057; }
@@ -602,7 +606,7 @@
     }
 
     .gnss-title {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--color-text-muted);
       text-transform: uppercase;
@@ -643,7 +647,7 @@
     }
 
     .caption-title {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--color-text-muted);
       text-transform: uppercase;
@@ -687,7 +691,7 @@
     }
 
     .result-summary-box .rs-label {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--color-text-muted);
       text-transform: uppercase;
@@ -761,7 +765,7 @@
 
       <div class="side-section">
         <div class="side-section-title">이미지셋 선택</div>
-        <div style="font-size:11px; color:var(--color-text-muted); margin-bottom:10px; line-height:1.45;">
+        <div style="font-size:12px; color:var(--color-text-muted); margin-bottom:10px; line-height:1.45;">
           차량 카메라로 수집된 이미지셋 묶음 하나를 선택하세요.
         </div>
         <div class="video-file-list" id="video-file-list"></div>
@@ -905,7 +909,7 @@
         </div>
         <div class="gnss-row">
           <span class="gnss-label">주소</span>
-          <span class="gnss-val" style="font-size:11px;font-family:inherit;" id="gnss-addr">–</span>
+          <span class="gnss-val" style="font-size:12px;font-family:inherit;" id="gnss-addr">–</span>
         </div>
         <div class="gnss-row">
           <span class="gnss-label">탐지 시각</span>
