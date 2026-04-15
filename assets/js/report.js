@@ -67,7 +67,10 @@ var NamwonReport = (function () {
   function downloadPDF(data) {
     var config = getReportConfig();
     var reportEl = document.getElementById('report-sheet');
-    if (!reportEl) { alert('보고서 영역을 찾을 수 없습니다.'); return; }
+    if (!reportEl) {
+      if (window.NotifyUI) NotifyUI.error('보고서 영역을 찾을 수 없습니다.');
+      return;
+    }
 
     var btn = document.getElementById('pdf-download-btn');
     if (btn) {
@@ -135,7 +138,7 @@ var NamwonReport = (function () {
         btn.disabled = false;
         btn.textContent = 'PDF 다운로드';
       }
-      alert('PDF 생성 중 오류가 발생했습니다.');
+      if (window.NotifyUI) NotifyUI.error('PDF 생성 중 오류가 발생했습니다.');
     });
   }
 

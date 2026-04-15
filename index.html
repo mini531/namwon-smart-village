@@ -738,26 +738,26 @@
 
   <!-- KPI 섹션 (좌측 선 제거, 단색 톤) -->
   <div class="kpi-grid">
-    <div class="kpi-card">
+    <a href="history.html" class="kpi-card">
       <span class="kpi-label">총 탐지 건수</span>
       <div class="kpi-value"><span id="kpi-total">–</span><span class="unit">건</span></div>
       <div class="kpi-delta">전월 대비 <strong>+12%</strong></div>
-    </div>
-    <div class="kpi-card is-danger">
+    </a>
+    <a href="history.html?severity=high" class="kpi-card is-danger">
       <span class="kpi-label">고위험 건수</span>
       <div class="kpi-value"><span id="kpi-high">–</span><span class="unit">건</span></div>
       <div class="kpi-delta warn">전체의 <strong id="kpi-high-pct">–</strong>%</div>
-    </div>
-    <div class="kpi-card">
+    </a>
+    <a href="history.html?status=%EB%AF%B8%EC%B2%98%EB%A6%AC" class="kpi-card">
       <span class="kpi-label">미처리 건수</span>
       <div class="kpi-value"><span id="kpi-unprocessed">–</span><span class="unit">건</span></div>
       <div class="kpi-delta">처리중 <strong id="kpi-processing">–</strong>건 포함</div>
-    </div>
-    <div class="kpi-card">
+    </a>
+    <a href="history.html?status=%EC%99%84%EB%A3%8C" class="kpi-card">
       <span class="kpi-label">처리 완료</span>
       <div class="kpi-value"><span id="kpi-done">–</span><span class="unit">건</span></div>
       <div class="kpi-delta">처리율 <strong id="kpi-rate">–</strong>%</div>
-    </div>
+    </a>
   </div>
 
   <!-- 메인 그리드: 분석 모델 + 최근 탐지 -->

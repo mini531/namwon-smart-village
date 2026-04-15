@@ -728,7 +728,11 @@
       });
       card.querySelector('.saved-card-del').addEventListener('click', function (e) {
         e.stopPropagation();
-        if (confirm('이 저장된 보고서를 삭제하시겠습니까?')) handleDelete(r.id);
+        NotifyUI.confirm(
+          '이 저장된 보고서를 삭제하시겠습니까?',
+          function () { handleDelete(r.id); },
+          { title: '보고서 삭제', okText: '삭제', cancelText: '취소', type: 'danger' }
+        );
       });
 
       wrap.appendChild(card);

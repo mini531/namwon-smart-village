@@ -753,12 +753,26 @@
       updateSummaryLive();
       renderJobsTable();
 
-      // URL 쿼리 파라미터로 job_id 필터가 넘어왔는지 확인
+      // URL 쿼리 파라미터: job / severity / status 필터 지원
       var params = new URLSearchParams(window.location.search);
       var jobId = params.get('job');
+      var severityParam = params.get('severity');
+      var statusParam = params.get('status');
       if (jobId) {
         currentJobFilter = jobId;
         switchView('detections');
+      }
+      if (severityParam || statusParam || jobId) {
+        // 탐지 객체 뷰로 전환하고 필터 값 세팅
+        if (!jobId) switchView('detections');
+        if (severityParam) {
+          var sevSel = document.getElementById('filter-severity');
+          if (sevSel) sevSel.value = severityParam;
+        }
+        if (statusParam) {
+          var statSel = document.getElementById('filter-status');
+          if (statSel) statSel.value = statusParam;
+        }
       }
       applyFilter();
     }).catch(function (err) {
