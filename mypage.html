@@ -1110,12 +1110,12 @@
     pwdcModal.classList.remove('show');
   }
   function submitPwdConfirm() {
+    // 프로토타입: 아무 값이나 입력되면 통과 (빈 값만 거부)
     var v = document.getElementById('pwdc-input').value;
     var field = document.getElementById('pwdc-field');
-    if (!v || v !== DEMO_PASSWORD) {
+    if (!v) {
       field.classList.add('has-error');
-      field.querySelector('.err-msg').textContent =
-        !v ? '비밀번호를 입력해 주세요.' : '비밀번호가 일치하지 않습니다.';
+      field.querySelector('.err-msg').textContent = '비밀번호를 입력해 주세요.';
       return;
     }
     closePwdConfirm();
