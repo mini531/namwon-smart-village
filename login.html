@@ -36,13 +36,14 @@
       background-color: #1a1d24;
     }
 
-    /* 배경 이미지 (포트홀/도로 히어로) + 어두운 그라디언트 오버레이 */
+    /* 배경 이미지 (포트홀/도로 히어로) + 깊은 네이비 오버레이 + 은은한 primary 글로우 */
     .hero-side::before {
       content: '';
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(135deg, rgba(155, 14, 38, 0.85) 0%, rgba(200, 16, 46, 0.78) 45%, rgba(15, 25, 35, 0.82) 100%),
+        radial-gradient(circle at 15% 25%, rgba(200, 16, 46, 0.35), transparent 55%),
+        linear-gradient(135deg, rgba(15, 23, 35, 0.86) 0%, rgba(15, 23, 35, 0.82) 50%, rgba(10, 18, 28, 0.92) 100%),
         url('assets/images/hero.png') center/cover no-repeat;
       pointer-events: none;
     }
@@ -67,10 +68,12 @@
       gap: 16px;
     }
     .hero-top img {
-      height: 46px;
+      height: 34px;
+      max-width: 240px;
       width: auto;
+      object-fit: contain;
       display: block;
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+      filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
     }
     .hero-top .ht-sub {
       font-size: 13px;
@@ -409,7 +412,7 @@
 
     @media (max-width: 480px) {
       .hero-side { padding: 28px 22px 36px; }
-      .hero-top img { height: 30px; }
+      .hero-top img { height: 28px; }
       .hero-main h1 { font-size: 26px; }
       .hero-main .eyebrow { font-size: 11px; padding: 4px 10px; }
       .form-side { padding: 32px 20px; }
@@ -463,7 +466,7 @@
     </div>
 
     <div class="hero-bottom">
-      <strong>© 2026 Namwon GeoVision</strong> · 전북특별자치도 남원시
+      <strong>전북특별자치도 남원시</strong> · AI 도로 안전관리 플랫폼
     </div>
   </section>
 
