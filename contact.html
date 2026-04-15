@@ -562,6 +562,8 @@
       }
       .filter-field.date { grid-column: span 3; }
       .filter-actions { grid-column: span 3; justify-content: flex-end; }
+      /* 좁아지면 date-range 줄바꿈 허용 */
+      .date-range { flex-wrap: wrap; }
     }
     @media (max-width: 720px) {
       .contact-container { padding: 18px 14px 40px; }
@@ -572,6 +574,16 @@
       .filter-actions .btn { flex: 1; }
       .data-table thead th.col-status,
       .data-table tbody td.col-status { display: none; }
+      .date-range {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .date-range > input[type="date"] {
+        flex: 1 1 calc(50% - 12px);
+        max-width: none;
+      }
+      .date-range .sep { display: none; }
+      .date-range .quick-btn { flex: 0 1 auto; }
     }
   </style>
 </head>
@@ -821,15 +833,14 @@
 
   // ── 뷰 전환 ──
   function switchView(view) {
-    // 탭 UI 는 form/list 만 노출 (detail 은 숨은 뷰)
+    // detail 뷰는 list 탭에 속하는 서브 뷰이므로 list 탭 활성 유지
+    var tabKey = (view === 'detail') ? 'list' : view;
     document.querySelectorAll('.view-tab').forEach(function (t) {
-      t.classList.toggle('active', t.dataset.view === view);
+      t.classList.toggle('active', t.dataset.view === tabKey);
     });
     document.querySelectorAll('.view-panel').forEach(function (p) {
       p.classList.toggle('active', p.id === 'panel-' + view);
     });
-    var tabsEl = document.querySelector('.view-tabs');
-    if (tabsEl) tabsEl.style.display = (view === 'detail') ? 'none' : '';
     if (view === 'list') {
       state.page = 1;
       renderList();

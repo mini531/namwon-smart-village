@@ -16,15 +16,18 @@
       padding-top: var(--header-height);
       height: 100vh;
       background: var(--color-page-bg);
-      display: block;
+      display: flex;
+      flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
     }
+    #footer-include { flex-shrink: 0; }
 
     .history-container {
       max-width: 1380px;
       margin: 0 auto;
       padding: 24px 32px 56px;
+      flex: 1 0 auto;
     }
 
     .page-header {

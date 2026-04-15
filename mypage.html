@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마이 페이지 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <style>
+    html, body { overflow: hidden; }
+
+    .page-body {
+      padding-top: var(--header-height);
+      height: 100vh;
+      background: var(--color-page-bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .mypage-container {
+      width: 100%;
+      max-width: 1380px;
+      min-width: 0;
+      margin: 0 auto;
+      padding: 24px 32px 56px;
+      flex: 1 0 auto;
+    }
+    #footer-include { flex-shrink: 0; }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      gap: 16px;
+    }
+    .page-title-wrap h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .page-title-wrap h1 svg { color: var(--color-primary); }
+    .page-title-wrap p {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    /* 공용 카드 — history.html 의 .table-card 와 동일한 스타일 */
+    .table-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .table-head {
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-head .th-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .table-head .th-title svg { color: var(--color-primary); }
+    .table-head .th-info {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+
+    .card-body { padding: 22px 26px; }
+
+    /* 회원정보 */
+    .welcome {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .welcome strong {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-text);
+      letter-spacing: -0.2px;
+    }
+
+    .profile-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 14px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+    .profile-table th {
+      background: var(--color-surface-2);
+      color: var(--color-text-muted);
+      padding: 12px 14px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .profile-table td {
+      padding: 16px 14px;
+      text-align: center;
+      color: var(--color-text);
+      font-weight: 600;
+    }
+    .profile-table th:not(:last-child),
+    .profile-table td:not(:last-child) {
+      border-right: 1px solid var(--color-border);
+    }
+
+    .profile-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* 2열 그리드 (스토리지) */
+    .two-col {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    /* 스토리지 사용량 */
+    .storage-card .card-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 28px 26px 22px;
+    }
+    .donut-wrap {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      justify-content: center;
+      width: 100%;
+    }
+    .donut {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      flex-shrink: 0;
+    }
+    .donut svg { width: 100%; height: 100%; }
+    .donut .donut-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .donut .dc-pct {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--color-text);
+      letter-spacing: -0.3px;
+      line-height: 1;
+    }
+    .donut .dc-label {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .donut-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--color-text);
+    }
+    .donut-legend .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    .donut-legend .legend-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .donut-legend .legend-swatch.used { background: #2A9D8F; }
+    .donut-legend .legend-swatch.free { background: #E9ECEF; }
+    .donut-legend .legend-val {
+      color: var(--color-text-muted);
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .storage-footer {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+      margin-top: 6px;
+    }
+    .storage-footer .sf-total {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+    .storage-footer .sf-total strong {
+      color: var(--color-text);
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    /* 스토리지 이력 테이블 */
+    .storage-history-card .card-body {
+      padding: 0;
+    }
+    .storage-history-card .table-wrap { overflow-x: auto; }
+    .data-table { margin: 0; }
+    .data-table th, .data-table td { font-size: 13px; }
+    .data-table th { white-space: nowrap; }
+    .data-table .col-capacity { width: 120px; text-align: center; }
+    .data-table .col-date { width: 160px; text-align: center; }
+    .data-table .col-status { width: 110px; text-align: center; }
+    .data-table td.col-capacity {
+      text-align: center;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .data-table td.col-date {
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+    .data-table td.col-status { text-align: center; }
+
+    .status-pill {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+    }
+    .status-pill.approved {
+      background: #E6F4F1;
+      border-color: rgba(42, 157, 143, 0.35);
+      color: #1F6F63;
+    }
+    .status-pill.pending {
+      background: #FFF8F9;
+      border-color: rgba(200, 16, 46, 0.35);
+      color: var(--color-primary);
+    }
+    .status-pill.rejected {
+      background: #F1F3F5;
+      border-color: var(--color-border);
+      color: #495057;
+    }
+
+    .empty-state {
+      padding: 72px 20px;
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+    .empty-state svg { opacity: 0.35; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    @media (max-width: 1024px) {
+      .two-col { grid-template-columns: 1fr; }
+      .donut-wrap { gap: 16px; }
+    }
+    @media (max-width: 720px) {
+      .mypage-container { padding: 18px 14px 40px; }
+      .card-body { padding: 18px 16px; }
+      .profile-table { display: block; border: none; }
+      .profile-table thead { display: none; }
+      .profile-table tbody,
+      .profile-table tr { display: block; }
+      .profile-table td {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        text-align: left;
+        border: 1px solid var(--color-border);
+        border-bottom: none;
+        padding: 12px 14px;
+      }
+      .profile-table tr td:last-child { border-bottom: 1px solid var(--color-border); }
+      .profile-table td::before {
+        content: attr(data-label);
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .profile-table td:not(:last-child) { border-right: 1px solid var(--color-border); }
+      .profile-actions { flex-wrap: wrap; }
+      .profile-actions .btn { flex: 1; }
+      .welcome { font-size: 18px; }
+      .donut-wrap { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="mypage-container">
+
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          마이 페이지
+        </h1>
+        <p>회원 정보 및 스토리지 사용 현황을 확인하세요</p>
+      </div>
+    </div>
+
+    <!-- 회원 정보 -->
+    <div class="table-card">
+      <div class="table-head">
+        <div class="th-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          회원 정보
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="welcome"><strong id="profile-name">관리자</strong>님 반갑습니다.</div>
+        <table class="profile-table">
+          <thead>
+            <tr>
+              <th>이름</th>
+              <th>부서</th>
+              <th>직위</th>
+              <th>가입 일시</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="이름" id="pt-name">신상미</td>
+              <td data-label="부서" id="pt-dept">도로관리과</td>
+              <td data-label="직위" id="pt-rank">주무관</td>
+              <td data-label="가입 일시" id="pt-joined">2025.04.10 11:18</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="profile-actions">
+          <button type="button" class="btn btn-ghost" id="btn-change-pwd">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            비밀번호 변경
+          </button>
+          <button type="button" class="btn btn-ghost" id="btn-edit-profile">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            회원정보 수정
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 스토리지 (2열) -->
+    <div class="two-col">
+      <div class="table-card storage-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            스토리지 사용량
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="donut-wrap">
+            <div class="donut">
+              <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#E9ECEF" stroke-width="14"></circle>
+                <circle id="donut-arc" cx="60" cy="60" r="50" fill="none" stroke="#2A9D8F" stroke-width="14"
+                  stroke-dasharray="314.16" stroke-dashoffset="314.16" stroke-linecap="round"
+                  transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.6s cubic-bezier(0.22,1,0.36,1);"></circle>
+              </svg>
+              <div class="donut-center">
+                <div class="dc-pct" id="donut-pct">0%</div>
+                <div class="dc-label">사용 중</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-item">
+                <span class="legend-swatch used"></span>
+                <span>사용</span>
+                <span class="legend-val" id="legend-used">0 GB</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-swatch free"></span>
+                <span>잔여</span>
+                <span class="legend-val" id="legend-free">0 GB</span>
+              </div>
+            </div>
+          </div>
+          <div class="storage-footer">
+            <div class="sf-total">전체 <strong id="sf-total">50 GB</strong></div>
+            <button type="button" class="btn btn-primary" id="btn-request-storage">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              스토리지 증량 신청
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card storage-history-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            스토리지 증량 신청 이력
+          </div>
+          <span class="th-info" id="history-count" style="font-size:12px;color:var(--color-text-muted);font-weight:600;">총 0건</span>
+        </div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="col-capacity">신청 용량 (GB)</th>
+                  <th>신청 사유</th>
+                  <th class="col-date">신청 일시</th>
+                  <th class="col-status">처리 여부</th>
+                  <th>처리 내용</th>
+                </tr>
+              </thead>
+              <tbody id="history-tbody"></tbody>
+            </table>
+          </div>
+          <div id="history-empty"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ── 샘플 회원 정보 ──
+  var PROFILE = {
+    displayName: '관리자',
+    name: '관리자',
+    dept: '도로관리과',
+    rank: '주무관',
+    joined: '2025-04-10T11:18:44'
+  };
+
+  // 스토리지: 현재 사용량 / 전체 (단위 GB)
+  var STORAGE = {
+    used: 16.4,
+    total: 50
+  };
+
+  // 증량 신청 이력 샘플 (Namwon GeoVision 맥락)
+  var STORAGE_HISTORY = [
+    {
+      capacity: 100,
+      reason: '정사영상 원본 누적 저장용 — 4월 광역 촬영 건',
+      requestedAt: '2026-04-05T09:20:00',
+      status: 'approved',
+      note: '승인 완료 · 2026.04.08 반영'
+    },
+    {
+      capacity: 50,
+      reason: '카메라 분석 추론 결과 백업',
+      requestedAt: '2026-04-12T14:42:00',
+      status: 'pending',
+      note: '검토 중'
+    }
+  ];
+
+  function fmtDateTime(iso) {
+    if (!iso) return '';
+    return iso.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+  }
+
+  function escapeHtml(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── 프로필 렌더 ──
+  function renderProfile() {
+    document.getElementById('profile-name').textContent = PROFILE.displayName || PROFILE.name;
+    document.getElementById('pt-name').textContent = PROFILE.name;
+    document.getElementById('pt-dept').textContent = PROFILE.dept;
+    document.getElementById('pt-rank').textContent = PROFILE.rank;
+    document.getElementById('pt-joined').textContent = fmtDateTime(PROFILE.joined);
+  }
+
+  // ── 도넛 차트 ──
+  function renderDonut() {
+    var pct = STORAGE.total > 0 ? (STORAGE.used / STORAGE.total) : 0;
+    var pctInt = Math.round(pct * 100);
+    var arcLen = 2 * Math.PI * 50; // 314.16
+    var offset = arcLen * (1 - pct);
+
+    document.getElementById('donut-pct').textContent = pctInt + '%';
+    document.getElementById('legend-used').textContent = STORAGE.used.toFixed(1) + ' GB';
+    document.getElementById('legend-free').textContent = (STORAGE.total - STORAGE.used).toFixed(1) + ' GB';
+    document.getElementById('sf-total').textContent = STORAGE.total + ' GB';
+
+    // 첫 렌더 시 애니메이션
+    var arc = document.getElementById('donut-arc');
+    setTimeout(function () {
+      arc.style.strokeDashoffset = offset;
+    }, 50);
+  }
+
+  // ── 이력 테이블 ──
+  function renderHistory() {
+    var tbody = document.getElementById('history-tbody');
+    var empty = document.getElementById('history-empty');
+    var cntEl = document.getElementById('history-count');
+    tbody.innerHTML = '';
+    empty.innerHTML = '';
+
+    cntEl.textContent = '총 ' + STORAGE_HISTORY.length + '건';
+
+    if (STORAGE_HISTORY.length === 0) {
+      empty.innerHTML =
+        '<div class="empty-state">' +
+          '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+          '<p>조회된 데이터가 없습니다.</p>' +
+        '</div>';
+      return;
+    }
+
+    var statusMap = {
+      approved: { label: '승인', cls: 'approved' },
+      pending: { label: '검토 중', cls: 'pending' },
+      rejected: { label: '반려', cls: 'rejected' }
+    };
+
+    STORAGE_HISTORY.slice().sort(function (a, b) {
+      return b.requestedAt.localeCompare(a.requestedAt);
+    }).forEach(function (h) {
+      var st = statusMap[h.status] || { label: '-', cls: '' };
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="col-capacity">+' + h.capacity + '</td>' +
+        '<td>' + escapeHtml(h.reason) + '</td>' +
+        '<td class="col-date">' + fmtDateTime(h.requestedAt) + '</td>' +
+        '<td class="col-status"><span class="status-pill ' + st.cls + '">' + st.label + '</span></td>' +
+        '<td style="color:var(--color-text-muted);font-size:12px;">' + escapeHtml(h.note || '-') + '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── 버튼 이벤트 ──
+  document.getElementById('btn-change-pwd').addEventListener('click', function () {
+    if (window.NotifyUI) NotifyUI.info('비밀번호 변경 기능은 준비 중입니다.', '안내');
+  });
+  document.getElementById('btn-edit-profile').addEventListener('click', function () {
+    if (window.NotifyUI) NotifyUI.info('회원정보 수정 기능은 준비 중입니다.', '안내');
+  });
+  document.getElementById('btn-request-storage').addEventListener('click', function () {
+    if (window.NotifyUI) NotifyUI.info('스토리지 증량 신청 폼은 준비 중입니다.\n급한 경우 도로관리과 담당자에게 문의해 주세요.', '스토리지 증량 신청');
+  });
+
+  // ── 초기 렌더 ──
+  renderProfile();
+  renderDonut();
+  renderHistory();
+})();
+</script>
+</body>
+</html>
