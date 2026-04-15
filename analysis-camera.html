@@ -447,7 +447,6 @@
       border-radius: 10px;
       min-width: 18px;
       text-align: center;
-      font-family: 'Inter', monospace;
     }
 
     .result-section .result-tab.active {
@@ -569,14 +568,12 @@
       font-size: 12px;
       font-weight: 700;
       color: var(--color-text);
-      font-family: 'Inter', monospace;
       min-width: 30px;
       text-align: right;
     }
     .result-row .rr-frame {
       font-size: 12px;
       color: var(--color-text-muted);
-      font-family: 'Inter', monospace;
       text-align: right;
       white-space: nowrap;
       overflow: hidden;
@@ -783,7 +780,6 @@
     .gnss-row .gnss-val {
       font-weight: 600;
       color: var(--color-text);
-      font-family: 'Inter', monospace;
       text-align: right;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1342,7 +1338,7 @@
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
     ctx.fillRect(12, 12, 230, 28);
     ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = '12px monospace';
+    ctx.font = '12px Inter, sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText('REC  ' + (selectedSource ? selectedSource.captured_at.replace(/-/g, '.') : '2026.04.15') + '  09:14:32', 20, 31);
 
@@ -1562,13 +1558,13 @@
         '<div class="rr-conf">' + confHtml + '</div>' +
         '<div class="rr-frame">#' + f.frameNo + ' · ' + f.timeStr + '</div>';
 
-      row.addEventListener('click', (function (frame) {
-        return function () {
+      (function (frame, rowEl) {
+        rowEl.addEventListener('click', function () {
           document.querySelectorAll('.result-row').forEach(function (r) { r.classList.remove('selected'); });
-          row.classList.add('selected');
+          rowEl.classList.add('selected');
           showFrameInfo(frame);
-        };
-      })(f));
+        });
+      })(f, row);
 
       frag.appendChild(row);
     }

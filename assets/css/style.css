@@ -47,6 +47,10 @@ html, body {
   background: var(--color-page-bg);
   line-height: 1.65;
   overflow: hidden;
+  font-variant-numeric: tabular-nums;
+  -moz-font-feature-settings: "tnum";
+  -webkit-font-feature-settings: "tnum";
+  font-feature-settings: "tnum";
 }
 
 a { text-decoration: none; color: inherit; }
@@ -1687,7 +1691,6 @@ select {
   align-items: center;
   gap: 8px;
   margin-top: 4px;
-  font-family: 'Inter', monospace;
 }
 
 .task-current-meta strong {
@@ -1796,7 +1799,6 @@ select {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.45);
   font-weight: 600;
-  font-family: 'Inter', monospace;
 }
 
 /* 색상 기준 토글 */
@@ -3127,7 +3129,6 @@ select {
   border-radius: var(--border-radius);
   padding: 12px 14px;
   color: #7fba9c;
-  font-family: 'Courier New', monospace;
   font-size: 12px;
   line-height: 2.1;
 }

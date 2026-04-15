@@ -266,7 +266,6 @@
 
     .job-filter-banner strong {
       font-weight: 700;
-      font-family: monospace;
       margin: 0 4px;
     }
 
@@ -312,7 +311,7 @@
     }
     .data-table th { white-space: nowrap; }
 
-    .data-table .col-id { width: 90px; font-family: monospace; color: var(--color-text-muted); font-size: 12px; }
+    .data-table .col-id { width: 90px; color: var(--color-text-muted); font-size: 12px; }
     .data-table .col-thumb { width: 60px; }
     .data-table .col-conf { width: 100px; }
     .data-table th.col-actions,
@@ -636,7 +635,6 @@
 
     .m-history-log-item time {
       color: var(--color-text-muted);
-      font-family: monospace;
       flex-shrink: 0;
     }
 
@@ -1084,12 +1082,12 @@
       var tr = document.createElement('tr');
       tr.className = 'job-row-clickable';
       tr.innerHTML =
-        '<td style="font-family:monospace;color:var(--color-text-muted);font-size:12px;font-weight:600;">' + job.job_id + '</td>' +
+        '<td style="color:var(--color-text-muted);font-size:12px;font-weight:600;">' + job.job_id + '</td>' +
         '<td class="job-source-cell" title="' + job.source_name + '">' + (job.source_label || job.source_name) +
-          '<div style="font-size:12px;color:var(--color-text-muted);font-weight:400;margin-top:1px;font-family:monospace;">' + job.source_name + '</div></td>' +
+          '<div style="font-size:12px;color:var(--color-text-muted);font-weight:400;margin-top:1px;">' + job.source_name + '</div></td>' +
         '<td>' + modelBadge + '<div style="font-size:12px;color:var(--color-text-muted);margin-top:2px;">' + job.model + ' ' + job.model_version + '</div></td>' +
-        '<td style="font-size:12px;font-family:monospace;color:var(--color-text-muted);">' + captured + '</td>' +
-        '<td style="font-size:12px;font-family:monospace;color:var(--color-text-muted);">' + analyzed + '</td>' +
+        '<td style="font-size:12px;color:var(--color-text-muted);">' + captured + '</td>' +
+        '<td style="font-size:12px;color:var(--color-text-muted);">' + analyzed + '</td>' +
         '<td style="text-align:center;white-space:nowrap;"><div style="font-size:18px;font-weight:800;color:var(--color-text);">' + job.detection_count + '</div>' + highMark + '</td>' +
         '<td><div class="job-class-summary">' + classChips + '</div></td>' +
         '<td style="text-align:center;white-space:nowrap;"><span class="badge ' + statusClass + '">' + job.status + '</span></td>' +
@@ -1245,7 +1243,7 @@
         '<td><span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + SEVERITY_KO[d.severity] + '</span></td>' +
         '<td><div class="conf-bar-cell"><div class="bar"><span style="width:' + confPct + '%;"></span></div><div class="pct">' + confPct + '%</div></div></td>' +
         '<td style="font-size:12px;">' + d.address + '</td>' +
-        '<td style="font-size:12px;font-family:monospace;">' + d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.') + '</td>' +
+        '<td style="font-size:12px;">' + d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.') + '</td>' +
         '<td><span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span></td>' +
         '<td class="col-actions"><button class="row-action-btn" data-id="' + d.id + '">자세히</button></td>';
 
@@ -1516,7 +1514,7 @@
 
     // 라벨
     var label = d.class_ko + ' ' + d.confidence.toFixed(2);
-    ctx.font = 'bold 13px monospace';
+    ctx.font = 'bold 13px Inter, sans-serif';
     var tw = ctx.measureText(label).width + 12;
     ctx.fillStyle = col;
     ctx.fillRect(bx, by - 22, tw, 22);
@@ -1527,7 +1525,7 @@
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
     ctx.fillRect(0, h - 24, 240, 24);
     ctx.fillStyle = '#0f0';
-    ctx.font = '11px monospace';
+    ctx.font = '11px Inter, sans-serif';
     ctx.fillText('LAT: ' + d.lat.toFixed(5) + '  LON: ' + d.lng.toFixed(5), 8, h - 8);
   }
 

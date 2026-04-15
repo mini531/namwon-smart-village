@@ -256,10 +256,10 @@
       var analyzed = job.analyzed_at.substring(0, 10).replace(/-/g, '.');
       tbody.insertAdjacentHTML('beforeend',
         '<tr>' +
-        '<td style="font-family:monospace;color:#64748B;font-size:12px;">' + job.job_id + '</td>' +
+        '<td style="color:#64748B;font-size:12px;">' + job.job_id + '</td>' +
         '<td style="font-weight:600;">' + (job.source_label || job.source_name) + '</td>' +
-        '<td style="font-family:monospace;">' + captured + '</td>' +
-        '<td style="font-family:monospace;">' + analyzed + '</td>' +
+        '<td style="">' + captured + '</td>' +
+        '<td style="">' + analyzed + '</td>' +
         '<td style="text-align:center;font-weight:700;">' + job.detection_count + '</td>' +
         '<td style="text-align:center;font-weight:700;color:' + (job.high_count > 0 ? '#C8102E' : '#94A3B8') + ';">' + job.high_count + '</td>' +
         '</tr>'
@@ -337,11 +337,11 @@
       var conf = (d.confidence * 100).toFixed(0) + '%';
       tbody.insertAdjacentHTML('beforeend',
         '<tr>' +
-        '<td style="font-family:monospace;color:#64748B;">' + d.id + '</td>' +
+        '<td style="color:#64748B;">' + d.id + '</td>' +
         '<td style="font-weight:600;">' + d.class_ko + '</td>' +
         '<td style="text-align:center;color:' + sevCol[d.severity] + ';font-weight:700;">' + sevKo[d.severity] + '</td>' +
         '<td style="font-size:12px;">' + d.address + '</td>' +
-        '<td style="font-family:monospace;">' + date + '</td>' +
+        '<td style="">' + date + '</td>' +
         '<td style="font-weight:700;color:#C8102E;">' + conf + '</td>' +
         '<td>' + d.status + '</td>' +
         '</tr>'

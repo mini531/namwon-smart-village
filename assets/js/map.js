@@ -523,7 +523,7 @@ var NamwonMap = (function () {
 
     // 레이블 배경
     var label = det.class_en + ' ' + det.confidence.toFixed(2);
-    ctx.font = 'bold 11px monospace';
+    ctx.font = 'bold 11px Inter, sans-serif';
     var labelW = ctx.measureText(label).width + 8;
 
     ctx.fillStyle = '#2D7DD2';
@@ -533,7 +533,7 @@ var NamwonMap = (function () {
 
     // 파일명 워터마크
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = '10px monospace';
+    ctx.font = '10px Inter, sans-serif';
     ctx.fillText(det.image_file || 'DJI_0001.JPG', 4, imgH - 4);
   }
 
@@ -612,7 +612,7 @@ var NamwonMap = (function () {
     });
 
     // 레이블
-    ctx.font = 'bold 11px monospace';
+    ctx.font = 'bold 11px Inter, sans-serif';
     var lbl = det.class_en + ' ' + det.confidence.toFixed(2);
     var lw = ctx.measureText(lbl).width + 8;
     ctx.fillStyle = color;
@@ -624,7 +624,7 @@ var NamwonMap = (function () {
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(0, h - 20, w, 20);
     ctx.fillStyle = '#0f0';
-    ctx.font = '10px monospace';
+    ctx.font = '10px Inter, sans-serif';
     ctx.fillText(det.detected_at || '2026-04-15 09:00:00', 4, h - 6);
     ctx.fillStyle = '#ff0';
     ctx.fillText(det.image_file || 'CAM_0001.JPG', w - 100, h - 6);
