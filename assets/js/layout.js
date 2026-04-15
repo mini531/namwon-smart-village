@@ -19,10 +19,143 @@
         el.innerHTML = html;
         initActiveMenu();
         initMenuInteraction();
+        initMobileNav();
       })
       .catch(function (err) {
         console.warn('Header load failed:', err);
       });
+  }
+
+  /* -------------------------------------------------------
+     풋터 로드 (include/footer.html)
+  ------------------------------------------------------- */
+  function loadFooter() {
+    var el = document.getElementById('footer-include');
+    if (!el) return Promise.resolve();
+
+    return fetch('include/footer.html')
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        el.innerHTML = html;
+      })
+      .catch(function (err) {
+        console.warn('Footer load failed:', err);
+      });
+  }
+
+  /* -------------------------------------------------------
+     모바일 내비 (햄버거 토글 + 드로어)
+  ------------------------------------------------------- */
+  function initMobileNav() {
+    var header = document.querySelector('.gnb-header');
+    if (!header) return;
+
+    // 햄버거 버튼 삽입 (1회)
+    if (!header.querySelector('.gnb-hamburger')) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'gnb-hamburger';
+      btn.setAttribute('aria-label', '메뉴 열기');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.innerHTML =
+        '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>';
+      header.appendChild(btn);
+    }
+
+    // 백드롭 삽입 (1회)
+    if (!document.getElementById('gnb-backdrop')) {
+      var bd = document.createElement('div');
+      bd.id = 'gnb-backdrop';
+      bd.className = 'gnb-backdrop';
+      document.body.appendChild(bd);
+      bd.addEventListener('click', closeMobileNav);
+    }
+
+    // 모바일 드로어용 보조 메뉴 섹션 (서비스 지원/관리/마이페이지) 생성
+    // 메인 메뉴와 동일한 menu-item / dropdown / dropdown-link 구조 사용
+    var nav = header.querySelector('.gnb-nav');
+    var subMenu = header.querySelector('.sub-menu');
+    if (nav && subMenu && !nav.querySelector('.gnb-nav-extra')) {
+      var menuListEl = nav.querySelector('.menu-list');
+      // 구분선 + 서브 메뉴 그룹들을 menu-list 끝에 추가
+      if (menuListEl) {
+        var divider = document.createElement('li');
+        divider.className = 'menu-divider-mobile';
+        menuListEl.appendChild(divider);
+      }
+
+      var bulletSvg =
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+
+      Array.prototype.forEach.call(subMenu.querySelectorAll('.action-dropdown'), function (drop) {
+        var titleEl = drop.querySelector('.action-tooltip h4') || drop.querySelector('.user-profile-mini span');
+        var name = titleEl ? titleEl.textContent.trim() : '';
+        var headIconEl = drop.querySelector('.action-icon') || drop.querySelector('.user-svg-avatar');
+        var headIconSvg = headIconEl ? headIconEl.cloneNode(true) : null;
+        if (headIconSvg) {
+          headIconSvg.removeAttribute('class');
+          headIconSvg.setAttribute('class', 'nav-icon-sm');
+          headIconSvg.setAttribute('width', '20');
+          headIconSvg.setAttribute('height', '20');
+        }
+
+        var li = document.createElement('li');
+        li.className = 'menu-item menu-item-extra';
+
+        var aTop = document.createElement('a');
+        if (headIconSvg) aTop.appendChild(headIconSvg);
+        var label = document.createElement('span');
+        label.className = 'nav-label';
+        label.textContent = name;
+        aTop.appendChild(label);
+        li.appendChild(aTop);
+
+        var dd = document.createElement('div');
+        dd.className = 'dropdown';
+        var ddHeader = document.createElement('div');
+        ddHeader.className = 'dropdown-header';
+        ddHeader.textContent = name;
+        dd.appendChild(ddHeader);
+
+        Array.prototype.forEach.call(drop.querySelectorAll('.action-tooltip ul li a'), function (a) {
+          var link = document.createElement('a');
+          link.className = 'dropdown-link';
+          link.href = a.getAttribute('href') || '#';
+          link.innerHTML = bulletSvg + a.textContent.trim();
+          dd.appendChild(link);
+        });
+
+        li.appendChild(dd);
+        if (menuListEl) menuListEl.appendChild(li);
+      });
+    }
+
+    var hamburger = header.querySelector('.gnb-hamburger');
+    hamburger.addEventListener('click', function () {
+      var open = header.classList.toggle('mobile-open');
+      document.body.classList.toggle('mobile-nav-open', open);
+      hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    // 드롭다운 링크 클릭하면 드로어 닫기
+    header.addEventListener('click', function (e) {
+      var link = e.target.closest('.dropdown-link');
+      if (link && window.matchMedia('(max-width: 1024px)').matches) closeMobileNav();
+    });
+
+    // 뷰포트가 데스크톱으로 복귀하면 드로어 상태 초기화
+    window.addEventListener('resize', function () {
+      if (!window.matchMedia('(max-width: 1024px)').matches) closeMobileNav();
+    });
+  }
+
+  function closeMobileNav() {
+    var header = document.querySelector('.gnb-header');
+    if (!header) return;
+    header.classList.remove('mobile-open');
+    document.body.classList.remove('mobile-nav-open');
+    var btn = header.querySelector('.gnb-hamburger');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
   }
 
   /* -------------------------------------------------------
@@ -238,6 +371,7 @@
       // 헤더 로드 완료 후 페이지별 초기화 이벤트
       document.dispatchEvent(new CustomEvent('headerLoaded'));
     });
+    loadFooter();
   });
 
 })();

@@ -707,6 +707,39 @@
       color: var(--color-text-muted);
       margin-left: 4px;
     }
+
+    @media (max-width: 1280px) {
+      .analysis-layout { grid-template-columns: 280px 1fr 280px; }
+    }
+
+    @media (max-width: 1024px) {
+      .page-body { display: flex; flex-direction: column; }
+      .analysis-layout {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        height: auto;
+      }
+      .side-panel,
+      .pipeline-panel {
+        max-height: 36vh;
+        border-right: 0;
+        border-left: 0;
+        border-bottom: 1px solid var(--color-border);
+        flex-shrink: 0;
+        width: 100%;
+      }
+      .pipeline-panel { border-top: 1px solid var(--color-border); border-bottom: 0; }
+      .viewer-area { flex: 1; min-height: 240px; }
+    }
+
+    @media (max-width: 640px) {
+      .side-panel,
+      .pipeline-panel { max-height: 30vh; }
+      .side-panel-header { padding: 16px 16px 12px; }
+      .side-section { padding: 14px 16px; }
+    }
   </style>
 </head>
 <body>

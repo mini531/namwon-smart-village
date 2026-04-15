@@ -240,6 +240,41 @@
       font-size: 15px;
       line-height: 1.6;
     }
+
+    @media (max-width: 1024px) {
+      .history-layout {
+        grid-template-columns: 280px 1fr;
+      }
+      .history-list-header { padding: 16px 16px 14px; }
+      .history-list-body { padding: 10px 12px; }
+    }
+
+    @media (max-width: 768px) {
+      .history-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(180px, 38vh) 1fr;
+      }
+      .history-list-panel {
+        border-right: 0;
+        border-bottom: 1px solid var(--color-border);
+      }
+      .viewer-toolbar {
+        padding: 10px 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .viewer-actions { flex-wrap: wrap; gap: 6px; }
+      .viewer-title { font-size: 14px; }
+    }
+
+    @media (max-width: 480px) {
+      .viewer-toolbar { padding: 10px 10px; }
+      .viewer-title { width: 100%; }
+      .viewer-actions { width: 100%; }
+      .viewer-actions .btn { flex: 1; justify-content: center; font-size: 12px; padding: 7px 10px; }
+      .history-list-header { padding: 14px 14px 12px; }
+      .new-report-btn { padding: 9px 12px; font-size: 13px; }
+    }
   </style>
 </head>
 <body>
@@ -312,7 +347,6 @@
       document.getElementById('viewer-placeholder').style.display = 'flex';
       document.getElementById('viewer-title-text').textContent = '보고서 미리보기';
       document.getElementById('btn-download-pdf').disabled = true;
-      document.getElementById('btn-open-full').disabled = true;
     }
     renderList();
   }

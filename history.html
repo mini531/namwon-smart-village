@@ -10,20 +10,21 @@
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
   <style>
-    body { overflow: auto; }
+    html, body { overflow: hidden; }
 
     .page-body {
       padding-top: var(--header-height);
-      min-height: 100vh;
+      height: 100vh;
       background: var(--color-page-bg);
       display: block;
       overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .history-container {
-      max-width: 1480px;
+      max-width: 1380px;
       margin: 0 auto;
-      padding: 24px 28px 48px;
+      padding: 24px 32px 56px;
     }
 
     .page-header {
@@ -58,7 +59,9 @@
       grid-template-columns: repeat(5, 1fr);
       gap: 14px;
       margin-bottom: 22px;
+      min-width: 0;
     }
+    .summary-strip > * { min-width: 0; }
 
     .summary-card {
       background: var(--color-surface);
@@ -647,14 +650,34 @@
     .empty-state svg { opacity: 0.35; margin-bottom: 12px; }
     .empty-state p { font-size: 14px; }
 
+    .history-container { min-width: 0; width: 100%; }
+
     @media (max-width: 1200px) {
       .summary-strip { grid-template-columns: repeat(3, 1fr); }
       .filter-row { grid-template-columns: repeat(3, 1fr); }
     }
 
+    @media (max-width: 1024px) {
+      .history-container { padding: 22px 22px 44px; }
+      .page-header { flex-wrap: wrap; gap: 12px; }
+      .page-actions { flex-wrap: wrap; }
+    }
+
     @media (max-width: 720px) {
-      .summary-strip { grid-template-columns: repeat(2, 1fr); }
+      .history-container { padding: 18px 14px 36px; }
+      .summary-strip { grid-template-columns: repeat(2, 1fr); gap: 10px; }
       .filter-row { grid-template-columns: 1fr 1fr; }
+      .page-header h1 { font-size: 22px; }
+      .page-actions .btn { font-size: 13px; padding: 7px 11px; }
+    }
+
+    @media (max-width: 480px) {
+      .summary-strip { grid-template-columns: 1fr; }
+      .filter-row { grid-template-columns: 1fr; }
+      .history-container { padding: 14px 12px 30px; }
+      .page-header { flex-direction: column; align-items: stretch; }
+      .page-actions { width: 100%; justify-content: stretch; }
+      .page-actions .btn { flex: 1; justify-content: center; }
     }
   </style>
 </head>
@@ -876,6 +899,8 @@
     </div><!-- /view-detections -->
 
   </div>
+
+  <div id="footer-include"></div>
 </div>
 
 <!-- 상세 모달 -->
