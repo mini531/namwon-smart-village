@@ -534,7 +534,6 @@
                 <th style="width:110px;text-align:center;white-space:nowrap;">탐지</th>
                 <th>주요 클래스</th>
                 <th style="width:100px;text-align:center;white-space:nowrap;">상태</th>
-                <th style="width:150px;text-align:center;">처리</th>
               </tr>
             </thead>
             <tbody id="jobs-tbody"></tbody>
@@ -831,18 +830,7 @@
         '<td style="font-size:12px;color:var(--color-text-muted);">' + analyzed + '</td>' +
         '<td style="text-align:center;white-space:nowrap;"><div style="font-size:18px;font-weight:800;color:var(--color-text);">' + job.detection_count + '</div>' + highMark + '</td>' +
         '<td><div class="job-class-summary">' + classChips + '</div></td>' +
-        '<td style="text-align:center;white-space:nowrap;"><span class="badge ' + statusClass + '">' + job.status + '</span></td>' +
-        '<td style="text-align:center;white-space:nowrap;"><button class="row-action-btn" data-job="' + job.job_id + '">탐지 결과 보기</button></td>';
-
-      tr.querySelector('.row-action-btn').addEventListener('click', function (e) {
-        e.stopPropagation();
-        currentJobFilter = job.job_id;
-        switchView('detections');
-        applyFilter();
-        if (window.history && window.history.replaceState) {
-          window.history.replaceState({}, '', window.location.pathname + '?job=' + job.job_id);
-        }
-      });
+        '<td style="text-align:center;white-space:nowrap;"><span class="badge ' + statusClass + '">' + job.status + '</span></td>';
 
       tr.addEventListener('click', function () {
         currentJobFilter = job.job_id;
