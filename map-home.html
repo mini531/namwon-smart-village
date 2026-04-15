@@ -814,8 +814,10 @@
   }
 
   var _statusModalDets = [];
+  var _lastStatusFilter = null;
 
   function openStatusModal(status) {
+    _lastStatusFilter = status;
     var dets = getActiveDetections().filter(function (d) { return d.status === status; });
     document.getElementById('status-modal-title').textContent = status + ' 탐지 목록';
     document.getElementById('status-modal-sub').textContent =
@@ -846,6 +848,8 @@
           '<td style="font-size:12px;color:var(--color-text-muted);">' + date + '</td>' +
           '<td style="font-weight:700;">' + (d.confidence * 100).toFixed(0) + '%</td>';
         tr.addEventListener('click', function () {
+          // 상태 모달을 닫고 상세 모달로 교체 — 이전으로 누르면 같은 상태로 재오픈
+          document.getElementById('status-modal').classList.remove('show');
           openDetailModal(d, { fromStatus: true });
         });
         tbody.appendChild(tr);
@@ -943,7 +947,7 @@
 
   function backToStatusModal() {
     closeDetailModal();
-    // 상태 모달은 열린 상태 유지 (닫히지 않음)
+    if (_lastStatusFilter) openStatusModal(_lastStatusFilter);
   }
 
   function saveDetailProcessing() {
@@ -978,15 +982,8 @@
 
     document.getElementById('dm-note').value = '';
 
-    // 지도 KPI / 처리상태 카드 / 상태 모달 다시 그림
+    // 지도 KPI 재계산 (상태 모달은 이전으로 누를 때 새로 렌더)
     updateKPI();
-    // 상태 모달이 열려있다면 현재 상태로 다시 렌더
-    var statusModal = document.getElementById('status-modal');
-    if (statusModal.classList.contains('show')) {
-      var currentTitle = document.getElementById('status-modal-title').textContent;
-      var m = currentTitle.match(/^(\S+)/);
-      if (m) openStatusModal(m[1]);
-    }
 
     if (window.NotifyUI) NotifyUI.toast('처리 상태가 저장되었습니다', '저장 완료');
   }
