@@ -252,11 +252,18 @@
   z-index: 1100;
 }
 
-.action-dropdown:hover .action-tooltip,
-.action-dropdown:focus-within .action-tooltip {
+.action-dropdown:hover .action-tooltip {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+}
+
+/* 아이콘 클릭 후 강제 닫힘 상태 — 마우스가 나갈 때까지 :hover 무시 */
+.action-dropdown.force-closed .action-tooltip {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateY(-6px) !important;
 }
 
 .action-tooltip h4 {

@@ -19,6 +19,7 @@
         el.innerHTML = html;
         initActiveMenu();
         initMenuInteraction();
+        initSubMenuClickClose();
         initMobileNav();
       })
       .catch(function (err) {
@@ -213,15 +214,21 @@
 
     menuItems.forEach(function (item) {
       item.addEventListener('mouseenter', function () {
+        // 클릭으로 닫힌 상태면 마우스가 실제로 한 번 나갔다 올 때까지 재오픈 금지
+        if (item.dataset.suppressOpen === '1') return;
         // 다른 모든 메뉴의 열린 드롭다운 강제 닫기
         menuItems.forEach(function (other) {
-          if (other !== item) other.classList.remove('hover-open');
+          if (other !== item) {
+            other.classList.remove('hover-open');
+            delete other.dataset.suppressOpen;
+          }
         });
         item.classList.add('hover-open');
       });
 
       item.addEventListener('mouseleave', function () {
         item.classList.remove('hover-open');
+        delete item.dataset.suppressOpen;
       });
 
       // 1차 메뉴명 클릭 시 드롭다운의 첫 번째 링크로 이동 (링크 없으면 드롭다운 닫기)
@@ -237,9 +244,13 @@
             window.location.href = firstDropLink.getAttribute('href');
             return;
           }
-          // 이동할 곳이 없으면: 펼쳐진 드롭다운 강제로 닫고 포커스 해제
+          // 이동할 곳이 없으면: 펼쳐진 드롭다운 강제로 닫고 mouseleave 전까지 재오픈 차단
           e.preventDefault();
-          menuItems.forEach(function (i) { i.classList.remove('hover-open'); });
+          menuItems.forEach(function (i) {
+            i.classList.remove('hover-open');
+            delete i.dataset.suppressOpen;
+          });
+          item.dataset.suppressOpen = '1';
           if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
         });
       }
@@ -249,15 +260,41 @@
     var navBar = document.querySelector('.gnb-nav');
     if (navBar) {
       navBar.addEventListener('mouseleave', function () {
-        menuItems.forEach(function (i) { i.classList.remove('hover-open'); });
+        menuItems.forEach(function (i) {
+          i.classList.remove('hover-open');
+          delete i.dataset.suppressOpen;
+        });
       });
     }
 
     // 문서 아무 곳이나 클릭 시 열려있는 드롭다운 닫기 (레이어 잔상 방지)
     document.addEventListener('click', function (e) {
       if (!e.target.closest('.menu-item[data-menu]')) {
-        menuItems.forEach(function (i) { i.classList.remove('hover-open'); });
+        menuItems.forEach(function (i) {
+          i.classList.remove('hover-open');
+          delete i.dataset.suppressOpen;
+        });
       }
+    });
+  }
+
+  /* -------------------------------------------------------
+     우측 보조 메뉴 (action-dropdown) — 아이콘 클릭 시 툴팁 닫기
+     링크가 아닌 아이콘/래퍼 영역을 클릭했을 때 호버 툴팁이 계속
+     열려있는 것을 방지. 마우스가 실제로 나갔다 다시 들어와야 재오픈.
+  ------------------------------------------------------- */
+  function initSubMenuClickClose() {
+    var drops = document.querySelectorAll('.sub-menu .action-dropdown');
+    drops.forEach(function (drop) {
+      drop.addEventListener('click', function (e) {
+        // 툴팁 안 링크(<a>) 를 클릭한 경우에는 정상 내비 허용
+        if (e.target.closest('.action-tooltip a')) return;
+        drop.classList.add('force-closed');
+        if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      });
+      drop.addEventListener('mouseleave', function () {
+        drop.classList.remove('force-closed');
+      });
     });
   }
 
