@@ -86,10 +86,10 @@
             '</div>' +
           '</div>' +
           '<div class="modal-foot">' +
-            '<button class="btn btn-ghost btn-sm" data-role="back" style="display:none;">← 이전으로</button>' +
+            '<button class="btn btn-ghost" data-role="back" style="display:none;">← 이전으로</button>' +
             '<div class="mf-spacer"></div>' +
-            '<button class="btn btn-ghost btn-sm" data-role="cancel">닫기</button>' +
-            '<button class="btn btn-primary btn-sm" data-role="save">저장</button>' +
+            '<button class="btn btn-ghost" data-role="cancel">닫기</button>' +
+            '<button class="btn btn-primary" data-role="save">저장</button>' +
           '</div>' +
         '</div>' +
       '</div>';

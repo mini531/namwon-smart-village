@@ -567,15 +567,18 @@ ul, ol { list-style: none; }
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
-  padding: 9px 18px;
+  padding: 11px 22px;
   border-radius: var(--border-radius);
   font-size: 14px;
-  font-weight: 600;
-  border: none;
+  font-weight: 700;
+  border: 1.5px solid transparent;
   transition: all var(--transition);
   cursor: pointer;
   white-space: nowrap;
+  font-family: inherit;
+  line-height: 1.2;
 }
 
 .btn-primary {
@@ -611,8 +614,9 @@ ul, ol { list-style: none; }
 }
 
 .btn-sm {
-  padding: 6px 12px;
+  padding: 7px 14px;
   font-size: 13px;
+  font-weight: 600;
 }
 
 .btn-lg {
