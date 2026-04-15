@@ -22,9 +22,11 @@
     }
 
     .faq-container {
-      max-width: 960px;
+      width: 100%;
+      max-width: 1380px;
+      min-width: 0;
       margin: 0 auto;
-      padding: 28px 32px 56px;
+      padding: 24px 32px 56px;
     }
 
     .page-header {
@@ -178,20 +180,15 @@
 
     .faq-q-cat {
       flex-shrink: 0;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 12px;
-      background: var(--color-surface-2);
+      padding: 3px 10px;
+      border-radius: 4px;
+      background: transparent;
+      border: 1px solid var(--color-border);
       color: var(--color-text-muted);
       letter-spacing: -0.2px;
-      text-transform: uppercase;
     }
-    .faq-q-cat.general { background: #E9ECEF; color: #495057; }
-    .faq-q-cat.analysis { background: #E8F1FB; color: #1E5A9C; }
-    .faq-q-cat.map { background: #E6F4F1; color: #1F6F63; }
-    .faq-q-cat.report { background: #FFF4E5; color: #A5611B; }
-    .faq-q-cat.account { background: #F3E8FA; color: #5A2E8C; }
 
     .faq-q-text {
       flex: 1;
@@ -261,7 +258,7 @@
     <div class="page-header">
       <div class="page-title-wrap">
         <h1>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           자주 묻는 질문
         </h1>
         <p>Namwon GeoVision 사용 중 자주 발생하는 질문과 답변을 확인하세요</p>
@@ -286,9 +283,9 @@
 
     <div class="faq-list" id="faq-list"></div>
     <div id="empty-state-wrap"></div>
-
-    <div id="footer-include"></div>
   </div>
+
+  <div id="footer-include"></div>
 </div>
 
 <script src="assets/js/layout.js"></script>

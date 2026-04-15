@@ -22,9 +22,11 @@
     }
 
     .notice-container {
-      max-width: 1100px;
+      width: 100%;
+      max-width: 1380px;
+      min-width: 0;
       margin: 0 auto;
-      padding: 28px 32px 56px;
+      padding: 24px 32px 56px;
     }
 
     .page-header {
@@ -161,8 +163,8 @@
       border-bottom: 1px solid var(--color-border);
     }
 
-    .notice-table thead th.col-category { width: 120px; }
-    .notice-table thead th.col-date { width: 130px; text-align: right; padding-right: 22px; }
+    .notice-table thead th.col-category { width: 120px; text-align: center; }
+    .notice-table thead th.col-date { width: 130px; text-align: center; }
 
     .notice-table tbody tr {
       border-bottom: 1px solid #F1F3F5;
@@ -196,15 +198,17 @@
       font-size: 12px;
       font-weight: 700;
       padding: 3px 10px;
-      border-radius: 12px;
-      background: var(--color-surface-2);
+      border-radius: 4px;
+      background: transparent;
+      border: 1px solid var(--color-border);
       color: var(--color-text-muted);
       letter-spacing: -0.2px;
     }
-    .notice-cat.general { background: #E9ECEF; color: #495057; }
-    .notice-cat.maintenance { background: #FFF4E5; color: #A5611B; }
-    .notice-cat.update { background: #E8F1FB; color: #1E5A9C; }
-    .notice-cat.important { background: #FBEEF0; color: var(--color-primary); }
+    .notice-cat.important {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: #FBEEF0;
+    }
 
     .notice-title-cell {
       display: flex;
@@ -243,78 +247,97 @@
     .empty-state svg { opacity: 0.35; margin-bottom: 12px; }
     .empty-state p { font-size: 14px; }
 
-    /* 페이지네이션 */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      gap: 4px;
-      margin-top: 22px;
-      flex-wrap: wrap;
-    }
-    .page-btn {
-      min-width: 36px;
-      height: 36px;
-      padding: 0 10px;
-      border: 1px solid var(--color-border);
+    /* 페이지네이션은 전역 .pagination / .page-btn 사용 */
+    .pagination { margin-top: 22px; min-height: 34px; }
+    .page-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
       background: var(--color-surface);
+      color: var(--color-text-muted);
+      border-color: var(--color-border);
+    }
+
+    /* 상세 페이지 뷰 (모달 아님 — 페이지 전환) */
+    .detail-view { display: none; }
+    .detail-view.active { display: block; }
+    .list-view.hidden { display: none; }
+
+    .detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-border);
       color: var(--color-text);
-      border-radius: 6px;
+      border-radius: var(--border-radius);
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       font-family: inherit;
+      margin-bottom: 18px;
+      transition: all 0.15s;
     }
-    .page-btn:hover:not(.active):not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
-    .page-btn.active {
-      background: var(--color-primary);
-      color: #fff;
-      border-color: var(--color-primary);
-    }
-    .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .detail-back:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
-    /* 상세 모달 (공용 .modal-* 스타일 재사용, 본문만 커스텀) */
-    .notice-detail-body {
-      padding: 22px 26px 8px;
+    .detail-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: 32px 36px 36px;
     }
-    .notice-detail-meta {
+
+    .detail-header {
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 26px;
+    }
+    .detail-header h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--color-text);
+      letter-spacing: -0.3px;
+      line-height: 1.35;
+      margin-bottom: 14px;
+    }
+    .detail-meta {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding-bottom: 14px;
-      margin-bottom: 18px;
-      border-bottom: 1px solid var(--color-border);
       flex-wrap: wrap;
     }
-    .notice-detail-meta .meta-date {
+    .detail-meta .meta-date {
       font-size: 13px;
       color: var(--color-text-muted);
       font-weight: 600;
     }
-    .notice-detail-content {
-      font-size: 14px;
-      line-height: 1.75;
+
+    .detail-content {
+      font-size: 15px;
+      line-height: 1.85;
       color: var(--color-text);
       white-space: pre-line;
+      min-height: 200px;
     }
-    .notice-detail-content strong { color: var(--color-text); font-weight: 800; }
-    .notice-detail-attach {
-      margin-top: 22px;
-      padding-top: 16px;
+
+    .detail-attach {
+      margin-top: 32px;
+      padding-top: 22px;
       border-top: 1px solid var(--color-border);
     }
-    .notice-detail-attach .attach-title {
+    .detail-attach .attach-title {
       font-size: 12px;
       font-weight: 700;
       color: var(--color-text-muted);
       text-transform: uppercase;
       letter-spacing: 0.4px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
-    .notice-detail-attach .attach-item {
+    .detail-attach .attach-item {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 12px;
+      padding: 11px 14px;
       background: var(--color-surface-2);
       border: 1px solid var(--color-border);
       border-radius: var(--border-radius);
@@ -322,11 +345,33 @@
       color: var(--color-text);
       margin-bottom: 6px;
       cursor: pointer;
+      transition: all 0.15s;
     }
-    .notice-detail-attach .attach-item:hover {
+    .detail-attach .attach-item:hover {
       border-color: var(--color-primary);
       color: var(--color-primary);
     }
+
+    .detail-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      gap: 8px;
+    }
+    .detail-nav button {
+      padding: 10px 16px;
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--border-radius);
+      color: var(--color-text);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .detail-nav button:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+    .detail-nav button:disabled { opacity: 0.4; cursor: not-allowed; }
 
     @media (max-width: 720px) {
       .notice-container { padding: 18px 14px 40px; }
@@ -349,73 +394,81 @@
 <div class="page-body">
   <div class="notice-container">
 
-    <div class="page-header">
-      <div class="page-title-wrap">
-        <h1>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-          공지사항
-        </h1>
-        <p>Namwon GeoVision 플랫폼 운영 공지 및 업데이트 소식을 확인하세요</p>
+    <!-- 목록 뷰 -->
+    <section class="list-view" id="list-view">
+      <div class="page-header">
+        <div class="page-title-wrap">
+          <h1>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            공지사항
+          </h1>
+          <p>Namwon GeoVision 플랫폼 운영 공지 및 업데이트 소식을 확인하세요</p>
+        </div>
       </div>
-    </div>
 
-    <div class="toolbar">
-      <div class="tab-strip" id="tab-strip">
-        <button type="button" class="active" data-cat="all">전체</button>
-        <button type="button" data-cat="important">중요</button>
-        <button type="button" data-cat="general">일반</button>
-        <button type="button" data-cat="maintenance">점검</button>
-        <button type="button" data-cat="update">업데이트</button>
+      <div class="toolbar">
+        <div class="tab-strip" id="tab-strip">
+          <button type="button" class="active" data-cat="all">전체</button>
+          <button type="button" data-cat="important">중요</button>
+          <button type="button" data-cat="general">일반</button>
+          <button type="button" data-cat="maintenance">점검</button>
+          <button type="button" data-cat="update">업데이트</button>
+        </div>
+        <div class="search-group">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="search-input" placeholder="제목 또는 내용 검색">
+        </div>
+        <div class="notice-count" id="notice-count">총 <strong>0</strong>건</div>
       </div>
-      <div class="search-group">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="search-input" placeholder="제목 또는 내용 검색">
+
+      <div class="notice-card">
+        <table class="notice-table">
+          <thead>
+            <tr>
+              <th class="col-category">구분</th>
+              <th>제목</th>
+              <th class="col-date">등록일</th>
+            </tr>
+          </thead>
+          <tbody id="notice-tbody"></tbody>
+        </table>
       </div>
-      <div class="notice-count" id="notice-count">총 <strong>0</strong>건</div>
-    </div>
 
-    <div class="notice-card">
-      <table class="notice-table">
-        <thead>
-          <tr>
-            <th class="col-category">구분</th>
-            <th>제목</th>
-            <th class="col-date">등록일</th>
-          </tr>
-        </thead>
-        <tbody id="notice-tbody"></tbody>
-      </table>
-    </div>
+      <div id="empty-state-wrap"></div>
+      <div class="pagination" id="pagination"></div>
+    </section>
 
-    <div id="empty-state-wrap"></div>
-    <div class="pagination" id="pagination"></div>
+    <!-- 상세 뷰 (페이지 전환 형태) -->
+    <section class="detail-view" id="detail-view">
+      <button type="button" class="detail-back" id="detail-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        목록으로
+      </button>
 
-    <div id="footer-include"></div>
+      <div class="detail-card">
+        <div class="detail-header">
+          <h2 id="dv-title">공지사항</h2>
+          <div class="detail-meta">
+            <span class="notice-cat" id="dv-cat">일반</span>
+            <span class="meta-date" id="dv-date">-</span>
+          </div>
+        </div>
+        <div class="detail-content" id="dv-content"></div>
+        <div class="detail-attach" id="dv-attach" style="display:none;">
+          <div class="attach-title">첨부 파일</div>
+          <div id="dv-attach-list"></div>
+        </div>
+      </div>
+
+      <div class="detail-nav">
+        <button type="button" id="dv-prev">← 이전 글</button>
+        <button type="button" id="dv-next">다음 글 →</button>
+      </div>
+    </section>
+
   </div>
-</div>
 
-<!-- 공지 상세 모달 (공용 .modal-* 재사용) -->
-<div class="modal-backdrop" id="notice-modal">
-  <div class="modal-card" style="width: 640px;">
-    <div class="modal-head">
-      <div class="title" id="nm-title">공지사항</div>
-      <button class="close-btn" id="nm-close">×</button>
-    </div>
-    <div class="notice-detail-body">
-      <div class="notice-detail-meta">
-        <span class="notice-cat" id="nm-cat">일반</span>
-        <span class="meta-date" id="nm-date">-</span>
-      </div>
-      <div class="notice-detail-content" id="nm-content"></div>
-      <div class="notice-detail-attach" id="nm-attach" style="display:none;">
-        <div class="attach-title">첨부 파일</div>
-        <div id="nm-attach-list"></div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost btn-sm" id="nm-close-foot">닫기</button>
-    </div>
-  </div>
+  <div id="footer-include"></div>
 </div>
 
 <script src="assets/js/layout.js"></script>
@@ -642,7 +695,6 @@
   function renderPagination(totalPages) {
     var cont = document.getElementById('pagination');
     cont.innerHTML = '';
-    if (totalPages <= 1) return;
 
     function mkBtn(label, page, opts) {
       opts = opts || {};
@@ -654,27 +706,33 @@
       else b.addEventListener('click', function () {
         state.page = page;
         render();
-        document.querySelector('.notice-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
       cont.appendChild(b);
     }
 
-    mkBtn('‹', state.page - 1, { disabled: state.page === 1 });
-    for (var p = 1; p <= totalPages; p++) {
+    mkBtn('‹', state.page - 1, { disabled: state.page <= 1 });
+    for (var p = 1; p <= Math.max(1, totalPages); p++) {
       mkBtn(String(p), p, { active: p === state.page });
     }
-    mkBtn('›', state.page + 1, { disabled: state.page === totalPages });
+    mkBtn('›', state.page + 1, { disabled: state.page >= totalPages });
   }
 
-  function openDetail(n) {
-    document.getElementById('nm-title').textContent = n.title;
-    document.getElementById('nm-cat').textContent = CAT_LABEL[n.category];
-    document.getElementById('nm-cat').className = 'notice-cat ' + n.category;
-    document.getElementById('nm-date').textContent = '등록일 ' + fmtDate(n.date);
-    document.getElementById('nm-content').textContent = n.content || '';
+  function openDetail(n, pushHistory) {
+    var sorted = NOTICES.slice().sort(function (a, b) {
+      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+      return b.date.localeCompare(a.date);
+    });
+    var idx = sorted.findIndex(function (x) { return x.id === n.id; });
 
-    var attachWrap = document.getElementById('nm-attach');
-    var attachList = document.getElementById('nm-attach-list');
+    document.getElementById('dv-title').textContent = n.title;
+    var catEl = document.getElementById('dv-cat');
+    catEl.textContent = CAT_LABEL[n.category];
+    catEl.className = 'notice-cat ' + n.category;
+    document.getElementById('dv-date').textContent = '등록일 ' + fmtDate(n.date);
+    document.getElementById('dv-content').textContent = n.content || '';
+
+    var attachWrap = document.getElementById('dv-attach');
+    var attachList = document.getElementById('dv-attach-list');
     if (n.attachments && n.attachments.length) {
       attachWrap.style.display = 'block';
       attachList.innerHTML = n.attachments.map(function (a) {
@@ -687,11 +745,28 @@
       attachWrap.style.display = 'none';
     }
 
-    document.getElementById('notice-modal').classList.add('show');
+    var prevBtn = document.getElementById('dv-prev');
+    var nextBtn = document.getElementById('dv-next');
+    prevBtn.disabled = idx <= 0;
+    nextBtn.disabled = idx >= sorted.length - 1;
+    prevBtn.onclick = function () { if (idx > 0) openDetail(sorted[idx - 1], true); };
+    nextBtn.onclick = function () { if (idx < sorted.length - 1) openDetail(sorted[idx + 1], true); };
+
+    document.getElementById('list-view').classList.add('hidden');
+    document.getElementById('detail-view').classList.add('active');
+    document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
+
+    if (pushHistory !== false && window.history && window.history.pushState) {
+      window.history.pushState({ noticeId: n.id }, '', '?notice=' + n.id);
+    }
   }
 
-  function closeDetail() {
-    document.getElementById('notice-modal').classList.remove('show');
+  function closeDetail(fromPopState) {
+    document.getElementById('list-view').classList.remove('hidden');
+    document.getElementById('detail-view').classList.remove('active');
+    if (!fromPopState && window.history && window.history.pushState) {
+      window.history.pushState({}, '', window.location.pathname);
+    }
   }
 
   function escapeHtml(s) {
@@ -724,18 +799,35 @@
     }, 180);
   });
 
-  document.getElementById('nm-close').addEventListener('click', closeDetail);
-  document.getElementById('nm-close-foot').addEventListener('click', closeDetail);
-  document.getElementById('notice-modal').addEventListener('click', function (e) {
-    if (e.target === this) closeDetail();
+  document.getElementById('detail-back').addEventListener('click', function () { closeDetail(); });
+
+  // 브라우저 뒤로가기 지원
+  window.addEventListener('popstate', function (e) {
+    var st = e.state || {};
+    if (st.noticeId) {
+      var n = NOTICES.find(function (x) { return x.id === st.noticeId; });
+      if (n) { openDetail(n, false); return; }
+    }
+    closeDetail(true);
   });
+
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && document.getElementById('notice-modal').classList.contains('show')) {
+    if (e.key === 'Escape' && document.getElementById('detail-view').classList.contains('active')) {
       closeDetail();
     }
   });
 
   render();
+
+  // 최초 진입 시 URL ?notice=N 지원
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var nid = parseInt(params.get('notice'), 10);
+    if (nid) {
+      var n = NOTICES.find(function (x) { return x.id === nid; });
+      if (n) openDetail(n, false);
+    }
+  })();
 })();
 </script>
 </body>
