@@ -473,6 +473,16 @@ var NamwonMap = (function () {
   /* -------------------------------------------------------
      Bounding Box Canvas 렌더링
   ------------------------------------------------------- */
+  // 결정론적 의사-난수 (det.id 기반 시드)
+  function _seedFrom(str) {
+    var h = 0, s = String(str || 'seed');
+    for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) & 0x7fffffff; }
+    return function () {
+      h = (h * 9301 + 49297) % 233280;
+      return h / 233280;
+    };
+  }
+
   function drawBoundingBox(canvas, det, imgW, imgH) {
     imgW = imgW || 320;
     imgH = imgH || 200;
@@ -483,57 +493,117 @@ var NamwonMap = (function () {
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, imgW, imgH);
 
-    // 배경 (드론 정사영상 시뮬레이션)
-    var grd = ctx.createLinearGradient(0, 0, imgW, imgH);
-    grd.addColorStop(0, '#3d5a4a');
-    grd.addColorStop(0.3, '#4a6b55');
-    grd.addColorStop(0.6, '#5a7a60');
-    grd.addColorStop(1, '#3d5a4a');
-    ctx.fillStyle = grd;
+    var rand = _seedFrom(det && det.id);
+
+    // ── 1) 지표면 (풀/관목) 그라디언트 + 노이즈 ──
+    var terrain = ctx.createRadialGradient(imgW * 0.35, imgH * 0.3, imgW * 0.1, imgW * 0.5, imgH * 0.5, imgW * 0.9);
+    terrain.addColorStop(0, '#6d8a3e');
+    terrain.addColorStop(0.4, '#58762f');
+    terrain.addColorStop(0.8, '#3e5a22');
+    terrain.addColorStop(1, '#2f4818');
+    ctx.fillStyle = terrain;
     ctx.fillRect(0, 0, imgW, imgH);
 
-    // 도로 시뮬레이션
-    ctx.fillStyle = '#6b7280';
-    ctx.fillRect(60, 0, imgW - 120, imgH);
-    ctx.fillStyle = '#5a6170';
-    ctx.fillRect(80, 0, imgW - 160, imgH);
+    // 풀/관목 텍스처 dots
+    for (var i = 0; i < 140; i++) {
+      var rx = rand() * imgW;
+      var ry = rand() * imgH;
+      var rs = 0.6 + rand() * 1.8;
+      var alpha = 0.18 + rand() * 0.28;
+      ctx.fillStyle = 'rgba(' + Math.floor(30 + rand() * 40) + ',' + Math.floor(60 + rand() * 50) + ',' + Math.floor(20 + rand() * 30) + ',' + alpha.toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.arc(rx, ry, rs, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
-    // 흰 점선
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([15, 10]);
+    // ── 2) 흙/자갈 도로 (대각선) ──
+    ctx.save();
+    var roadAngle = (rand() - 0.5) * 0.5 + Math.PI * 0.48;
+    ctx.translate(imgW / 2, imgH / 2);
+    ctx.rotate(roadAngle - Math.PI / 2);
+    var roadW = imgW * (0.32 + rand() * 0.06);
+    var roadH = imgH * 1.6;
+
+    var roadGrad = ctx.createLinearGradient(-roadW / 2, 0, roadW / 2, 0);
+    roadGrad.addColorStop(0, '#7a6a4e');
+    roadGrad.addColorStop(0.2, '#a08f6c');
+    roadGrad.addColorStop(0.5, '#b9a881');
+    roadGrad.addColorStop(0.8, '#a08f6c');
+    roadGrad.addColorStop(1, '#7a6a4e');
+    ctx.fillStyle = roadGrad;
+    ctx.fillRect(-roadW / 2, -roadH / 2, roadW, roadH);
+
+    // 도로 자갈 texture
+    for (var j = 0; j < 80; j++) {
+      var gx = (rand() - 0.5) * roadW * 0.95;
+      var gy = (rand() - 0.5) * roadH;
+      var gs = 0.4 + rand() * 1.5;
+      ctx.fillStyle = 'rgba(80,60,40,' + (0.2 + rand() * 0.4).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.arc(gx, gy, gs, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 도로 가장자리 자국
+    ctx.strokeStyle = 'rgba(60, 50, 30, 0.35)';
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(imgW / 2, 0);
-    ctx.lineTo(imgW / 2, imgH);
+    ctx.moveTo(-roadW / 2, -roadH / 2);
+    ctx.lineTo(-roadW / 2, roadH / 2);
+    ctx.moveTo(roadW / 2, -roadH / 2);
+    ctx.lineTo(roadW / 2, roadH / 2);
     ctx.stroke();
-    ctx.setLineDash([]);
 
-    // Bounding Box
-    var bbox = det.bbox || [80, 60, 240, 160];
-    var scaleX = imgW / 480;
-    var scaleY = imgH / 320;
-    var x = bbox[0] * scaleX;
-    var y = bbox[1] * scaleY;
-    var w = (bbox[2] - bbox[0]) * scaleX;
-    var h = (bbox[3] - bbox[1]) * scaleY;
+    ctx.restore();
+
+    // ── 3) 탐지 바운딩 박스 (여러 개) ──
+    // 도로 중심선 기준 2~4개를 배치, 첫 번째는 det 의 신뢰도 사용
+    var boxCount = 2 + Math.floor(rand() * 2); // 2~3
+    var primaryConf = (det && det.confidence) ? Number(det.confidence) : 0.9;
+    var boxes = [];
+
+    // 도로 중앙 근처에 랜덤 배치
+    for (var k = 0; k < boxCount; k++) {
+      var localX = imgW * (0.3 + rand() * 0.35);
+      var localY = imgH * (0.18 + rand() * 0.6);
+      var bw = imgW * (0.09 + rand() * 0.05);
+      var bh = imgH * (0.14 + rand() * 0.08);
+      var conf;
+      if (k === 0) {
+        conf = primaryConf;
+      } else {
+        // 0.78 ~ 0.95 사이
+        conf = 0.78 + rand() * 0.17;
+      }
+      boxes.push({ x: localX, y: localY, w: bw, h: bh, conf: conf });
+    }
 
     ctx.strokeStyle = '#2D7DD2';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(x, y, w, h);
+    ctx.lineWidth = 1.6;
+    ctx.font = 'bold 10px Inter, sans-serif';
 
-    // 레이블 배경
-    var label = det.class_en + ' ' + det.confidence.toFixed(2);
-    ctx.font = 'bold 11px Inter, sans-serif';
-    var labelW = ctx.measureText(label).width + 8;
+    boxes.forEach(function (b) {
+      // 박스
+      ctx.strokeStyle = '#2D7DD2';
+      ctx.lineWidth = 1.6;
+      ctx.strokeRect(b.x, b.y, b.w, b.h);
 
-    ctx.fillStyle = '#2D7DD2';
-    ctx.fillRect(x, y - 16, labelW, 16);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(label, x + 4, y - 4);
+      // 반투명 채우기
+      ctx.fillStyle = 'rgba(45, 125, 210, 0.1)';
+      ctx.fillRect(b.x, b.y, b.w, b.h);
 
-    // 파일명 워터마크
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = '10px Inter, sans-serif';
+      // 레이블
+      var label = 'pothole ' + b.conf.toFixed(2);
+      var lw = ctx.measureText(label).width + 6;
+      ctx.fillStyle = '#2D7DD2';
+      ctx.fillRect(b.x, b.y - 13, lw, 13);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(label, b.x + 3, b.y - 3);
+    });
+
+    // ── 4) 파일명 워터마크 ──
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.font = '9px Inter, sans-serif';
     ctx.fillText(det.image_file || 'DJI_0001.JPG', 4, imgH - 4);
   }
 
