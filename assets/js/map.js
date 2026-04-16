@@ -483,116 +483,59 @@ var NamwonMap = (function () {
     };
   }
 
-  function drawBoundingBox(canvas, det, imgW, imgH) {
-    imgW = imgW || 320;
-    imgH = imgH || 200;
+  // Vworld 타일 로드 (이미지 캐시)
+  var _tileImgCache = {};
+  function _loadTileImage(url) {
+    if (_tileImgCache[url]) {
+      var cached = _tileImgCache[url];
+      if (cached.complete && cached.naturalWidth > 0) return Promise.resolve(cached);
+    }
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () {
+        _tileImgCache[url] = img;
+        resolve(img);
+      };
+      img.onerror = function () { reject(new Error('tile load failed: ' + url)); };
+      img.src = url;
+    });
+  }
 
-    canvas.width = imgW;
-    canvas.height = imgH;
+  // lat/lng → WMTS 타일 좌표 (분수 포함, Web Mercator)
+  function _latLngToTileXY(lat, lng, zoom) {
+    var n = Math.pow(2, zoom);
+    var sin = Math.sin(lat * Math.PI / 180);
+    var x = (lng + 180) / 360 * n;
+    var y = (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * n;
+    return { x: x, y: y, z: zoom };
+  }
 
-    var ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, imgW, imgH);
-
+  // 박스 오버레이 — 시드 기반 위치, 2~3개
+  function _drawBboxOverlay(ctx, det, imgW, imgH) {
     var rand = _seedFrom(det && det.id);
-
-    // ── 1) 지표면 (풀/관목) 그라디언트 + 노이즈 ──
-    var terrain = ctx.createRadialGradient(imgW * 0.35, imgH * 0.3, imgW * 0.1, imgW * 0.5, imgH * 0.5, imgW * 0.9);
-    terrain.addColorStop(0, '#6d8a3e');
-    terrain.addColorStop(0.4, '#58762f');
-    terrain.addColorStop(0.8, '#3e5a22');
-    terrain.addColorStop(1, '#2f4818');
-    ctx.fillStyle = terrain;
-    ctx.fillRect(0, 0, imgW, imgH);
-
-    // 풀/관목 텍스처 dots
-    for (var i = 0; i < 140; i++) {
-      var rx = rand() * imgW;
-      var ry = rand() * imgH;
-      var rs = 0.6 + rand() * 1.8;
-      var alpha = 0.18 + rand() * 0.28;
-      ctx.fillStyle = 'rgba(' + Math.floor(30 + rand() * 40) + ',' + Math.floor(60 + rand() * 50) + ',' + Math.floor(20 + rand() * 30) + ',' + alpha.toFixed(2) + ')';
-      ctx.beginPath();
-      ctx.arc(rx, ry, rs, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // ── 2) 흙/자갈 도로 (대각선) ──
-    ctx.save();
-    var roadAngle = (rand() - 0.5) * 0.5 + Math.PI * 0.48;
-    ctx.translate(imgW / 2, imgH / 2);
-    ctx.rotate(roadAngle - Math.PI / 2);
-    var roadW = imgW * (0.32 + rand() * 0.06);
-    var roadH = imgH * 1.6;
-
-    var roadGrad = ctx.createLinearGradient(-roadW / 2, 0, roadW / 2, 0);
-    roadGrad.addColorStop(0, '#7a6a4e');
-    roadGrad.addColorStop(0.2, '#a08f6c');
-    roadGrad.addColorStop(0.5, '#b9a881');
-    roadGrad.addColorStop(0.8, '#a08f6c');
-    roadGrad.addColorStop(1, '#7a6a4e');
-    ctx.fillStyle = roadGrad;
-    ctx.fillRect(-roadW / 2, -roadH / 2, roadW, roadH);
-
-    // 도로 자갈 texture
-    for (var j = 0; j < 80; j++) {
-      var gx = (rand() - 0.5) * roadW * 0.95;
-      var gy = (rand() - 0.5) * roadH;
-      var gs = 0.4 + rand() * 1.5;
-      ctx.fillStyle = 'rgba(80,60,40,' + (0.2 + rand() * 0.4).toFixed(2) + ')';
-      ctx.beginPath();
-      ctx.arc(gx, gy, gs, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // 도로 가장자리 자국
-    ctx.strokeStyle = 'rgba(60, 50, 30, 0.35)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(-roadW / 2, -roadH / 2);
-    ctx.lineTo(-roadW / 2, roadH / 2);
-    ctx.moveTo(roadW / 2, -roadH / 2);
-    ctx.lineTo(roadW / 2, roadH / 2);
-    ctx.stroke();
-
-    ctx.restore();
-
-    // ── 3) 탐지 바운딩 박스 (여러 개) ──
-    // 도로 중심선 기준 2~4개를 배치, 첫 번째는 det 의 신뢰도 사용
-    var boxCount = 2 + Math.floor(rand() * 2); // 2~3
     var primaryConf = (det && det.confidence) ? Number(det.confidence) : 0.9;
-    var boxes = [];
 
-    // 도로 중앙 근처에 랜덤 배치
+    // 중심(이미지 center) 을 기준으로 작은 바운딩 박스들
+    var boxes = [];
+    var boxCount = 2 + Math.floor(rand() * 2);
     for (var k = 0; k < boxCount; k++) {
-      var localX = imgW * (0.3 + rand() * 0.35);
-      var localY = imgH * (0.18 + rand() * 0.6);
-      var bw = imgW * (0.09 + rand() * 0.05);
-      var bh = imgH * (0.14 + rand() * 0.08);
-      var conf;
-      if (k === 0) {
-        conf = primaryConf;
-      } else {
-        // 0.78 ~ 0.95 사이
-        conf = 0.78 + rand() * 0.17;
-      }
-      boxes.push({ x: localX, y: localY, w: bw, h: bh, conf: conf });
+      var bw = imgW * (0.07 + rand() * 0.04);
+      var bh = imgH * (0.11 + rand() * 0.06);
+      // 중심 ± 30% 범위
+      var cx = imgW * (0.45 + (rand() - 0.5) * 0.4);
+      var cy = imgH * (0.48 + (rand() - 0.5) * 0.5);
+      var conf = k === 0 ? primaryConf : (0.78 + rand() * 0.17);
+      boxes.push({ x: cx - bw / 2, y: cy - bh / 2, w: bw, h: bh, conf: conf });
     }
 
-    ctx.strokeStyle = '#2D7DD2';
-    ctx.lineWidth = 1.6;
+    ctx.lineWidth = 1.8;
     ctx.font = 'bold 10px Inter, sans-serif';
-
     boxes.forEach(function (b) {
-      // 박스
       ctx.strokeStyle = '#2D7DD2';
-      ctx.lineWidth = 1.6;
       ctx.strokeRect(b.x, b.y, b.w, b.h);
-
-      // 반투명 채우기
-      ctx.fillStyle = 'rgba(45, 125, 210, 0.1)';
+      ctx.fillStyle = 'rgba(45, 125, 210, 0.12)';
       ctx.fillRect(b.x, b.y, b.w, b.h);
 
-      // 레이블
       var label = 'pothole ' + b.conf.toFixed(2);
       var lw = ctx.measureText(label).width + 6;
       ctx.fillStyle = '#2D7DD2';
@@ -601,10 +544,106 @@ var NamwonMap = (function () {
       ctx.fillText(label, b.x + 3, b.y - 3);
     });
 
-    // ── 4) 파일명 워터마크 ──
-    ctx.fillStyle = 'rgba(255,255,255,0.65)';
-    ctx.font = '9px Inter, sans-serif';
-    ctx.fillText(det.image_file || 'DJI_0001.JPG', 4, imgH - 4);
+    // 좌하단 워터마크
+    ctx.fillStyle = 'rgba(255,255,255,0.82)';
+    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.shadowBlur = 2;
+    ctx.font = 'bold 9px Inter, sans-serif';
+    ctx.fillText(det.image_file || 'DJI_0001.JPG', 5, imgH - 5);
+    ctx.shadowBlur = 0;
+  }
+
+  // Fallback: 타일 로드 실패 시 synthetic 배경
+  function _drawFallbackBase(ctx, det, imgW, imgH) {
+    var rand = _seedFrom((det && det.id) + '-fb');
+    var terrain = ctx.createRadialGradient(imgW * 0.35, imgH * 0.3, imgW * 0.1, imgW * 0.5, imgH * 0.5, imgW * 0.9);
+    terrain.addColorStop(0, '#6d8a3e');
+    terrain.addColorStop(0.4, '#58762f');
+    terrain.addColorStop(0.8, '#3e5a22');
+    terrain.addColorStop(1, '#2f4818');
+    ctx.fillStyle = terrain;
+    ctx.fillRect(0, 0, imgW, imgH);
+    for (var i = 0; i < 120; i++) {
+      var rx = rand() * imgW;
+      var ry = rand() * imgH;
+      ctx.fillStyle = 'rgba(30,60,20,' + (0.15 + rand() * 0.25).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.arc(rx, ry, 0.6 + rand() * 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // 대각선 도로
+    ctx.save();
+    ctx.translate(imgW / 2, imgH / 2);
+    ctx.rotate((rand() - 0.5) * 0.6 + Math.PI * 0.48 - Math.PI / 2);
+    var roadW = imgW * 0.36;
+    var roadH = imgH * 1.6;
+    var rg = ctx.createLinearGradient(-roadW / 2, 0, roadW / 2, 0);
+    rg.addColorStop(0, '#7a6a4e');
+    rg.addColorStop(0.5, '#b9a881');
+    rg.addColorStop(1, '#7a6a4e');
+    ctx.fillStyle = rg;
+    ctx.fillRect(-roadW / 2, -roadH / 2, roadW, roadH);
+    ctx.restore();
+  }
+
+  function drawBoundingBox(canvas, det, imgW, imgH) {
+    imgW = imgW || 320;
+    imgH = imgH || 200;
+    canvas.width = imgW;
+    canvas.height = imgH;
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, imgW, imgH);
+
+    // 1) 즉시 fallback 배경 그려두기 (타일 로딩 동안 빈 화면 방지)
+    _drawFallbackBase(ctx, det, imgW, imgH);
+    _drawBboxOverlay(ctx, det, imgW, imgH);
+
+    // 2) Vworld 위성 타일 fetch 시도
+    if (!det || typeof det.lat !== 'number' || typeof det.lng !== 'number') return;
+
+    var zoom = 18;
+    var tp = _latLngToTileXY(det.lat, det.lng, zoom);
+    var pxX = tp.x * 256; // 전역 픽셀 좌표 (분수 포함)
+    var pxY = tp.y * 256;
+
+    // 중심이 (imgW/2, imgH/2) 가 되도록 원점 offset
+    var offX = pxX - imgW / 2;
+    var offY = pxY - imgH / 2;
+
+    var startTX = Math.floor(offX / 256);
+    var startTY = Math.floor(offY / 256);
+    var endTX = Math.floor((offX + imgW - 1) / 256);
+    var endTY = Math.floor((offY + imgH - 1) / 256);
+
+    var tileList = [];
+    for (var tx = startTX; tx <= endTX; tx++) {
+      for (var ty = startTY; ty <= endTY; ty++) {
+        tileList.push({
+          x: tx,
+          y: ty,
+          url: 'https://api.vworld.kr/req/wmts/1.0.0/' + VWORLD_KEY + '/Satellite/' + zoom + '/' + ty + '/' + tx + '.jpeg'
+        });
+      }
+    }
+
+    Promise.all(tileList.map(function (t) { return _loadTileImage(t.url); }))
+      .then(function (imgs) {
+        // 타일 전부 로드 성공 → 배경 다시 그림
+        ctx.clearRect(0, 0, imgW, imgH);
+        tileList.forEach(function (t, idx) {
+          var drawX = t.x * 256 - offX;
+          var drawY = t.y * 256 - offY;
+          ctx.drawImage(imgs[idx], Math.round(drawX), Math.round(drawY), 256, 256);
+        });
+        // 살짝 어둡게 깔아서 박스 가독성 확보
+        ctx.fillStyle = 'rgba(0,0,0,0.08)';
+        ctx.fillRect(0, 0, imgW, imgH);
+        // bbox + 워터마크
+        _drawBboxOverlay(ctx, det, imgW, imgH);
+      })
+      .catch(function () {
+        // 타일 로드 실패 → fallback 유지 (이미 그려져 있음)
+      });
   }
 
   /* -------------------------------------------------------

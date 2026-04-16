@@ -628,6 +628,10 @@
   ]).then(function (results) {
     detectionsData = results[0];
     jobsData = results[1];
+
+    // ── 실제 남원 도로 좌표 따라 orthophoto 탐지 추가 생성 (데모용) ──
+    augmentOrthoDetections();
+
     // 이력 관리에서 저장한 처리 상태 오버라이드 반영
     try {
       var overrides = JSON.parse(localStorage.getItem('namwon-detection-overrides') || '{}');
@@ -649,6 +653,106 @@
     jobsData = { jobs: [] };
     initPage();
   });
+
+  // 남원 주요 도로 경로 (수동 샘플 — 실제 lat/lng 대략치)
+  var ROAD_PATHS = [
+    { name: '시청로',   addr: '전북 남원시 죽항동', pts: [
+      [35.4163, 127.3905], [35.4166, 127.3915], [35.4170, 127.3925], [35.4174, 127.3935]
+    ]},
+    { name: '광한북로', addr: '전북 남원시 광한동', pts: [
+      [35.4148, 127.3868], [35.4145, 127.3858], [35.4142, 127.3848], [35.4138, 127.3838]
+    ]},
+    { name: '요천로',   addr: '전북 남원시 천거동', pts: [
+      [35.4120, 127.3858], [35.4115, 127.3868], [35.4108, 127.3880], [35.4102, 127.3890]
+    ]},
+    { name: '용성로',   addr: '전북 남원시 용성동', pts: [
+      [35.4120, 127.3755], [35.4118, 127.3775], [35.4115, 127.3795], [35.4112, 127.3815]
+    ]},
+    { name: '양림길',   addr: '전북 남원시 양림동', pts: [
+      [35.4128, 127.3785], [35.4132, 127.3795], [35.4136, 127.3805]
+    ]},
+    { name: '향교길',   addr: '전북 남원시 향교동', pts: [
+      [35.4140, 127.3875], [35.4144, 127.3882], [35.4148, 127.3890]
+    ]},
+    { name: '춘향로',   addr: '전북 남원시 죽항동', pts: [
+      [35.4100, 127.3820], [35.4095, 127.3830], [35.4090, 127.3840]
+    ]},
+    { name: '금동3길',  addr: '전북 남원시 금동',   pts: [
+      [35.4208, 127.3860], [35.4212, 127.3868], [35.4216, 127.3876]
+    ]}
+  ];
+
+  function augmentOrthoDetections() {
+    if (!detectionsData || !detectionsData.detections) return;
+
+    var classes = [
+      { en: 'Pothole', ko: '포트홀' },
+      { en: 'Crack', ko: '크랙' },
+      { en: 'Patch', ko: '보수흔적' },
+      { en: 'Void_Suspected', ko: '공동의심' }
+    ];
+    var seed = 1234567;
+    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+
+    var nextId = detectionsData.detections.length + 200;
+    var newDets = [];
+    var newIds = [];
+
+    ROAD_PATHS.forEach(function (road) {
+      road.pts.forEach(function (pt, i) {
+        var cls = classes[Math.floor(rnd() * classes.length)];
+        var severityRoll = rnd();
+        var sev = severityRoll > 0.65 ? 'high' : severityRoll > 0.35 ? 'medium' : 'low';
+        var conf = 0.72 + rnd() * 0.24;
+        // 포트홀 / 공동의심은 심각도 상향
+        if (cls.en === 'Pothole' || cls.en === 'Void_Suspected') {
+          sev = severityRoll > 0.4 ? 'high' : 'medium';
+        }
+        var stRoll = rnd();
+        var status = stRoll > 0.65 ? '미처리' : stRoll > 0.35 ? '처리중' : '완료';
+        var det = {
+          id: 'DET-' + (nextId++),
+          model_type: 'orthophoto',
+          class_en: cls.en,
+          class_ko: cls.ko,
+          confidence: Math.round(conf * 100) / 100,
+          severity: sev,
+          lat: pt[0] + (rnd() - 0.5) * 0.0002,
+          lng: pt[1] + (rnd() - 0.5) * 0.0002,
+          address: road.addr + ' ' + road.name + ' ' + (i + 1),
+          detected_at: '2026-04-' + String(10 + Math.floor(rnd() * 6)).padStart(2, '0') + 'T' +
+                       String(9 + Math.floor(rnd() * 8)).padStart(2, '0') + ':' +
+                       String(Math.floor(rnd() * 60)).padStart(2, '0') + ':00',
+          status: status,
+          image_file: 'DJI_' + String(200 + nextId).padStart(4, '0') + '.JPG',
+          bbox: [80 + Math.floor(rnd() * 60), 60 + Math.floor(rnd() * 40), 260 + Math.floor(rnd() * 40), 180 + Math.floor(rnd() * 40)]
+        };
+        newDets.push(det);
+        newIds.push(det.id);
+      });
+    });
+
+    // detectionsData 에 추가
+    detectionsData.detections = detectionsData.detections.concat(newDets);
+
+    // summary 업데이트
+    if (detectionsData.summary) {
+      detectionsData.summary.total = detectionsData.detections.length;
+    }
+
+    // 가장 최근 orthophoto job 에 detection_ids 로 연결
+    if (jobsData && jobsData.jobs) {
+      var orthoJob = jobsData.jobs
+        .filter(function (j) { return j.source_type === 'orthophoto'; })
+        .sort(function (a, b) { return b.analyzed_at.localeCompare(a.analyzed_at); })[0];
+      if (orthoJob) {
+        orthoJob.detection_ids = (orthoJob.detection_ids || []).concat(newIds);
+        orthoJob.detection_count = orthoJob.detection_ids.length;
+        orthoJob.high_count = (orthoJob.high_count || 0) +
+          newDets.filter(function (d) { return d.severity === 'high'; }).length;
+      }
+    }
+  }
 
   function initPage() {
     // 진입 타입에 맞춰 탭 활성 상태 동기화
