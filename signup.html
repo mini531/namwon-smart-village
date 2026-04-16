@@ -34,26 +34,23 @@
       max-width: 620px;
     }
 
-    /* 상단 로고 (중앙 정렬) */
+    /* 상단 로고 (중앙 정렬, 검은 버전은 invert 필터로 흰→검) */
     .top-brand {
       display: flex;
       justify-content: center;
-      margin-bottom: 26px;
+      margin-bottom: 28px;
     }
     .top-brand a {
       display: inline-flex;
-      align-items: center;
-      padding: 10px 20px;
-      background: var(--color-text);
-      border-radius: 12px;
       text-decoration: none;
     }
     .top-brand img {
-      height: 26px;
+      height: 28px;
       width: auto;
-      max-width: 200px;
+      max-width: 220px;
       object-fit: contain;
       display: block;
+      filter: invert(1);
     }
 
     .signup-title {
@@ -79,57 +76,6 @@
       border-radius: 16px;
       box-shadow: 0 18px 48px rgba(15, 37, 64, 0.07);
       padding: 36px 40px 32px;
-    }
-
-    /* 단계 인디케이터 */
-    .step-indicator {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin: 0 0 32px;
-    }
-    .step-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--color-text-muted);
-    }
-    .step-item .si-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--color-surface-2);
-      border: 1.5px solid var(--color-border);
-      color: var(--color-text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 800;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-    .step-item .si-label {
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .step-item.active .si-num {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-      color: #fff;
-    }
-    .step-item.active .si-label { color: var(--color-primary); }
-    .step-item.done .si-num {
-      background: var(--color-text);
-      border-color: var(--color-text);
-      color: #fff;
-    }
-    .step-item.done .si-label { color: var(--color-text); }
-    .step-divider {
-      width: 40px;
-      height: 1px;
-      background: var(--color-border);
     }
 
     /* ── 뷰 토글 ── */
@@ -394,24 +340,6 @@
     </div>
 
     <div class="signup-card">
-
-      <!-- 단계 표시 -->
-      <div class="step-indicator" id="step-indicator">
-        <div class="step-item active" data-step="1">
-          <span class="si-num">1</span>
-          <span class="si-label">약관 동의</span>
-        </div>
-        <div class="step-divider"></div>
-        <div class="step-item" data-step="2">
-          <span class="si-num">2</span>
-          <span class="si-label">정보 입력</span>
-        </div>
-        <div class="step-divider"></div>
-        <div class="step-item" data-step="3">
-          <span class="si-num">3</span>
-          <span class="si-label">신청 완료</span>
-        </div>
-      </div>
 
       <!-- ═════════ Step 1: 약관 동의 ═════════ -->
       <section class="step-view active" id="step-view-1">
