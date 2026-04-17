@@ -3363,25 +3363,6 @@ select {
   justify-content: space-between;
 }
 
-.result-card .rc-conf {
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-.conf-bar {
-  height: 5px;
-  background: #E2EAF4;
-  border-radius: 3px;
-  margin-top: 5px;
-  overflow: hidden;
-}
-
-.conf-fill {
-  height: 100%;
-  background: var(--color-accent);
-  border-radius: 3px;
-}
-
 /* =========================================================
    OpenLayers 기본 컨트롤
    ========================================================= */

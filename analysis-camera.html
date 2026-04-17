@@ -545,31 +545,6 @@
       min-width: 0;
       font-family: 'Inter', sans-serif;
     }
-    .result-row .rr-conf {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .result-row .rr-conf-bar {
-      flex: 1;
-      height: 5px;
-      background: #E9ECEF;
-      border-radius: 2px;
-      overflow: hidden;
-      min-width: 0;
-    }
-    .result-row .rr-conf-bar > span {
-      display: block;
-      height: 100%;
-      border-radius: 2px;
-    }
-    .result-row .rr-conf-val {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--color-text);
-      min-width: 30px;
-      text-align: right;
-    }
     .result-row .rr-frame {
       font-size: 12px;
       color: var(--color-text-muted);
@@ -638,8 +613,7 @@
         gap: 8px;
         padding: 8px 14px;
       }
-      .result-row .rr-meta,
-      .result-row .rr-conf { display: none; }
+      .result-row .rr-meta { display: none; }
       .result-row .rr-frame { font-size: 11px; }
     }
 
@@ -941,15 +915,6 @@
 
         <div class="slider-row">
           <div class="slider-header">
-            <span class="config-label">신뢰도 임계값</span>
-            <span class="slider-value" id="conf-val-disp">0.45</span>
-          </div>
-          <input type="range" class="config-slider" id="conf-threshold" min="10" max="90" value="45"
-            oninput="document.getElementById('conf-val-disp').textContent=(this.value/100).toFixed(2)">
-        </div>
-
-        <div class="slider-row">
-          <div class="slider-header">
             <span class="config-label">NMS IoU</span>
             <span class="slider-value" id="iou-val-disp">0.50</span>
           </div>
@@ -1030,7 +995,6 @@
             <div></div>
             <div>클래스</div>
             <div>주소</div>
-            <div>신뢰도</div>
             <div>프레임 / 시각</div>
           </div>
           <div id="result-rows"></div>
@@ -1327,10 +1291,6 @@
       ctx.textAlign = 'left';
       ctx.fillText(label, x + 4, y - 5);
 
-      // 신뢰도
-      ctx.fillStyle = 'rgba(255,255,255,0.9)';
-      ctx.font = '11px Inter, sans-serif';
-      ctx.fillText(det.confidence, x + lw + 4, y - 5);
     });
 
     // 상단 타임스탬프
@@ -1540,21 +1500,14 @@
       row.className = 'result-row' + (det ? '' : ' no-detect');
       row.dataset.frameIdx = f.idx;
 
-      var confPct = det ? Math.round(parseFloat(det.confidence) * 100) : 0;
       var sevColor = det ? sevColors[f.severity] : '#CED4DA';
       var className = det ? det.class_ko : '이상 없음';
       var addr = det ? det.address : '–';
-      var confHtml = det
-        ? '<div class="rr-conf-bar"><span style="width:' + confPct + '%;background:' + sevColor + ';"></span></div>' +
-          '<div class="rr-conf-val">' + confPct + '%</div>'
-        : '<div class="rr-conf-bar"><span style="width:0%;"></span></div>' +
-          '<div class="rr-conf-val">–</div>';
 
       row.innerHTML =
         '<div class="rr-sev" style="background:' + sevColor + ';"></div>' +
         '<div class="rr-class" title="' + className + (det ? ' · ' + sevKo[f.severity] : '') + '">' + className + '</div>' +
         '<div class="rr-meta" title="' + addr + '">' + addr + '</div>' +
-        '<div class="rr-conf">' + confHtml + '</div>' +
         '<div class="rr-frame">#' + f.frameNo + ' · ' + f.timeStr + '</div>';
 
       (function (frame, rowEl) {

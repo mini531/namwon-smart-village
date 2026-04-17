@@ -527,7 +527,7 @@
         fill: new ol.style.Fill({ color: col.fill }),
         stroke: new ol.style.Stroke({ color: col.stroke, width: 2.2 }),
         text: new ol.style.Text({
-          text: (det.class_ko || det.class_en) + ' ' + det.confidence.toFixed(2),
+          text: (det.class_ko || det.class_en),
           font: 'bold 11px Inter, sans-serif',
           fill: new ol.style.Fill({ color: '#fff' }),
           stroke: new ol.style.Stroke({ color: col.stroke, width: 3 }),
@@ -641,8 +641,7 @@
         (NamwonMap.CLASS_KO[det.class_en] || det.class_en) +
         '<span class="badge badge-' + det.severity + '" style="font-size:12px;">' + NamwonMap.SEVERITY_KO[det.severity] + '</span>' +
         '</div>' +
-        '<div class="rc-conf">신뢰도: ' + det.confidence + '</div>' +
-        '<div class="conf-bar"><div class="conf-fill" style="width:' + (det.confidence * 100) + '%;"></div></div>';
+        '</div>';
       area.appendChild(card);
     });
   }

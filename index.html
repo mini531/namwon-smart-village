@@ -878,7 +878,6 @@
                 <th>모델</th>
                 <th>위치</th>
                 <th>탐지일</th>
-                <th style="text-align:right;padding-right:22px;">신뢰도</th>
               </tr>
             </thead>
             <tbody id="priority-tbody"></tbody>
@@ -940,7 +939,7 @@
   function renderPriority() {
     var priority = _allDets
       .filter(function (d) { return d.severity === 'high' && d.status === '미처리'; })
-      .sort(function (a, b) { return b.confidence - a.confidence; })
+      .sort(function (a, b) { return a.detected_at < b.detected_at ? 1 : -1; })
       .slice(0, 6);
 
     var ptbody = document.getElementById('priority-tbody');
@@ -952,7 +951,6 @@
     priority.forEach(function (det) {
       var modelLabel = det.model_type === 'orthophoto' ? '정사영상' : '카메라';
       var dateStr = det.detected_at.substring(0, 10).replace(/-/g, '.');
-      var confPct = Math.round(det.confidence * 100);
       var tr = document.createElement('tr');
       tr.className = 'clickable-row';
       tr.innerHTML =
@@ -960,8 +958,7 @@
         '<td style="font-weight:700;">' + det.class_ko + '</td>' +
         '<td><span class="badge">' + modelLabel + '</span></td>' +
         '<td style="font-size:12px;color:var(--color-text-muted);">' + det.address + '</td>' +
-        '<td style="font-size:12px;color:var(--color-text-muted);">' + dateStr + '</td>' +
-        '<td style="text-align:right;padding-right:22px;font-weight:700;color:var(--color-primary);">' + confPct + '%</td>';
+        '<td style="font-size:12px;color:var(--color-text-muted);">' + dateStr + '</td>';
       tr.addEventListener('click', function () {
         if (!window.DetectionModal) return;
         DetectionModal.open(det, {

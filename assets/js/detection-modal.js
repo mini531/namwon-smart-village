@@ -53,11 +53,10 @@
             '<button class="close-btn" data-role="close">×</button>' +
           '</div>' +
           '<div class="modal-body">' +
-            '<canvas class="modal-thumb" data-role="thumb" width="500" height="180"></canvas>' +
+            '<img class="modal-thumb" data-role="thumb" style="width:100%;border-radius:6px;object-fit:cover;max-height:180px;" alt="썸네일">' +
             '<div class="modal-info-grid">' +
               '<div class="info-item"><div class="label">탐지 ID</div><div class="value" data-f="id">-</div></div>' +
               '<div class="info-item"><div class="label">탐지 클래스</div><div class="value" data-f="class">-</div></div>' +
-              '<div class="info-item"><div class="label">신뢰도</div><div class="value" data-f="conf">-</div></div>' +
               '<div class="info-item"><div class="label">심각도</div><div class="value" data-f="severity">-</div></div>' +
               '<div class="info-item full"><div class="label">위치</div><div class="value" data-f="addr">-</div></div>' +
               '<div class="info-item"><div class="label">위도</div><div class="value" data-f="lat">-</div></div>' +
@@ -119,75 +118,6 @@
     });
   }
 
-  function drawThumb(canvas, d) {
-    var ctx = canvas.getContext('2d');
-    var w = canvas.width, h = canvas.height;
-
-    var grd = ctx.createLinearGradient(0, 0, 0, h);
-    if (d.model_type === 'orthophoto') {
-      grd.addColorStop(0, '#4a7c59');
-      grd.addColorStop(0.5, '#3d6b4a');
-      grd.addColorStop(1, '#2a4f36');
-    } else {
-      grd.addColorStop(0, '#0d1520');
-      grd.addColorStop(0.4, '#1e3050');
-      grd.addColorStop(1, '#1a2535');
-    }
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, w, h);
-
-    if (d.model_type === 'orthophoto') {
-      ctx.fillStyle = '#5a6370';
-      ctx.fillRect(w * 0.25, 0, w * 0.5, h);
-      ctx.fillStyle = '#4e5765';
-      ctx.fillRect(w * 0.32, 0, w * 0.36, h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([20, 12]);
-      ctx.beginPath();
-      ctx.moveTo(w * 0.5, 0);
-      ctx.lineTo(w * 0.5, h);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    } else {
-      ctx.fillStyle = '#2a3444';
-      ctx.fillRect(0, h * 0.4, w, h * 0.6);
-      ctx.strokeStyle = 'rgba(255,255,220,0.7)';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([30, 15]);
-      ctx.beginPath();
-      ctx.moveTo(w * 0.5, h * 0.4);
-      ctx.lineTo(w * 0.5, h);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(w * 0.15, h);
-      ctx.lineTo(w * 0.4, h * 0.4);
-      ctx.moveTo(w * 0.85, h);
-      ctx.lineTo(w * 0.6, h * 0.4);
-      ctx.stroke();
-    }
-
-    var col = d.severity === 'high' ? '#E63946' : d.severity === 'medium' ? '#F4A261' : '#2A9D8F';
-    var bx = w * 0.34, by = h * 0.42, bw = w * 0.32, bh = h * 0.34;
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 3;
-    ctx.strokeRect(bx, by, bw, bh);
-    ctx.fillStyle = col;
-    ctx.globalAlpha = 0.18;
-    ctx.fillRect(bx, by, bw, bh);
-    ctx.globalAlpha = 1;
-
-    var label = d.class_ko + ' ' + (d.confidence || 0).toFixed(2);
-    ctx.font = 'bold 13px Inter, sans-serif';
-    var tw = ctx.measureText(label).width + 12;
-    ctx.fillStyle = col;
-    ctx.fillRect(bx, by - 22, tw, 22);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(label, bx + 6, by - 7);
-  }
 
   function renderLog() {
     var logEl = state.modal.querySelector('[data-role="log"]');
@@ -209,7 +139,6 @@
     var m = state.modal;
     m.querySelector('[data-f="id"]').textContent = d.id;
     m.querySelector('[data-f="class"]').textContent = d.class_ko + (d.class_en ? ' (' + d.class_en + ')' : '');
-    m.querySelector('[data-f="conf"]').textContent = Math.round(d.confidence * 100) + '%';
     m.querySelector('[data-f="severity"]').innerHTML = '<span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + SEVERITY_KO[d.severity] + '</span>';
     m.querySelector('[data-f="addr"]').textContent = d.address || '-';
     m.querySelector('[data-f="lat"]').textContent = (d.lat != null) ? d.lat.toFixed(6) : '-';
@@ -220,7 +149,9 @@
     m.querySelector('[data-f="status"]').innerHTML = '<span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span>';
     m.querySelector('[data-f="file"]').textContent = d.image_file || '-';
 
-    drawThumb(m.querySelector('[data-role="thumb"]'), d);
+    var imgIdx = (parseInt(d.id.replace(/\D/g, ''), 10) || 0) % 6 + 1;
+    m.querySelector('[data-role="thumb"]').src =
+      (d.model_type === 'camera' ? 'assets/images/camera_0' : 'assets/images/drone_0') + imgIdx + '.png';
 
     m.querySelectorAll('.m-status-step').forEach(function (btn) {
       btn.classList.toggle('active', btn.dataset.status === d.status);

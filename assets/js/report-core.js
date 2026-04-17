@@ -316,7 +316,7 @@
       var sevOrder = { high: 0, medium: 1, low: 2 };
       var sa = sevOrder[a.severity], sb = sevOrder[b.severity];
       if (sa !== sb) return sa - sb;
-      return b.confidence - a.confidence;
+      return a.detected_at < b.detected_at ? 1 : -1;
     });
 
     tbody.innerHTML = '';
@@ -325,7 +325,7 @@
     if (titleEl) titleEl.textContent = '6. 탐지 객체 목록 (총 ' + sorted.length + '건)';
 
     if (sorted.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:14px;color:#94A3B8;">탐지된 객체가 없습니다.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:14px;color:#94A3B8;">탐지된 객체가 없습니다.</td></tr>';
       return;
     }
 
@@ -334,7 +334,6 @@
 
     sorted.forEach(function (d) {
       var date = d.detected_at.substring(0, 10).replace(/-/g, '.');
-      var conf = (d.confidence * 100).toFixed(0) + '%';
       tbody.insertAdjacentHTML('beforeend',
         '<tr>' +
         '<td style="color:#64748B;">' + d.id + '</td>' +
@@ -342,7 +341,6 @@
         '<td style="text-align:center;color:' + sevCol[d.severity] + ';font-weight:700;">' + sevKo[d.severity] + '</td>' +
         '<td style="font-size:12px;">' + d.address + '</td>' +
         '<td style="">' + date + '</td>' +
-        '<td style="font-weight:700;color:#C8102E;">' + conf + '</td>' +
         '<td>' + d.status + '</td>' +
         '</tr>'
       );
