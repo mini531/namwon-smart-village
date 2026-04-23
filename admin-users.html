@@ -301,18 +301,22 @@
         </div>
       </div>
 
-      <!-- 액션: 계정 상태에 따라 탈퇴/삭제 중 하나만 노출.
-           - 정상 (active)   → 탈퇴 버튼
-           - 탈퇴 (withdrawn) → 삭제 버튼 (완전 삭제, 서로 다른 기능) -->
+      <!-- 푸터 액션: 좌측 목록 / 우측 삭제·저장 (저장 좌측에 삭제) -->
       <div class="form-actions form-actions--split">
         <button type="button" class="btn btn-secondary" id="d-list">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           목록
         </button>
-        <button type="button" class="btn btn-primary" id="d-save">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          저장
-        </button>
+        <div class="form-actions-group">
+          <button type="button" class="btn btn-danger" id="d-delete-footer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
+            삭제
+          </button>
+          <button type="button" class="btn btn-primary" id="d-save">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            저장
+          </button>
+        </div>
       </div>
     </section>
 
@@ -858,6 +862,7 @@
   });
   document.getElementById('d-save').addEventListener('click', saveDetail);
   document.getElementById('d-reset-fails').addEventListener('click', resetPwdFails);
+  document.getElementById('d-delete-footer').addEventListener('click', deleteUser);
   // 인라인 액션: 상태 값 우측 버튼들
   document.getElementById('d-inline-withdraw').addEventListener('click', withdrawUser);
   document.getElementById('d-inline-delete').addEventListener('click', deleteUser);
