@@ -137,8 +137,8 @@ html, body { overflow: hidden; }
 }
 .main-grid { margin-bottom: 20px; }
 
-.main-grid > .dash-card,
-.bottom-grid > .dash-card {
+.main-grid > .card,
+.bottom-grid > .card {
   grid-column: span 2;
 }
 
@@ -242,7 +242,7 @@ html, body { overflow: hidden; }
 /* (위 공통 그리드로 통합됨) */
 
 /* ── 섹션 카드 ── */
-.dash-card {
+.card {
   background: var(--color-surface);
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--color-border);
@@ -250,7 +250,7 @@ html, body { overflow: hidden; }
   overflow: hidden;
 }
 
-.dash-card-header {
+.card-header {
   padding: 0 22px;
   height: 62px;
   min-height: 62px;
@@ -262,7 +262,7 @@ html, body { overflow: hidden; }
   box-sizing: border-box;
 }
 
-.dash-card-title {
+.card-title {
   font-size: 17px;
   font-weight: 700;
   color: var(--color-text);
@@ -271,9 +271,9 @@ html, body { overflow: hidden; }
   gap: 10px;
 }
 
-.dash-card-title svg { color: var(--color-primary); }
+.card-title svg { color: var(--color-primary); }
 
-.dash-card-body { padding: 20px 22px; }
+.card-body { padding: 20px 22px; }
 
 /* ── AI 분석 과제 카드 (실사 썸네일 상단/제목 하단) ── */
 .model-select-grid {
@@ -323,12 +323,12 @@ html, body { overflow: hidden; }
    대시보드 inline style 대체 클래스
    ============================================================ */
 
-/* dash-card-body 패딩 변형 */
-.dash-card-body--flush { padding: 0; }
-.dash-card-body--sm { padding: 14px 18px; }
+/* .card-body 패딩 변형 */
+.card-body--flush { padding: 0; }
+.card-body--sm { padding: 14px 18px; }
 
 /* bottom-grid: 풀 폭 단일 카드 */
-.bottom-grid .dash-card--span-4 { grid-column: span 4; }
+.bottom-grid .card--span-4 { grid-column: span 4; }
 
 /* 빠른 이동 바 */
 .quick-nav-row {
@@ -691,8 +691,8 @@ html, body { overflow: hidden; }
   .bottom-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .main-grid > .dash-card,
-  .bottom-grid > .dash-card {
+  .main-grid > .card,
+  .bottom-grid > .card {
     grid-column: span 2;
   }
   .kpi-grid {
@@ -715,8 +715,8 @@ html, body { overflow: hidden; }
     grid-template-columns: 1fr;
     gap: 14px;
   }
-  .main-grid > .dash-card,
-  .bottom-grid > .dash-card {
+  .main-grid > .card,
+  .bottom-grid > .card {
     grid-column: span 1;
   }
   .kpi-grid {
@@ -736,8 +736,8 @@ html, body { overflow: hidden; }
     border-top: none;
   }
   .kpi-grid .kpi-value { font-size: 38px; }
-  .dash-card-header { padding: 14px 16px; }
-  .dash-card-body { padding: 14px 16px; }
+  .card-header { padding: 14px 16px; }
+  .card-body { padding: 14px 16px; }
   .model-select-card { grid-template-columns: 1fr; }
   .model-thumb { aspect-ratio: 16 / 9; min-height: auto; }
   .notice-strip { padding: 10px 14px; gap: 10px; }

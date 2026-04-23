@@ -514,6 +514,9 @@ html, body { overflow: hidden; }
 .admin-form-view.hidden,
 .admin-view-view.hidden { display: none; }
 
+/* .card / .card-header / .card-title / .card-body / .card-meta
+   는 style.css 전역 정의. 중복 금지. */
+
 /* 상세 여러 카드 나열 (사용자 상세 같이 소속/계정/권한 3개 카드 나열) */
 .admin-card-grid {
   display: grid;

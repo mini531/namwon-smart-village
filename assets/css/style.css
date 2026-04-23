@@ -696,9 +696,55 @@ select {
 }
 
 /* =========================================================
+   공용 카드 — 전역 .card / .card-header / .card-title / .card-body
+   대시보드·관리자·게시판·사용자 페이지 전반에서 공유.
+   header 62px 고정, body 는 기본 20px 22px 패딩.
+   ========================================================= */
+.card {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 3px rgba(15, 37, 64, 0.04);
+  overflow: hidden;
+}
+.card-header {
+  padding: 0 22px;
+  height: 62px;
+  min-height: 62px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  gap: 12px;
+}
+.card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-title svg { color: var(--color-primary); }
+.card-meta {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+.card-body { padding: 20px 22px; }
+.card-body--sm { padding: 14px 18px; }
+.card-body--flush { padding: 0; }
+@media (max-width: 900px) {
+  .card-header { padding: 0 16px; }
+  .card-body { padding: 14px 16px; }
+}
+
+/* =========================================================
    테이블
    ========================================================= */
-/* 공용 카드 + 헤더 (대시보드 .dash-card 와 동일한 룩) */
+/* 공용 카드 변형 — 테이블 중심 카드 (본문 안쪽에 data-table 이 꽉 참) */
 .table-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -3907,9 +3953,9 @@ html, body { overflow-x: hidden; }
 .kpi-grid > *,
 .main-grid > *,
 .bottom-grid > * { min-width: 0; }
-.dash-card,
-.dash-card-body,
-.dash-card-header { min-width: 0; }
+.card,
+.card-body,
+.card-header { min-width: 0; }
 
 /* 넓은 테이블은 카드 안에서 가로 스크롤 — 페이지 전체가 밀리지 않게 */
 .table-scroll {
