@@ -439,11 +439,13 @@ html, body { overflow: hidden; }
 .form-actions-group { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* 상세 뷰 카드도 동일 — .card + .card-body--form 공용 사용. */
+/* view-row — 라벨이 값 위에 오는 스택 레이아웃. 라벨 길이에 영향받지
+   않도록 전역 통일 (info-row 와 동일 원칙). */
 .view-row {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 12px 20px;
-  padding: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0;
   border-bottom: 1px solid #F1F3F5;
   font-size: 14px;
 }
@@ -451,10 +453,15 @@ html, body { overflow: hidden; }
 .view-row .label {
   color: var(--color-text-muted);
   font-weight: 700;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.3;
 }
-.view-row .value { color: var(--color-text); }
-.view-row.block { grid-template-columns: 1fr; }
+.view-row .value {
+  color: var(--color-text);
+  line-height: 1.5;
+  word-break: break-word;
+}
+.view-row.block { gap: 8px; }
 .view-content {
   font-size: 14px;
   line-height: 1.85;
