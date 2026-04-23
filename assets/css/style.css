@@ -764,8 +764,11 @@ select {
 .card-body { padding: 20px 22px; }
 .card-body--sm { padding: 14px 18px; }
 .card-body--flush { padding: 0; }
-/* 자연 흐름에서 인접한 카드는 간격 — grid 컨테이너 안에서는 gap 이 우선. */
+/* 자연 흐름에서 인접한 카드는 간격. Grid 컨테이너(kpi/main/bottom-grid 등)
+   안에서는 gap 이 이미 간격을 주고, margin 은 track 높이에서 깎여 카드
+   높이가 달라 보이므로 :is()로 명시 제외. */
 .card + .card { margin-top: 16px; }
+:is(.kpi-grid, .main-grid, .bottom-grid, .admin-card-grid) > .card + .card { margin-top: 0; }
 /* 작은 카드 변형 (사용자 상세의 소속/계정/권한 3카드 등) */
 .card-header--sm { height: auto; min-height: 0; padding: 14px 18px; }
 .card-header--sm .card-title { font-size: 14px; }
