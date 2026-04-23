@@ -9,10 +9,10 @@
 :root {
   --color-primary: #C8102E;
   --color-accent: #C8102E;
-  /* danger 는 primary 와 같은 계열(빨강)이되 훨씬 어두운 와인 톤으로
-     구분. 같은 #C8102E 로 두면 등록/삭제 버튼이 식별 불가능. */
-  --color-danger: #6D0D1E;
-  --color-danger-hover: #4A0815;
+  /* danger 는 primary 와 채도는 비슷하되 밝기가 더 높은 코랄 레드로
+     분리. 같은 #C8102E 로 두면 등록/삭제 버튼이 식별 불가능. */
+  --color-danger: #FF6B6B;
+  --color-danger-hover: #FF5252;
   --color-warning: #868E96;
   --color-success: #495057;
   --color-page-bg: #F8F9FA;
