@@ -445,26 +445,7 @@ html, body { overflow: hidden; }
   max-width: 150px;
 }
 .date-range .sep { color: var(--color-text-muted); font-weight: 700; flex-shrink: 0; }
-.date-range .quick-btn {
-  padding: 6px 9px;
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  color: var(--color-text);
-  border-radius: var(--border-radius);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.15s;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-.date-range .quick-btn:hover:not(.active) { border-color: var(--color-text); color: var(--color-text); }
-.date-range .quick-btn.active {
-  background: var(--color-text);
-  border-color: var(--color-text);
-  color: #fff;
-}
+/* .board-quick-btn 은 style.css 공용. contact.html 은 .board-quick-btn 사용 */
 
 .filter-actions { display: flex; gap: 6px; }
 
@@ -548,5 +529,5 @@ html, body { overflow: hidden; }
     max-width: none;
   }
   .date-range .sep { display: none; }
-  .date-range .quick-btn { flex: 0 1 auto; }
+  .date-range .board-quick-btn { flex: 0 1 auto; }
 }
