@@ -201,8 +201,8 @@
               <div class="k-value"><span id="kpi-unprocessed">0</span><span class="k-unit">건</span></div>
             </div>
             <div class="gc-kpi">
-              <div class="k-label">선택 작업</div>
-              <div class="k-value"><span id="kpi-jobs">0</span><span class="k-unit">건</span></div>
+              <div class="k-label">처리중</div>
+              <div class="k-value"><span id="kpi-processing">0</span><span class="k-unit">건</span></div>
             </div>
           </div>
         </div>
@@ -2423,12 +2423,10 @@
     var unproc = dets.filter(function (d) { return d.status === '미처리'; }).length;
     var proc = dets.filter(function (d) { return d.status === '처리중'; }).length;
     var done = dets.filter(function (d) { return d.status === '완료'; }).length;
-    var selectedJobs = getFilteredJobs().filter(function (j) { return selectedJobIds.has(j.job_id); }).length;
-
     document.getElementById('kpi-total').textContent = dets.length;
     document.getElementById('kpi-high').textContent = high;
     document.getElementById('kpi-unprocessed').textContent = unproc;
-    document.getElementById('kpi-jobs').textContent = selectedJobs;
+    document.getElementById('kpi-processing').textContent = proc;
 
     // 처리 상태
     document.getElementById('stat-unproc').textContent = unproc + '건';
