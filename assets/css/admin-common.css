@@ -505,13 +505,14 @@ html, body { overflow: hidden; }
 .admin-card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 .admin-card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
 /* info-row — 라벨 위, 값 아래의 스택 레이아웃. 라벨 길이에 영향받지 않음.
-   긴 라벨(비밀번호 실패 횟수 등) 도 잘리지 않고 자연스럽게 표시. */
+   전역 가독성: 라벨 12px(muted) / 값 14px(본문 크기) — 다른 상세 뷰와
+   동일한 본문 읽기 크기 유지. */
 .info-row {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px 0;
-  font-size: 13px;
+  gap: 6px;
+  padding: 9px 0;
+  font-size: 14px;
 }
 .info-row .info-label {
   color: var(--color-text-muted);
@@ -521,11 +522,11 @@ html, body { overflow: hidden; }
 }
 .info-row .info-value {
   color: var(--color-text);
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: 14px;
+  line-height: 1.45;
   word-break: break-all;
 }
-.info-row .form-control { padding: 6px 10px; font-size: 13px; }
+.info-row .form-control { padding: 7px 10px; font-size: 14px; }
 /* 한 행에 2개 서브 필드(라벨+값 쌍) 를 나란히 배치 — 처리자/처리일시 등 */
 .info-row--split {
   flex-direction: row;

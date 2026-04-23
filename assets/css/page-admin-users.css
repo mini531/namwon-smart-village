@@ -31,12 +31,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
   background: var(--color-surface);
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-text);
   transition: all 0.12s;
 }
