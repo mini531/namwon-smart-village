@@ -155,6 +155,8 @@
               <option value="농업기술센터">농업기술센터</option>
               <option value="환경관리과">환경관리과</option>
               <option value="기획감사실">기획감사실</option>
+              <option value="직속기관">직속기관</option>
+              <option value="외부">외부</option>
             </select>
           </div>
           <div class="ic-row"><span class="ic-label">직위</span>
@@ -301,70 +303,62 @@
     { id: 21, email: 'choi.ys@namwon.go.kr',   name: '최영수', phone: '063-620-9320', dept: '기획감사실',   rank: '실장',   status: 'withdrawn', expires: '',           pwdFails: 0, joined: '2024-12-18T13:15:00', lastLogin: '2025-12-30T10:14:57', action: 'approved', actionBy: '김관리',        actionAt: '2024-12-18T14:02:00', roles: [] }
   ];
 
-  // 사용자별 로그인 이력 시드 (id → array). 실제 분포: 성공 비율 높고,
-  // 비정상/실패는 일부 사용자에 집중.
+  // 사용자별 로그인 이력 시드 (id → array). 새 시드의 id 기준.
   var LOGIN_HISTORY = {
     1: [
       { loginId: 'admin@namwon.go.kr', ip: '211.252.232.5',  success: true, reason: '', at: '2026-04-23T08:12:00' },
-      { loginId: 'admin@namwon.go.kr', ip: '211.252.232.5',  success: true, reason: '', at: '2026-04-22T08:05:00' },
-      { loginId: 'admin@namwon.go.kr', ip: '211.252.232.5',  success: true, reason: '', at: '2026-04-21T08:12:00' }
+      { loginId: 'admin@namwon.go.kr', ip: '211.252.232.5',  success: true, reason: '', at: '2026-04-22T08:05:00' }
     ],
     2: [
       { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',               at: '2026-04-22T17:05:23' },
       { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',               at: '2026-04-22T09:02:11' },
-      { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',               at: '2026-04-21T09:15:30' },
       { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치', at: '2026-04-19T10:12:44' }
     ],
     3: [
-      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',                at: '2026-03-18T10:24:07' },
-      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T16:00:00' },
-      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T15:59:30' },
-      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T15:58:50' },
-      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',                at: '2026-03-04T09:18:22' }
+      { loginId: 'ngii@kakao.com', ip: '211.252.232.33', success: true,  reason: '',                at: '2026-04-22T10:12:05' },
+      { loginId: 'ngii@kakao.com', ip: '211.252.232.33', success: true,  reason: '',                at: '2026-04-10T09:40:00' },
+      { loginId: 'ngii@kakao.com', ip: '211.252.232.33', success: false, reason: '비밀번호 불일치',  at: '2026-04-02T11:05:12' }
     ],
     4: [
-      { loginId: 'hanlee@namwon.go.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-04-22T09:48:41' },
-      { loginId: 'hanlee@namwon.go.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-04-20T09:50:02' },
-      { loginId: 'hanlee@namwon.go.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-04-18T09:41:23' }
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', success: true,  reason: '',                at: '2026-04-21T11:04:12' },
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T16:00:00' },
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T15:59:30' },
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T15:58:50' },
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', success: true,  reason: '',                at: '2026-03-04T09:18:22' }
     ],
     5: [
-      { loginId: 'parkjs@namwon.go.kr', ip: '211.252.232.19', success: true, reason: '', at: '2026-04-21T15:32:10' },
-      { loginId: 'parkjs@namwon.go.kr', ip: '211.252.232.19', success: true, reason: '', at: '2026-04-20T15:11:09' }
+      { loginId: 'dbwjdakrso4235@gmail.com', ip: '211.252.232.42', success: true, reason: '', at: '2026-04-20T09:48:10' }
     ],
     6: [
+      { loginId: 'test8@korea.kr', ip: '211.252.232.50', success: true, reason: '', at: '2026-03-11T09:12:30' }
+    ],
+    7: [
+      { loginId: 'hanlee@namwon.go.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-04-22T09:48:41' },
+      { loginId: 'hanlee@namwon.go.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-04-20T09:50:02' }
+    ],
+    9: [
       { loginId: 'ohgilsu@namwon.go.kr', ip: '211.252.232.20', success: true,  reason: '',                at: '2026-04-20T11:12:55' },
       { loginId: 'ohgilsu@namwon.go.kr', ip: '211.252.232.20', success: false, reason: '비밀번호 불일치',  at: '2026-04-15T10:40:02' }
     ],
-    8: [
-      { loginId: 'noh.ms@namwon.go.kr', ip: '211.252.232.88', success: true, reason: '', at: '2026-04-22T10:40:19' },
-      { loginId: 'noh.ms@namwon.go.kr', ip: '211.252.232.88', success: true, reason: '', at: '2026-04-21T10:33:02' }
+    11: [
+      { loginId: 'noh.ms@namwon.go.kr', ip: '211.252.232.88', success: true, reason: '', at: '2026-04-22T10:40:19' }
     ],
-    10: [
-      { loginId: 'chnam@namwon.go.kr', ip: '211.252.232.101', success: true, reason: '', at: '2026-04-22T08:55:41' },
-      { loginId: 'chnam@namwon.go.kr', ip: '211.252.232.101', success: true, reason: '', at: '2026-04-19T08:58:10' }
-    ],
-    14: [
-      { loginId: 'hyun.mk@namwon.go.kr', ip: '211.252.232.14', success: true,  reason: '',                at: '2026-04-22T13:50:14' },
-      { loginId: 'hyun.mk@namwon.go.kr', ip: '211.252.232.14', success: false, reason: '비밀번호 불일치',  at: '2026-04-21T17:02:00' },
-      { loginId: 'hyun.mk@namwon.go.kr', ip: '211.252.232.14', success: false, reason: '비밀번호 불일치',  at: '2026-04-21T17:01:30' }
-    ],
-    17: [
+    19: [
       { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', success: false, reason: '비밀번호 5회 초과로 잠금', at: '2025-12-24T10:08:05' },
       { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', success: false, reason: '비밀번호 불일치', at: '2025-12-24T10:08:00' }
     ]
   };
 
   var PWD_HISTORY = {
-    3: [
-      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T16:00:00' },
-      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T15:59:30' },
-      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T15:58:50' }
+    4: [
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T16:00:00' },
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T15:59:30' },
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T15:58:50' }
     ],
-    14: [
-      { loginId: 'hyun.mk@namwon.go.kr', ip: '211.252.232.14', reason: '비밀번호 불일치', at: '2026-04-21T17:02:00' },
-      { loginId: 'hyun.mk@namwon.go.kr', ip: '211.252.232.14', reason: '비밀번호 불일치', at: '2026-04-21T17:01:30' }
+    9: [
+      { loginId: 'ohgilsu@namwon.go.kr', ip: '211.252.232.20', reason: '비밀번호 불일치', at: '2026-04-15T10:40:02' }
     ],
-    17: [
+    19: [
       { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:07:20' },
       { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:07:35' },
       { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:07:50' },
@@ -482,8 +476,8 @@
   }
 
   var VIEW_TITLES = {
-    list: { title: '사용자 관리',  sub: '등록된 사용자를 조회하고 권한·상태를 관리하거나 계정을 탈퇴·삭제할 수 있습니다' },
-    view: { title: '사용자 상세',  sub: '사용자 정보·권한·접속 이력을 확인하고 수정합니다' }
+    list: { title: '사용자 관리',       sub: '등록된 사용자를 조회하고 권한·상태를 관리하거나 계정을 탈퇴·삭제할 수 있습니다' },
+    view: { title: '사용자 정보 열람',  sub: '사용자 정보·권한·접속 이력을 확인하고 수정합니다' }
   };
   function updatePageTitle(key) {
     var t = VIEW_TITLES[key] || VIEW_TITLES.list;
@@ -710,6 +704,11 @@
   document.getElementById('d-delete').addEventListener('click', deleteUser);
 
   renderList();
+  // URL ?id=N 이 있으면 해당 사용자 상세를 바로 열기 (딥링크·테스트용)
+  var urlId = parseInt(new URLSearchParams(window.location.search).get('id'), 10);
+  if (Number.isInteger(urlId) && state.list.some(function (u) { return u.id === urlId; })) {
+    openDetail(urlId);
+  }
 })();
 </script>
 </body>

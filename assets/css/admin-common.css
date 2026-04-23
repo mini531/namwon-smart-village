@@ -493,9 +493,27 @@ html, body { overflow: hidden; }
 }
 .admin-card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 .admin-card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-/* info card 는 .card.card-sm + .card-header--sm + .card-body--sm. 내부
-   행은 .info-row 공용 — label/value 2열 그리드. */
-.info-row {
+/* info card — 사용자 상세의 소속/계정/권한처럼 "작은 정보 카드" 를
+   3단 그리드로 나열할 때 사용하는 컴팩트 변형. */
+.admin-info-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: 18px 20px;
+}
+.admin-info-card .ic-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+.admin-info-card .ic-head svg { color: var(--color-primary); }
+.admin-info-card .ic-row {
   display: grid;
   grid-template-columns: 84px 1fr;
   gap: 8px 12px;
@@ -503,12 +521,12 @@ html, body { overflow: hidden; }
   font-size: 13px;
   align-items: center;
 }
-.info-row .info-label {
+.admin-info-card .ic-row .ic-label {
   color: var(--color-text-muted);
   font-weight: 700;
   font-size: 12px;
 }
-.info-row .info-value { color: var(--color-text); }
+.admin-info-card .ic-row .ic-value { color: var(--color-text); }
 
 /* 반응형 */
 @media (max-width: 480px) {
