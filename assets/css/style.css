@@ -736,6 +736,8 @@ select {
 .card-body { padding: 20px 22px; }
 .card-body--sm { padding: 14px 18px; }
 .card-body--flush { padding: 0; }
+/* 자연 흐름에서 인접한 카드는 간격 — grid 컨테이너 안에서는 gap 이 우선. */
+.card + .card { margin-top: 16px; }
 /* 작은 카드 변형 (사용자 상세의 소속/계정/권한 3카드 등) */
 .card-header--sm { height: auto; min-height: 0; padding: 14px 18px; }
 .card-header--sm .card-title { font-size: 14px; }
