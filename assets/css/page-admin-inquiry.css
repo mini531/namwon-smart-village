@@ -10,25 +10,24 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: -4px 0 12px;
+  margin: -6px 0 14px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--color-border);
 }
-.inq-card-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 12px;
+/* 카드 제목 — 섹션 헤딩. 배지가 아니라 본문 섹션 타이틀처럼 보이게. */
+.inq-card-title {
+  margin: 0;
+  padding-left: 12px;
+  font-size: 16px;
   font-weight: 800;
-  letter-spacing: -0.2px;
-  border: 1px solid var(--color-primary);
+  letter-spacing: -0.3px;
   color: var(--color-primary);
-  background: #FBEEF0;
+  border-left: 4px solid var(--color-primary);
+  line-height: 1.1;
 }
-.inq-card-badge.answer {
-  border-color: #1F4E79;
+.inq-card-title.answer {
   color: #1F4E79;
-  background: #EDF2FA;
+  border-left-color: #1F4E79;
 }
 .inq-card-meta {
   font-size: 13px;
