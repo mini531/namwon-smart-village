@@ -147,13 +147,17 @@
         </div>
       </div>
 
-      <!-- 색상 기준 (도로안전 상세 활성화 시만 표시) -->
-      <div class="glass-card" id="color-mode-card" hidden>
+    </div>
+
+    <!-- 지도 위 플로팅 스택 — 색상 기준 · 범례 (사이드바 높이 잠식하지 않도록 분리) -->
+    <div class="db-map-floating-stack">
+      <!-- 색상 기준 (체크된 도로안전 작업이 있을 때만 표시) -->
+      <div class="glass-card glass-card--floating" id="color-mode-card" hidden>
         <div class="glass-card-header">
           <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
           <span class="gc-title">색상 기준</span>
         </div>
-        <div class="glass-card-body gc-body--lg">
+        <div class="glass-card-body gc-body--md">
           <div class="color-mode-toggle">
             <button class="color-mode-btn active" data-mode="class">클래스</button>
             <button class="color-mode-btn" data-mode="severity">심각도</button>
@@ -161,10 +165,6 @@
         </div>
       </div>
 
-    </div>
-
-    <!-- 지도 위 플로팅 범례 (사이드바 높이 잠식하지 않도록 분리) -->
-    <div class="db-map-floating-stack">
       <!-- 범례 (체크된 작업이 1개 이상일 때만 표시) -->
       <div class="glass-card glass-card--floating glass-card--compact" id="legend-card" hidden>
         <div class="glass-card-header">
@@ -1607,6 +1607,11 @@
     tbody.innerHTML = rows.length > 0 ? rows.join('') : '<tr><td colspan="3" class="fc-table-empty">선택된 작업이 없어요</td></tr>';
   }
 
+  // 현재 모드에서 표시되는 클래스가 모두 활성화됐는지 (전체 선택 체크박스 상태)
+  function fcAllCheckedForMode() {
+    return FC_CLASS_KEYS().every(function (c) { return fcEnabledClasses.has(c.key); });
+  }
+
   function buildFcCheckList() {
     var wrap = document.getElementById('fc-check-list');
     if (!wrap) return;
@@ -1618,7 +1623,7 @@
         var cb = wrap.querySelector('input[data-key="' + c.key + '"]');
         if (cb) cb.checked = fcEnabledClasses.has(c.key);
       });
-      document.getElementById('fc-check-all').checked = fcEnabledClasses.size === FC_CLASS_KEYS().length;
+      document.getElementById('fc-check-all').checked = fcAllCheckedForMode();
       return;
     }
     wrap.innerHTML = FC_CLASS_KEYS().map(function (c) {
@@ -1630,26 +1635,31 @@
     }).join('');
     wrap.dataset.built = '1';
     wrap.dataset.mode = mode;
+    document.getElementById('fc-check-all').checked = fcAllCheckedForMode();
     // 이벤트 바인딩은 최초 1회만 — 이후 innerHTML 교체는 이벤트 위임으로 처리
     if (!firstBuild) return;
 
+    // 개별 클래스 체크박스 — 체크 상태만 기억. 통계 재계산은 검색 버튼에서 일괄 수행
     wrap.addEventListener('change', function (e) {
       var cb = e.target.closest('input[type="checkbox"][data-key]');
       if (!cb) return;
       var k = cb.dataset.key;
       if (cb.checked) fcEnabledClasses.add(k);
       else fcEnabledClasses.delete(k);
-      document.getElementById('fc-check-all').checked = fcEnabledClasses.size === FC_CLASS_KEYS().length;
-      renderFcOverview(); renderFcPie(); renderFcRegion();
+      document.getElementById('fc-check-all').checked = fcAllCheckedForMode();
     });
+    // 전체 선택 — 현재 모드 클래스 전부 on/off 토글. 역시 검색 버튼에서 적용
     document.getElementById('fc-check-all').addEventListener('change', function () {
-      if (this.checked) FC_CLASS_KEYS().forEach(function (c) { fcEnabledClasses.add(c.key); });
-      else fcEnabledClasses.clear();
-      wrap.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+      var on = this.checked;
+      FC_CLASS_KEYS().forEach(function (c) {
+        if (on) fcEnabledClasses.add(c.key);
+        else fcEnabledClasses.delete(c.key);
+      });
+      wrap.querySelectorAll('input[type="checkbox"][data-key]').forEach(function (cb) {
         cb.checked = fcEnabledClasses.has(cb.dataset.key);
       });
-      renderFcOverview(); renderFcPie(); renderFcRegion();
     });
+    // 검색 버튼 — 현재 체크 상태를 기준으로 통계 재계산
     document.getElementById('fc-search-btn').addEventListener('click', function () {
       renderFcOverview(); renderFcPie(); renderFcRegion();
     });
