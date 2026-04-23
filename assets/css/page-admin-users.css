@@ -23,7 +23,7 @@
 }
 /* 권한 목록이 많아지면 카드 영역 내에서 스크롤 */
 .role-list--scroll {
-  max-height: 260px;
+  max-height: 200px;
   overflow-y: auto;
   padding-right: 4px;
 }
