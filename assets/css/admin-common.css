@@ -506,14 +506,18 @@ html, body { overflow: hidden; }
 .admin-card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
 /* info-row — 라벨 위, 값 아래의 스택 레이아웃. 라벨 길이에 영향받지 않음.
    전역 가독성: 라벨 12px(muted) / 값 14px(본문 크기) — 다른 상세 뷰와
-   동일한 본문 읽기 크기 유지. */
+   동일한 본문 읽기 크기 유지.
+   항목 사이 구분선(view-row 와 동일 스타일) 적용. */
 .info-row {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 9px 0;
+  padding: 11px 0;
   font-size: 14px;
+  border-bottom: 1px solid #F1F3F5;
 }
+.info-row:last-child { border-bottom: none; }
+.info-row:first-child { padding-top: 4px; }
 .info-row .info-label {
   color: var(--color-text-muted);
   font-weight: 700;
