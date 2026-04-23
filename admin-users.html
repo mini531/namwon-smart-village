@@ -194,21 +194,21 @@
             </div>
           </div>
           <div class="card-body card-body--sm">
-            <div class="info-row"><span class="info-label">승인 소속</span>
-              <span class="info-value"><span class="admin-cat" id="d-action-by">-</span></span></div>
-            <div class="info-row"><span class="info-label">승인일시</span>
+            <div class="info-row"><span class="info-label">처리 상태</span>
+              <span class="info-value"><span class="admin-pill" id="d-action-status">-</span></span></div>
+            <div class="info-row"><span class="info-label">처리자</span>
+              <span class="info-value" id="d-action-by">-</span></div>
+            <div class="info-row"><span class="info-label">처리일시</span>
               <span class="info-value" id="d-action-at">-</span></div>
-            <div class="role-list role-list--scroll" id="d-roles">
-              <label class="role-item"><input type="checkbox" class="form-check" value="admin"><span>남원시 홍보전산과 관리자</span></label>
-              <label class="role-item"><input type="checkbox" class="form-check" value="gov"><span>행정정보관리</span></label>
-              <label class="role-item"><input type="checkbox" class="form-check" value="map"><span>지도정보관리 / 검토</span></label>
-              <label class="role-item"><input type="checkbox" class="form-check" value="farm"><span>농지 업무 등</span></label>
-              <label class="role-item"><input type="checkbox" class="form-check" value="crop"><span>영농 정보 등</span></label>
-              <label class="role-item"><input type="checkbox" class="form-check" value="general"><span>일반 사용자</span></label>
-              <label class="role-item"><input type="checkbox" class="form-check" value="report"><span>보고서 열람/생성</span></label>
-              <label class="role-item"><input type="checkbox" class="form-check" value="dataset"><span>학습 데이터 관리</span></label>
-              <label class="role-item"><input type="checkbox" class="form-check" value="analyze"><span>AI 분석 실행</span></label>
-              <label class="role-item"><input type="checkbox" class="form-check" value="audit"><span>감사 로그 열람</span></label>
+            <div class="info-row">
+              <span class="info-label">권한</span>
+              <div class="role-list role-list--scroll" id="d-roles">
+                <label class="role-item"><input type="checkbox" class="form-check" value="admin"><span>남원시청 관리자</span></label>
+                <label class="role-item"><input type="checkbox" class="form-check" value="forage"><span>사료작물 분석</span></label>
+                <label class="role-item"><input type="checkbox" class="form-check" value="farmland"><span>농지 활용 분석</span></label>
+                <label class="role-item"><input type="checkbox" class="form-check" value="crop"><span>영농 정보 분석</span></label>
+                <label class="role-item"><input type="checkbox" class="form-check" value="general"><span>일반사용자</span></label>
+              </div>
             </div>
           </div>
         </div>
@@ -550,6 +550,10 @@
     document.getElementById('d-joined').textContent = fmtDateTime(u.joined);
     document.getElementById('d-pwd-fails').textContent = u.pwdFails || 0;
     // 권한 정보 상단
+    var action = u.action || 'pending';
+    var actionStatusEl = document.getElementById('d-action-status');
+    actionStatusEl.className = 'admin-pill ' + (action === 'approved' ? 'ok' : (action === 'rejected' ? 'off' : 'pending'));
+    actionStatusEl.textContent = ACTION_LABEL[action];
     document.getElementById('d-action-by').textContent = u.actionBy || '-';
     document.getElementById('d-action-at').textContent = u.actionAt ? fmtDateTime(u.actionAt) : '-';
 
