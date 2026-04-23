@@ -1,7 +1,4 @@
-/* admin-faq.html 전용 — 카테고리 01~06 배지 variant.
+/* admin-faq.html 전용 — 테이블 카테고리 배지 정렬 등 미세 조정.
    레이아웃/테이블/폼 등 공용 규칙은 admin-common.css. */
 
-.admin-table thead th.col-order { width: 100px; text-align: center; }
-
-/* FAQ 카테고리 배지 — 번호별 파스텔 톤으로 구분 */
 .admin-cat { white-space: nowrap; }
