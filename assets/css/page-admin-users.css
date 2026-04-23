@@ -1,0 +1,87 @@
+/* admin-users.html 전용 — 사용자 목록/상세에 특화된 컬럼 폭·권한 리스트·탭.
+   레이아웃/테이블/폼 등 공용 규칙은 admin-common.css. */
+
+/* 목록 테이블 컬럼 폭 */
+.users-table thead th.col-name { width: 90px; }
+.users-table thead th.col-phone { width: 130px; }
+.users-table thead th.col-dept { width: 120px; }
+.users-table thead th.col-rank { width: 80px; text-align: center; }
+.users-table tbody td.col-name,
+.users-table tbody td.col-phone,
+.users-table tbody td.col-dept {
+  font-size: 13px;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+.users-table tbody td.col-rank { text-align: center; font-size: 13px; }
+
+/* 상세 카드 내 input/select — info 카드 안에서는 컴팩트하게 */
+.admin-info-card .ic-row .form-control {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+/* 권한 체크박스 리스트 */
+.role-list {
+  display: grid;
+  gap: 8px;
+  padding-top: 4px;
+}
+.role-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--color-text);
+  transition: all 0.12s;
+}
+.role-item:hover { border-color: var(--color-primary); }
+.role-item input[type="checkbox"]:checked ~ span { font-weight: 700; color: var(--color-primary); }
+.role-item input[type="checkbox"] { flex-shrink: 0; }
+
+/* 이력 탭 카드 */
+.history-card { padding: 0; overflow: hidden; }
+.history-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 24px;
+  background: var(--color-surface-2);
+}
+.history-tab {
+  background: transparent;
+  border: none;
+  padding: 14px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.12s;
+}
+.history-tab:hover { color: var(--color-text); }
+.history-tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+.history-panel { padding: 0; }
+.history-panel.hidden { display: none; }
+.history-panel .admin-table thead th.col-ip { width: 140px; }
+.history-panel .admin-table thead th.col-status { width: 90px; text-align: center; }
+.history-panel .admin-table tbody td.col-ip {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+.history-panel .admin-table tbody td.col-status { text-align: center; }
+
+@media (max-width: 900px) {
+  .users-table thead th.col-dept,
+  .users-table tbody td.col-dept { display: none; }
+}

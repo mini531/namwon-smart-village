@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문의 관리 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/admin-common.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="admin-container">
+
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <span id="page-title-text">문의 관리</span>
+        </h1>
+        <p id="page-title-sub">사용자 문의를 조회하고 답변을 작성·수정하거나 삭제할 수 있습니다</p>
+      </div>
+    </div>
+
+    <!-- 목록 뷰 -->
+    <section class="admin-list-view" id="list-view">
+      <div class="board-toolbar">
+        <div class="board-field board-field--search">
+          <label for="iq-search-input">검색어</label>
+          <div class="board-field-row">
+            <select class="board-search-select" id="iq-search-field">
+              <option value="all">전체</option>
+              <option value="title">제목</option>
+              <option value="content">내용</option>
+              <option value="author">등록자</option>
+            </select>
+            <input type="text" class="board-search-input" id="iq-search-input" placeholder="검색어">
+          </div>
+        </div>
+        <div class="board-field">
+          <label for="iq-status">상태</label>
+          <select class="board-search-select" id="iq-status">
+            <option value="all">전체</option>
+            <option value="pending">답변 대기</option>
+            <option value="replied">답변 완료</option>
+          </select>
+        </div>
+        <div class="board-field board-field--period">
+          <label>등록일</label>
+          <div class="board-period-row">
+            <div class="board-period-dates">
+              <input type="date" class="board-date-input" id="iq-from" placeholder="YYYY-MM-DD">
+              <span class="board-period-sep">~</span>
+              <input type="date" class="board-date-input" id="iq-to" placeholder="YYYY-MM-DD">
+            </div>
+            <div class="board-period-quicks">
+              <button type="button" class="board-quick-btn active" data-months="0">전체</button>
+              <button type="button" class="board-quick-btn" data-months="1">1개월</button>
+              <button type="button" class="board-quick-btn" data-months="3">3개월</button>
+              <button type="button" class="board-quick-btn" data-months="6">6개월</button>
+              <button type="button" class="board-quick-btn" data-months="12">12개월</button>
+            </div>
+          </div>
+        </div>
+        <div class="board-toolbar-actions board-toolbar-actions--end">
+          <button type="button" class="board-btn" id="iq-reset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            초기화
+          </button>
+          <button type="button" class="board-btn board-btn-primary" id="iq-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            검색
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-list-card">
+        <div class="admin-list-head">
+          <div class="admin-list-title">문의 목록</div>
+          <div class="admin-list-actions">
+            <button type="button" class="board-btn board-btn-danger" id="iq-del-selected">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
+              선택 삭제
+            </button>
+          </div>
+        </div>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" class="form-check" id="iq-check-all"></th>
+              <th class="col-status">상태</th>
+              <th>제목</th>
+              <th class="col-author">등록자</th>
+              <th class="col-date">등록 일시</th>
+              <th class="col-date">답변 일시</th>
+            </tr>
+          </thead>
+          <tbody id="iq-tbody"></tbody>
+        </table>
+        <div id="iq-empty-wrap"></div>
+      </div>
+
+      <div class="board-paginator">
+        <button type="button" class="board-page-btn" id="iq-first">처음</button>
+        <button type="button" class="board-page-btn" id="iq-prev">이전</button>
+        <div class="board-page-pages" id="iq-pages"></div>
+        <button type="button" class="board-page-btn" id="iq-next">다음</button>
+        <button type="button" class="board-page-btn" id="iq-last">마지막</button>
+        <div class="board-page-size-wrap">
+          <select class="board-page-size" id="iq-page-size">
+            <option value="10">10</option><option value="20">20</option><option value="50">50</option>
+          </select>
+          <span>페이지 크기</span>
+        </div>
+        <div class="board-count" id="iq-count">총 <strong>0</strong>건 중 0~0행</div>
+      </div>
+    </section>
+
+    <!-- 상세/답변 뷰 -->
+    <section class="admin-view-view hidden" id="view-view">
+      <div class="admin-view-card">
+        <div class="view-row">
+          <span class="label">상태</span>
+          <span class="value"><span class="admin-pill" id="v-status">-</span></span>
+        </div>
+        <div class="view-row">
+          <span class="label">제목</span>
+          <span class="value" id="v-title">-</span>
+        </div>
+        <div class="view-row block">
+          <span class="label">문의 내용</span>
+          <div class="view-content" id="v-content" style="min-height:120px;"></div>
+        </div>
+        <div class="view-row block" id="v-attach-row" hidden>
+          <span class="label">첨부 파일</span>
+          <div id="v-attach-list"></div>
+        </div>
+        <div class="view-row block">
+          <span class="label">답변 작성</span>
+          <div class="form-field" style="padding-top:8px;">
+            <textarea class="form-control" id="v-answer-input" placeholder="답변을 입력하세요. 저장 시 문의 상태가 '답변 완료'로 변경됩니다." rows="6"></textarea>
+          </div>
+        </div>
+        <div class="view-footer-meta">
+          <div><span class="mt-label">등록자</span><span class="mt-value" id="v-author">-</span></div>
+          <div><span class="mt-label">등록 일시</span><span class="mt-value" id="v-created">-</span></div>
+          <div><span class="mt-label">답변자</span><span class="mt-value" id="v-replier">-</span></div>
+          <div><span class="mt-label">답변 일시</span><span class="mt-value" id="v-replied">-</span></div>
+        </div>
+      </div>
+      <div class="form-actions form-actions--split">
+        <button type="button" class="board-btn" id="v-list">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          목록
+        </button>
+        <div class="form-actions-group">
+          <button type="button" class="board-btn board-btn-danger" id="v-delete">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
+            삭제
+          </button>
+          <button type="button" class="board-btn board-btn-primary" id="v-reply">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 00-4-4H4"/></svg>
+            답변 저장
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script src="assets/js/confirm-modal.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // contact.html 의 문의 데이터와 동일 저장소 — 사용자 등록/답변 상태가
+  // 관리 페이지와 실시간으로 맞춰진다.
+  var STORAGE_KEY = 'namwon-inquiries-v2';
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return [];
+  }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.list)); } catch (e) {}
+  }
+
+  var state = {
+    list: load(),
+    filter: { field: 'all', keyword: '', status: 'all', from: '', to: '', quick: 0 },
+    page: 1,
+    pageSize: 10,
+    viewingId: null
+  };
+
+  function fmtDateTime(iso) {
+    if (!iso) return '';
+    return iso.replace('T', ' ').replace(/-/g, '.').substring(0, 19);
+  }
+  function nowIso() {
+    var d = new Date();
+    var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' +
+      pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+  function escapeHtml(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function fmtFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  }
+
+  function getFiltered() {
+    var list = state.list.slice();
+    var f = state.filter;
+    if (f.status !== 'all') list = list.filter(function (n) { return n.status === f.status; });
+    if (f.keyword) {
+      var kw = f.keyword.toLowerCase();
+      list = list.filter(function (n) {
+        var t = (n.title || '').toLowerCase();
+        var c = (n.content || '').toLowerCase();
+        var a = (n.author || '').toLowerCase();
+        if (f.field === 'title') return t.indexOf(kw) !== -1;
+        if (f.field === 'content') return c.indexOf(kw) !== -1;
+        if (f.field === 'author') return a.indexOf(kw) !== -1;
+        return t.indexOf(kw) !== -1 || c.indexOf(kw) !== -1 || a.indexOf(kw) !== -1;
+      });
+    }
+    if (f.from) list = list.filter(function (n) { return (n.createdAt || '').substring(0, 10) >= f.from; });
+    if (f.to) list = list.filter(function (n) { return (n.createdAt || '').substring(0, 10) <= f.to; });
+    list.sort(function (a, b) { return (b.createdAt || '').localeCompare(a.createdAt || ''); });
+    return list;
+  }
+
+  function renderList() {
+    var tbody = document.getElementById('iq-tbody');
+    var emptyWrap = document.getElementById('iq-empty-wrap');
+    var countEl = document.getElementById('iq-count');
+    var list = getFiltered();
+    var total = list.length;
+    tbody.innerHTML = '';
+    emptyWrap.innerHTML = '';
+
+    if (total === 0) {
+      emptyWrap.innerHTML =
+        '<div class="uc-empty" style="padding:50px 20px;text-align:center;color:var(--color-text-muted);">' +
+          '<p style="font-size:14px;">검색 조건에 맞는 문의가 없습니다.</p></div>';
+      countEl.innerHTML = '총 <strong>0</strong>건 중 0~0행';
+      renderPagination(1);
+      document.getElementById('iq-check-all').checked = false;
+      return;
+    }
+
+    var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+    if (state.page > totalPages) state.page = totalPages;
+    var startIdx = (state.page - 1) * state.pageSize;
+    var endIdx = Math.min(total, startIdx + state.pageSize);
+
+    list.slice(startIdx, endIdx).forEach(function (n) {
+      var tr = document.createElement('tr');
+      tr.dataset.id = n.id;
+      var statusLabel = n.status === 'replied' ? '답변 완료' : '답변 대기';
+      var statusCls = n.status === 'replied' ? 'replied' : 'pending';
+      tr.innerHTML =
+        '<td class="col-check"><input type="checkbox" class="form-check iq-row-check" data-id="' + n.id + '"></td>' +
+        '<td class="col-status"><span class="admin-pill ' + statusCls + '">' + statusLabel + '</span></td>' +
+        '<td><button type="button" class="title-link" data-id="' + n.id + '">' + escapeHtml(n.title) + '</button></td>' +
+        '<td class="col-author">' + escapeHtml(n.author || '-') + '</td>' +
+        '<td class="col-date">' + fmtDateTime(n.createdAt) + '</td>' +
+        '<td class="col-date">' + (n.answeredAt ? fmtDateTime(n.answeredAt) : '-') + '</td>';
+      tbody.appendChild(tr);
+    });
+
+    countEl.innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (startIdx + 1) + '~' + endIdx + '행';
+    renderPagination(totalPages);
+    document.getElementById('iq-check-all').checked = false;
+  }
+
+  function renderPagination(totalPages) {
+    var pagesEl = document.getElementById('iq-pages');
+    pagesEl.innerHTML = '';
+    document.getElementById('iq-first').disabled = document.getElementById('iq-prev').disabled = state.page <= 1;
+    document.getElementById('iq-next').disabled = document.getElementById('iq-last').disabled = state.page >= totalPages;
+    var start = Math.max(1, state.page - 2);
+    var end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    for (var p = start; p <= end; p++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'board-page-btn' + (p === state.page ? ' active' : '');
+      btn.textContent = String(p);
+      (function (pg) { btn.addEventListener('click', function () { state.page = pg; renderList(); }); })(p);
+      pagesEl.appendChild(btn);
+    }
+  }
+
+  var VIEW_TITLES = {
+    list: { title: '문의 관리',  sub: '사용자 문의를 조회하고 답변을 작성·수정하거나 삭제할 수 있습니다' },
+    view: { title: '문의 답변',  sub: '문의 내용을 확인하고 답변을 작성합니다' }
+  };
+  function updatePageTitle(key) {
+    var t = VIEW_TITLES[key] || VIEW_TITLES.list;
+    document.getElementById('page-title-text').textContent = t.title;
+    document.getElementById('page-title-sub').textContent = t.sub;
+    document.title = t.title + ' - Namwon GeoVision';
+  }
+  function showView(which) {
+    document.getElementById('list-view').classList.toggle('hidden', which !== 'list');
+    document.getElementById('view-view').classList.toggle('hidden', which !== 'view');
+    updatePageTitle(which);
+    document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  function openDetail(id) {
+    var n = state.list.find(function (x) { return x.id === id; });
+    if (!n) return;
+    state.viewingId = id;
+    var statusEl = document.getElementById('v-status');
+    statusEl.className = 'admin-pill ' + (n.status === 'replied' ? 'replied' : 'pending');
+    statusEl.textContent = n.status === 'replied' ? '답변 완료' : '답변 대기';
+    document.getElementById('v-title').textContent = n.title || '-';
+    document.getElementById('v-content').textContent = n.content || '';
+
+    var attachRow = document.getElementById('v-attach-row');
+    var attachList = document.getElementById('v-attach-list');
+    if (n.attachments && n.attachments.length) {
+      attachRow.hidden = false;
+      attachList.innerHTML = '<div class="attach-list">' + n.attachments.map(function (a) {
+        return '<div class="attach-row">' +
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>' +
+          '<span class="attach-name">' + escapeHtml(a.name) + '</span>' +
+          '<span class="attach-size">(' + fmtFileSize(a.size) + ')</span>' +
+        '</div>';
+      }).join('') + '</div>';
+    } else {
+      attachRow.hidden = true;
+      attachList.innerHTML = '';
+    }
+    document.getElementById('v-answer-input').value = n.answer || '';
+    document.getElementById('v-author').textContent = n.author || '-';
+    document.getElementById('v-created').textContent = fmtDateTime(n.createdAt) || '-';
+    document.getElementById('v-replier').textContent = n.answeredBy || '-';
+    document.getElementById('v-replied').textContent = n.answeredAt ? fmtDateTime(n.answeredAt) : '-';
+    showView('view');
+  }
+
+  function saveReply() {
+    var answer = document.getElementById('v-answer-input').value.trim();
+    if (!answer) { alert('답변 내용을 입력해 주세요.'); return; }
+    var idx = state.list.findIndex(function (x) { return x.id === state.viewingId; });
+    if (idx < 0) return;
+    state.list[idx].answer = answer;
+    state.list[idx].answeredAt = nowIso();
+    state.list[idx].answeredBy = '관리자';
+    state.list[idx].status = 'replied';
+    save();
+    if (window.NotifyUI) NotifyUI.toast('답변이 저장되었습니다', '완료');
+    openDetail(state.viewingId);
+  }
+
+  function deleteById(id) {
+    state.list = state.list.filter(function (n) { return n.id !== id; });
+    save();
+  }
+  function deleteSelected() {
+    var ids = Array.prototype.slice.call(document.querySelectorAll('.iq-row-check:checked'))
+      .map(function (cb) { return parseInt(cb.dataset.id, 10); });
+    if (ids.length === 0) { alert('삭제할 항목을 선택해 주세요.'); return; }
+    ConfirmModal.open({
+      title: '확인',
+      message: ids.length + '개 문의를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+      danger: true,
+      onConfirm: function () {
+        state.list = state.list.filter(function (n) { return ids.indexOf(n.id) === -1; });
+        save();
+        renderList();
+      }
+    });
+  }
+
+  function applyQuick(months) {
+    var to = '', from = '';
+    if (months > 0) {
+      var now = new Date();
+      var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+      to = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+      var past = new Date(now);
+      past.setMonth(past.getMonth() - months);
+      from = past.getFullYear() + '-' + pad(past.getMonth() + 1) + '-' + pad(past.getDate());
+    }
+    document.getElementById('iq-from').value = from;
+    document.getElementById('iq-to').value = to;
+    state.filter.quick = months;
+    document.querySelectorAll('.board-quick-btn[data-months]').forEach(function (b) {
+      b.classList.toggle('active', parseInt(b.dataset.months, 10) === months);
+    });
+  }
+
+  function applySearch() {
+    state.filter.field = document.getElementById('iq-search-field').value;
+    state.filter.keyword = document.getElementById('iq-search-input').value.trim();
+    state.filter.status = document.getElementById('iq-status').value;
+    state.filter.from = document.getElementById('iq-from').value;
+    state.filter.to = document.getElementById('iq-to').value;
+    state.page = 1;
+    renderList();
+  }
+
+  document.getElementById('iq-search').addEventListener('click', applySearch);
+  document.getElementById('iq-search-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') applySearch();
+  });
+  document.getElementById('iq-reset').addEventListener('click', function () {
+    document.getElementById('iq-search-field').value = 'all';
+    document.getElementById('iq-search-input').value = '';
+    document.getElementById('iq-status').value = 'all';
+    applyQuick(0);
+    state.filter = { field: 'all', keyword: '', status: 'all', from: '', to: '', quick: 0 };
+    state.page = 1;
+    renderList();
+  });
+  document.querySelectorAll('.board-quick-btn[data-months]').forEach(function (b) {
+    b.addEventListener('click', function () { applyQuick(parseInt(b.dataset.months, 10)); });
+  });
+  document.getElementById('iq-first').addEventListener('click', function () { state.page = 1; renderList(); });
+  document.getElementById('iq-prev').addEventListener('click', function () {
+    if (state.page > 1) { state.page -= 1; renderList(); }
+  });
+  document.getElementById('iq-next').addEventListener('click', function () { state.page += 1; renderList(); });
+  document.getElementById('iq-last').addEventListener('click', function () {
+    state.page = Math.max(1, Math.ceil(getFiltered().length / state.pageSize));
+    renderList();
+  });
+  document.getElementById('iq-page-size').addEventListener('change', function () {
+    state.pageSize = parseInt(this.value, 10) || 10;
+    state.page = 1;
+    renderList();
+  });
+  document.getElementById('iq-tbody').addEventListener('click', function (e) {
+    var tbtn = e.target.closest('.title-link');
+    if (tbtn) { openDetail(parseInt(tbtn.dataset.id, 10)); return; }
+  });
+  document.getElementById('iq-check-all').addEventListener('change', function () {
+    var on = this.checked;
+    document.querySelectorAll('.iq-row-check').forEach(function (cb) { cb.checked = on; });
+  });
+  document.getElementById('iq-del-selected').addEventListener('click', deleteSelected);
+
+  document.getElementById('v-list').addEventListener('click', function () {
+    state.viewingId = null;
+    showView('list');
+    renderList();
+  });
+  document.getElementById('v-reply').addEventListener('click', saveReply);
+  document.getElementById('v-delete').addEventListener('click', function () {
+    ConfirmModal.open({
+      title: '확인',
+      message: '이 문의를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+      danger: true,
+      onConfirm: function () {
+        deleteById(state.viewingId);
+        state.viewingId = null;
+        showView('list');
+        renderList();
+      }
+    });
+  });
+
+  renderList();
+})();
+</script>
+</body>
+</html>
