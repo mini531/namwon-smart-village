@@ -52,8 +52,7 @@
           <label for="us-status">계정 상태</label>
           <select class="board-search-select" id="us-status">
             <option value="all">전체</option>
-            <option value="active">활성</option>
-            <option value="inactive">비활성</option>
+            <option value="active">정상</option>
             <option value="withdrawn">탈퇴</option>
           </select>
         </div>
@@ -287,8 +286,8 @@
       </div>
 
       <!-- 액션: 계정 상태에 따라 탈퇴/삭제 중 하나만 노출.
-           - 정상·잠금 (active/inactive) → 탈퇴 버튼
-           - 탈퇴됨 (withdrawn)           → 삭제 버튼 (완전 삭제, 서로 다른 기능) -->
+           - 정상 (active)   → 탈퇴 버튼
+           - 탈퇴 (withdrawn) → 삭제 버튼 (완전 삭제, 서로 다른 기능) -->
       <div class="form-actions form-actions--split">
         <button type="button" class="btn btn-secondary" id="d-list">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -344,8 +343,8 @@
     { id: 15, email: 'yoo.jh@namwon.go.kr',    name: '유정호', phone: '063-620-9318', dept: '기획감사실',   rank: '주임',   status: 'active',    expires: '2028-08-10', pwdFails: 0, joined: '2025-08-12T15:00:00', lastLogin: '2026-04-21T10:02:31', action: 'approved', actionBy: '홍지수',        actionAt: '2025-08-12T16:30:00', roles: ['report'] },
     { id: 16, email: 'hyun.mk@namwon.go.kr',   name: '현미경', phone: '063-620-6145', dept: '홍보전산과',   rank: '주무관', status: 'active',    expires: '2029-02-28', pwdFails: 0, joined: '2025-11-03T11:25:00', lastLogin: '2026-04-22T13:50:14', action: 'approved', actionBy: '이주원',        actionAt: '2025-11-03T13:00:00', roles: ['analyze','report'] },
     { id: 17, email: 'kang.hw@kovis.co.kr',    name: '강해원', phone: '010-4822-1177', dept: '홍보전산과',   rank: '외부협력', status: 'active', expires: '2026-12-31', pwdFails: 0, joined: '2025-12-01T10:00:00', lastLogin: '2026-04-15T17:08:23', action: 'approved', actionBy: '이주원',        actionAt: '2025-12-01T14:12:00', roles: ['analyze','dataset'] },
-    { id: 18, email: 'newreq@namwon.go.kr',    name: '신청자', phone: '063-620-9990', dept: '농업기술센터', rank: '주무관', status: 'inactive',  expires: '',           pwdFails: 0, joined: '2026-04-22T09:15:00', lastLogin: '',                    action: 'pending',  actionBy: '',              actionAt: '',                    roles: [] },
-    { id: 19, email: 'parkmj@namwon.go.kr',    name: '박민지', phone: '063-620-9430', dept: '환경관리과',   rank: '주무관', status: 'inactive',  expires: '2027-12-31', pwdFails: 5, joined: '2025-12-24T10:07:00', lastLogin: '2025-12-24T10:08:00', action: 'approved', actionBy: '차남호',        actionAt: '2025-12-24T10:12:00', roles: ['map'] },
+    { id: 18, email: 'newreq@namwon.go.kr',    name: '신청자', phone: '063-620-9990', dept: '농업기술센터', rank: '주무관', status: 'active',    expires: '',           pwdFails: 0, joined: '2026-04-22T09:15:00', lastLogin: '',                    action: 'pending',  actionBy: '',              actionAt: '',                    roles: [] },
+    { id: 19, email: 'parkmj@namwon.go.kr',    name: '박민지', phone: '063-620-9430', dept: '환경관리과',   rank: '주무관', status: 'active',    expires: '2027-12-31', pwdFails: 5, joined: '2025-12-24T10:07:00', lastLogin: '2025-12-24T10:08:00', action: 'approved', actionBy: '차남호',        actionAt: '2025-12-24T10:12:00', roles: ['map'] },
     { id: 20, email: 'reject.aa@gmail.com',    name: '김거절', phone: '010-0000-9999', dept: '외부',         rank: '',       status: 'withdrawn', expires: '',           pwdFails: 0, joined: '2026-04-18T10:20:00', lastLogin: '',                    action: 'rejected', actionBy: '김관리',        actionAt: '2026-04-18T13:15:00', withdrawnAt: '2026-04-18T13:15:00', roles: [] },
     { id: 21, email: 'choi.ys@namwon.go.kr',   name: '최영수', phone: '063-620-9320', dept: '기획감사실',   rank: '실장',   status: 'withdrawn', expires: '',           pwdFails: 0, joined: '2024-12-18T13:15:00', lastLogin: '2025-12-30T10:14:57', action: 'approved', actionBy: '김관리',        actionAt: '2024-12-18T14:02:00', withdrawnAt: '2026-01-15T09:30:00', roles: [] }
   ];
@@ -422,7 +421,7 @@
     ]
   };
 
-  var STATUS_LABEL = { active: '정상', inactive: '비활성', withdrawn: '탈퇴' };
+  var STATUS_LABEL = { active: '정상', withdrawn: '탈퇴' };
   var ACTION_LABEL = { approved: '승인', pending: '처리 대기', rejected: '반려' };
 
   function load() {
@@ -696,7 +695,7 @@
   function withdrawUser() {
     ConfirmModal.open({
       title: '확인',
-      message: '사용자를 탈퇴 처리하시겠습니까? (계정 상태가 비활성화됩니다)',
+      message: '사용자를 탈퇴 처리하시겠습니까?',
       danger: true,
       onConfirm: function () {
         var idx = state.list.findIndex(function (x) { return x.id === state.viewingId; });
