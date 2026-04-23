@@ -270,48 +270,99 @@
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'namwon-admin-users-v1';
+  var STORAGE_KEY = 'namwon-admin-users-v2';
   var ROLES = ['admin', 'analyze', 'report', 'dataset', 'map', 'unlimited'];
 
   var DEFAULT_SEED = [
-    { id: 1, email: 'jyong7@kovis.co.kr', name: '정용', phone: '010-9002-8724', dept: '홍보전산과', rank: '팀장', status: 'active', expires: '2028-03-16', pwdFails: 3, joined: '2026-03-16T09:29:00', lastLogin: '2026-03-18T10:24:07', roles: ['analyze','report','unlimited'] },
-    { id: 2, email: 'ng1@kovis.co.kr', name: '이한길', phone: '010-7988-5253', dept: '도로관리과', rank: '과장', status: 'active', expires: '2029-03-15', pwdFails: 0, joined: '2026-02-11T09:40:00', lastLogin: '2026-03-18T09:48:41', roles: ['analyze','report','dataset'] },
-    { id: 3, email: 'abwjdtntn62.09@gmail.com', name: '조수경', phone: '010-5002-6724', dept: '농업기술센터', rank: '주무관', status: 'active', expires: '2027-10-05', pwdFails: 1, joined: '2026-02-18T20:23:19', lastLogin: '2026-03-08T16:58:21', roles: ['analyze'] },
-    { id: 4, email: 'admin@kovis.co.kr', name: '관리자', phone: '010-0000-0001', dept: '홍보전산과', rank: '주임', status: 'active', expires: '', pwdFails: 0, joined: '2025-04-10T11:18:00', lastLogin: '2026-04-23T08:12:00', roles: ['admin','unlimited'] },
-    { id: 5, email: 'lee01@kovis.co.kr', name: '이주원', phone: '010-0000-0000', dept: '홍보전산과', rank: '주임', status: 'active', expires: '2028-05-15', pwdFails: 0, joined: '2026-03-05T10:41:23', lastLogin: '2025-11-27T15:13:40', roles: ['report'] },
-    { id: 6, email: 'test1@kovis.co.kr', name: '박민지', phone: '010-0000-0000', dept: '환경관리과', rank: '주무관', status: 'inactive', expires: '2027-12-31', pwdFails: 5, joined: '2025-12-24T10:07:00', lastLogin: '2025-12-24T10:08:00', roles: ['map'] },
-    { id: 7, email: 'test2@kovis.co.kr', name: '최영수', phone: '010-0000-0000', dept: '기획감사실', rank: '실장', status: 'withdrawn', expires: '', pwdFails: 0, joined: '2025-12-18T13:15:00', lastLogin: '2025-12-30T10:14:57', roles: [] }
+    { id: 1,  email: 'admin@namwon.go.kr',        name: '김관리',   phone: '063-620-6000', dept: '홍보전산과',     rank: '팀장',   status: 'active',    expires: '',           pwdFails: 0, joined: '2025-04-10T11:18:00', lastLogin: '2026-04-23T08:12:00', roles: ['admin','unlimited'] },
+    { id: 2,  email: 'leejuwon@namwon.go.kr',     name: '이주원',   phone: '063-620-6134', dept: '홍보전산과',     rank: '주무관', status: 'active',    expires: '2028-05-15', pwdFails: 0, joined: '2025-04-10T11:20:00', lastLogin: '2026-04-22T17:05:23', roles: ['admin','analyze','report','dataset','map'] },
+    { id: 3,  email: 'jyong7@namwon.go.kr',       name: '정용찬',   phone: '063-620-6235', dept: '홍보전산과',     rank: '주임',   status: 'active',    expires: '2028-03-16', pwdFails: 3, joined: '2025-06-16T09:29:00', lastLogin: '2026-03-18T10:24:07', roles: ['analyze','report','unlimited'] },
+    { id: 4,  email: 'hanlee@namwon.go.kr',       name: '이한길',   phone: '063-620-7321', dept: '도로관리과',     rank: '과장',   status: 'active',    expires: '2029-03-15', pwdFails: 0, joined: '2025-02-11T09:40:00', lastLogin: '2026-04-22T09:48:41', roles: ['analyze','report','dataset'] },
+    { id: 5,  email: 'parkjs@namwon.go.kr',       name: '박정수',   phone: '063-620-7335', dept: '도로관리과',     rank: '주무관', status: 'active',    expires: '2029-02-28', pwdFails: 0, joined: '2025-03-04T14:10:00', lastLogin: '2026-04-21T15:32:10', roles: ['analyze','report'] },
+    { id: 6,  email: 'ohgilsu@namwon.go.kr',      name: '오길수',   phone: '063-620-7340', dept: '도로관리과',     rank: '주임',   status: 'active',    expires: '2028-12-31', pwdFails: 1, joined: '2025-08-22T10:03:15', lastLogin: '2026-04-20T11:12:55', roles: ['analyze'] },
+    { id: 7,  email: 'jsk@namwon.go.kr',          name: '조수경',   phone: '063-620-8520', dept: '농업기술센터',   rank: '주무관', status: 'active',    expires: '2027-10-05', pwdFails: 1, joined: '2025-09-18T20:23:19', lastLogin: '2026-04-19T16:58:21', roles: ['analyze','map'] },
+    { id: 8,  email: 'noh.ms@namwon.go.kr',       name: '노명석',   phone: '063-620-8534', dept: '농업기술센터',   rank: '팀장',   status: 'active',    expires: '',           pwdFails: 0, joined: '2024-11-03T09:12:00', lastLogin: '2026-04-22T10:40:19', roles: ['analyze','report','dataset'] },
+    { id: 9,  email: 'sohjy@namwon.go.kr',        name: '손지영',   phone: '063-620-8548', dept: '농업기술센터',   rank: '주임',   status: 'active',    expires: '2028-06-30', pwdFails: 0, joined: '2025-10-02T11:22:00', lastLogin: '2026-04-18T09:05:00', roles: ['analyze'] },
+    { id: 10, email: 'chnam@namwon.go.kr',        name: '차남호',   phone: '063-620-9411', dept: '환경관리과',     rank: '과장',   status: 'active',    expires: '',           pwdFails: 0, joined: '2024-12-05T09:00:00', lastLogin: '2026-04-22T08:55:41', roles: ['analyze','report','map'] },
+    { id: 11, email: 'kimsy@namwon.go.kr',        name: '김서영',   phone: '063-620-9425', dept: '환경관리과',     rank: '주무관', status: 'active',    expires: '2028-01-20', pwdFails: 0, joined: '2025-01-20T09:45:00', lastLogin: '2026-04-17T14:29:08', roles: ['analyze'] },
+    { id: 12, email: 'hong.js@namwon.go.kr',      name: '홍지수',   phone: '063-620-9302', dept: '기획감사실',     rank: '실장',   status: 'active',    expires: '',           pwdFails: 0, joined: '2024-10-14T10:10:00', lastLogin: '2026-04-22T11:18:45', roles: ['admin','report'] },
+    { id: 13, email: 'yoo.jh@namwon.go.kr',       name: '유정호',   phone: '063-620-9318', dept: '기획감사실',     rank: '주임',   status: 'active',    expires: '2028-08-10', pwdFails: 0, joined: '2025-08-12T15:00:00', lastLogin: '2026-04-21T10:02:31', roles: ['report'] },
+    { id: 14, email: 'hyun.mk@namwon.go.kr',      name: '현미경',   phone: '063-620-6145', dept: '홍보전산과',     rank: '주무관', status: 'active',    expires: '2029-02-28', pwdFails: 2, joined: '2025-11-03T11:25:00', lastLogin: '2026-04-22T13:50:14', roles: ['analyze','report'] },
+    { id: 15, email: 'kang.hw@kovis.co.kr',       name: '강해원',   phone: '010-4822-1177', dept: '홍보전산과',    rank: '외부협력', status: 'active',   expires: '2026-12-31', pwdFails: 0, joined: '2025-12-01T10:00:00', lastLogin: '2026-04-15T17:08:23', roles: ['analyze','dataset'] },
+    { id: 16, email: 'test.jung@kovis.co.kr',     name: '정수빈',   phone: '010-5002-6724', dept: '홍보전산과',     rank: '외부협력', status: 'active',  expires: '2026-08-31', pwdFails: 0, joined: '2026-01-18T09:30:00', lastLogin: '2026-03-08T16:58:21', roles: ['analyze'] },
+    { id: 17, email: 'parkmj@namwon.go.kr',       name: '박민지',   phone: '063-620-9430', dept: '환경관리과',     rank: '주무관', status: 'inactive',  expires: '2027-12-31', pwdFails: 5, joined: '2025-12-24T10:07:00', lastLogin: '2025-12-24T10:08:00', roles: ['map'] },
+    { id: 18, email: 'choi.ys@namwon.go.kr',      name: '최영수',   phone: '063-620-9320', dept: '기획감사실',     rank: '실장',   status: 'withdrawn', expires: '',           pwdFails: 0, joined: '2024-12-18T13:15:00', lastLogin: '2025-12-30T10:14:57', roles: [] }
   ];
 
-  // 사용자별 로그인 이력 시드 (id → array)
+  // 사용자별 로그인 이력 시드 (id → array). 실제 분포: 성공 비율 높고,
+  // 비정상/실패는 일부 사용자에 집중.
   var LOGIN_HISTORY = {
     1: [
-      { loginId: 'jyong7@kovis.co.kr', ip: '211.252.232.17', success: true,  reason: '',               at: '2026-03-18T10:24:07' },
-      { loginId: 'jyong7@kovis.co.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치', at: '2026-03-10T16:00:00' },
-      { loginId: 'jyong7@kovis.co.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치', at: '2026-03-10T15:59:30' },
-      { loginId: 'jyong7@kovis.co.kr', ip: '211.252.232.17', success: true,  reason: '',               at: '2026-03-04T09:18:22' }
+      { loginId: 'admin@namwon.go.kr', ip: '211.252.232.5',  success: true, reason: '', at: '2026-04-23T08:12:00' },
+      { loginId: 'admin@namwon.go.kr', ip: '211.252.232.5',  success: true, reason: '', at: '2026-04-22T08:05:00' },
+      { loginId: 'admin@namwon.go.kr', ip: '211.252.232.5',  success: true, reason: '', at: '2026-04-21T08:12:00' }
     ],
     2: [
-      { loginId: 'ng1@kovis.co.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-03-18T09:48:41' },
-      { loginId: 'ng1@kovis.co.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-03-11T08:02:00' }
+      { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',               at: '2026-04-22T17:05:23' },
+      { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',               at: '2026-04-22T09:02:11' },
+      { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',               at: '2026-04-21T09:15:30' },
+      { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치', at: '2026-04-19T10:12:44' }
+    ],
+    3: [
+      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',                at: '2026-03-18T10:24:07' },
+      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T16:00:00' },
+      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T15:59:30' },
+      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T15:58:50' },
+      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',                at: '2026-03-04T09:18:22' }
     ],
     4: [
-      { loginId: 'admin@kovis.co.kr', ip: '211.252.232.5', success: true, reason: '', at: '2026-04-23T08:12:00' }
+      { loginId: 'hanlee@namwon.go.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-04-22T09:48:41' },
+      { loginId: 'hanlee@namwon.go.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-04-20T09:50:02' },
+      { loginId: 'hanlee@namwon.go.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-04-18T09:41:23' }
+    ],
+    5: [
+      { loginId: 'parkjs@namwon.go.kr', ip: '211.252.232.19', success: true, reason: '', at: '2026-04-21T15:32:10' },
+      { loginId: 'parkjs@namwon.go.kr', ip: '211.252.232.19', success: true, reason: '', at: '2026-04-20T15:11:09' }
+    ],
+    6: [
+      { loginId: 'ohgilsu@namwon.go.kr', ip: '211.252.232.20', success: true,  reason: '',                at: '2026-04-20T11:12:55' },
+      { loginId: 'ohgilsu@namwon.go.kr', ip: '211.252.232.20', success: false, reason: '비밀번호 불일치',  at: '2026-04-15T10:40:02' }
+    ],
+    8: [
+      { loginId: 'noh.ms@namwon.go.kr', ip: '211.252.232.88', success: true, reason: '', at: '2026-04-22T10:40:19' },
+      { loginId: 'noh.ms@namwon.go.kr', ip: '211.252.232.88', success: true, reason: '', at: '2026-04-21T10:33:02' }
+    ],
+    10: [
+      { loginId: 'chnam@namwon.go.kr', ip: '211.252.232.101', success: true, reason: '', at: '2026-04-22T08:55:41' },
+      { loginId: 'chnam@namwon.go.kr', ip: '211.252.232.101', success: true, reason: '', at: '2026-04-19T08:58:10' }
+    ],
+    14: [
+      { loginId: 'hyun.mk@namwon.go.kr', ip: '211.252.232.14', success: true,  reason: '',                at: '2026-04-22T13:50:14' },
+      { loginId: 'hyun.mk@namwon.go.kr', ip: '211.252.232.14', success: false, reason: '비밀번호 불일치',  at: '2026-04-21T17:02:00' },
+      { loginId: 'hyun.mk@namwon.go.kr', ip: '211.252.232.14', success: false, reason: '비밀번호 불일치',  at: '2026-04-21T17:01:30' }
+    ],
+    17: [
+      { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', success: false, reason: '비밀번호 5회 초과로 잠금', at: '2025-12-24T10:08:05' },
+      { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', success: false, reason: '비밀번호 불일치', at: '2025-12-24T10:08:00' }
     ]
   };
 
   var PWD_HISTORY = {
-    1: [
-      { loginId: 'jyong7@kovis.co.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T16:00:00' },
-      { loginId: 'jyong7@kovis.co.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T15:59:30' },
-      { loginId: 'jyong7@kovis.co.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T15:58:50' }
+    3: [
+      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T16:00:00' },
+      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T15:59:30' },
+      { loginId: 'jyong7@namwon.go.kr', ip: '211.252.232.17', reason: '비밀번호 불일치', at: '2026-03-10T15:58:50' }
     ],
-    6: [
-      { loginId: 'test1@kovis.co.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:07:20' },
-      { loginId: 'test1@kovis.co.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:07:35' },
-      { loginId: 'test1@kovis.co.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:07:50' },
-      { loginId: 'test1@kovis.co.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:08:00' },
-      { loginId: 'test1@kovis.co.kr', ip: '211.252.232.22', reason: '비밀번호 5회 초과로 잠금', at: '2025-12-24T10:08:05' }
+    14: [
+      { loginId: 'hyun.mk@namwon.go.kr', ip: '211.252.232.14', reason: '비밀번호 불일치', at: '2026-04-21T17:02:00' },
+      { loginId: 'hyun.mk@namwon.go.kr', ip: '211.252.232.14', reason: '비밀번호 불일치', at: '2026-04-21T17:01:30' }
+    ],
+    17: [
+      { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:07:20' },
+      { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:07:35' },
+      { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:07:50' },
+      { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', reason: '비밀번호 불일치', at: '2025-12-24T10:08:00' },
+      { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', reason: '비밀번호 5회 초과로 잠금', at: '2025-12-24T10:08:05' }
     ]
   };
 
