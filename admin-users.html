@@ -286,6 +286,9 @@
         </div>
       </div>
 
+      <!-- 액션: 계정 상태에 따라 탈퇴/삭제 중 하나만 노출.
+           - 정상·잠금 (active/inactive) → 탈퇴 버튼
+           - 탈퇴됨 (withdrawn)           → 삭제 버튼 (완전 삭제, 서로 다른 기능) -->
       <div class="form-actions form-actions--split">
         <button type="button" class="btn btn-secondary" id="d-list">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -295,6 +298,10 @@
           <button type="button" class="btn btn-danger" id="d-withdraw">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
             탈퇴
+          </button>
+          <button type="button" class="btn btn-danger" id="d-delete" hidden>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
+            삭제
           </button>
           <button type="button" class="btn btn-primary" id="d-save">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -640,6 +647,11 @@
     document.getElementById('d-action-by').textContent = u.actionBy || '-';
     document.getElementById('d-action-at').textContent = u.actionAt ? fmtDateTime(u.actionAt) : '-';
 
+    // 상태별 액션 버튼 전환: withdrawn 계정만 삭제(완전 제거), 그 외는 탈퇴
+    var isWithdrawn = u.status === 'withdrawn';
+    document.getElementById('d-withdraw').hidden = isWithdrawn;
+    document.getElementById('d-delete').hidden = !isWithdrawn;
+
     var roles = u.roles || [];
     document.querySelectorAll('#d-roles input[type="checkbox"]').forEach(function (cb) {
       cb.checked = roles.indexOf(cb.value) !== -1;
@@ -786,6 +798,7 @@
   document.getElementById('d-save').addEventListener('click', saveDetail);
   document.getElementById('d-reset-fails').addEventListener('click', resetPwdFails);
   document.getElementById('d-withdraw').addEventListener('click', withdrawUser);
+  document.getElementById('d-delete').addEventListener('click', deleteUser);
 
   // 이력 탭 페이지네이션
   function bindMiniPager(prefix, getPage, setPage, renderFn, getPageSize, setPageSize) {
