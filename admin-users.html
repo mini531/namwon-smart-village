@@ -60,9 +60,9 @@
           <label for="us-action">처리 상태</label>
           <select class="board-search-select" id="us-action">
             <option value="all">전체</option>
-            <option value="pending">처리 대기</option>
-            <option value="approved">처리 완료</option>
-            <option value="rejected">반려</option>
+            <option value="approved">승인</option>
+            <option value="rejected">거부</option>
+            <option value="pending">대기</option>
           </select>
         </div>
         <div class="board-field board-field--period">
@@ -422,7 +422,7 @@
   };
 
   var STATUS_LABEL = { active: '정상', withdrawn: '탈퇴' };
-  var ACTION_LABEL = { approved: '승인', pending: '처리 대기', rejected: '반려' };
+  var ACTION_LABEL = { approved: '승인', rejected: '거부', pending: '대기' };
 
   function load() {
     try {
