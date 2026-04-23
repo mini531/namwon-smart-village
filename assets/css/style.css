@@ -770,11 +770,8 @@ select {
 .card + .card { margin-top: 16px; }
 :is(.kpi-grid, .main-grid, .bottom-grid, .admin-card-grid) > .card + .card { margin-top: 0; }
 /* 작은 카드 변형 (사용자 상세의 소속/계정/권한 3카드 등) */
-/* 작은 헤더 — info card 처럼 컴팩트한 카드에서 사용. 기본 .card-header
-   가 62px·17px 이면 너무 커 보이는 맥락 전용. 글자 크기는 15px 로 유지
-   (14px 은 과도하게 작아 보임). */
-.card-header--sm { height: auto; min-height: 0; padding: 14px 18px; }
-.card-header--sm .card-title { font-size: 15px; }
+/* 전체 카드 헤더는 단일 표준(.card-header 62px·17px)으로 통일.
+   별도 --sm 변형 불필요. */
 /* 카드 본문 변형 — form/detail 이 body 없이 card 에 바로 붙는 경우 */
 .card-body--form { padding: 28px 32px; }
 .card--pad { padding: 28px 32px; }
