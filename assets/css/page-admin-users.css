@@ -15,12 +15,6 @@
 }
 .users-table tbody td.col-rank { text-align: center; font-size: 13px; }
 
-/* 상세 카드 내 input/select — info 카드 안에서는 컴팩트하게 */
-.admin-info-card .ic-row .form-control {
-  padding: 6px 10px;
-  font-size: 13px;
-}
-
 /* 권한 체크박스 리스트 */
 .role-list {
   display: grid;
@@ -44,8 +38,7 @@
 .role-item input[type="checkbox"]:checked ~ span { font-weight: 700; color: var(--color-primary); }
 .role-item input[type="checkbox"] { flex-shrink: 0; }
 
-/* 이력 탭 카드 */
-.history-card { padding: 0; overflow: hidden; }
+/* 이력 탭 (.card 안에 들어감) */
 .history-tabs {
   display: flex;
   border-bottom: 1px solid var(--color-border);

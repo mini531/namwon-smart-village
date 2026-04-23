@@ -98,7 +98,7 @@
             </button>
           </div>
         </div>
-        <table class="admin-table">
+        <table class="admin-table is-clickable">
           <thead>
             <tr>
               <th class="col-check"><input type="checkbox" class="form-check" id="an-check-all"></th>
@@ -238,17 +238,17 @@
             </div>
           </div>
         </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" id="f-cancel">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            취소
-          </button>
-          <button type="button" class="btn btn-primary" id="f-save">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            저장
-          </button>
-        </div>
+      </div>
+      <!-- 액션: 카드 바깥 — 전체 페이지 공통 표준 -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="f-cancel">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          취소
+        </button>
+        <button type="button" class="btn btn-primary" id="f-save">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          저장
+        </button>
       </div>
     </section>
 
@@ -855,8 +855,8 @@
 
   // 목록: 제목 클릭 / 전체 선택 / 개별 체크
   document.getElementById('an-tbody').addEventListener('click', function (e) {
-    var titleBtn = e.target.closest('.title-link');
-    if (titleBtn) { openDetail(parseInt(titleBtn.dataset.id, 10)); return; }
+    var row = e.target.closest('tr[data-id]');
+    if (row) { openDetail(parseInt(row.dataset.id, 10)); return; }
   });
   document.getElementById('an-check-all').addEventListener('change', function () {
     var on = this.checked;

@@ -116,6 +116,10 @@ html, body { overflow: hidden; }
 }
 .admin-table tbody tr:last-child { border-bottom: none; }
 .admin-table tbody tr:hover { background: #FAFBFC; }
+/* 행 전체 링크 — 상세 뷰로 이동하는 목록 공통 패턴 */
+.admin-table.is-clickable tbody tr { cursor: pointer; }
+.admin-table.is-clickable tbody tr:hover td .title-link { color: var(--color-primary); }
+.admin-table tbody td .title-link { pointer-events: none; }
 .admin-table tbody td {
   padding: 14px 16px;
   color: var(--color-text);
@@ -493,27 +497,8 @@ html, body { overflow: hidden; }
 }
 .admin-card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 .admin-card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-/* info card — 사용자 상세의 소속/계정/권한처럼 "작은 정보 카드" 를
-   3단 그리드로 나열할 때 사용하는 컴팩트 변형. */
-.admin-info-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  padding: 18px 20px;
-}
-.admin-info-card .ic-head {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-text);
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--color-border);
-}
-.admin-info-card .ic-head svg { color: var(--color-primary); }
-.admin-info-card .ic-row {
+/* info-row — 라벨/값 2열 그리드 공용 패턴. .card-body--sm 안에서 사용. */
+.info-row {
   display: grid;
   grid-template-columns: 84px 1fr;
   gap: 8px 12px;
@@ -521,12 +506,13 @@ html, body { overflow: hidden; }
   font-size: 13px;
   align-items: center;
 }
-.admin-info-card .ic-row .ic-label {
+.info-row .info-label {
   color: var(--color-text-muted);
   font-weight: 700;
   font-size: 12px;
 }
-.admin-info-card .ic-row .ic-value { color: var(--color-text); }
+.info-row .info-value { color: var(--color-text); }
+.info-row .form-control { padding: 6px 10px; font-size: 13px; }
 
 /* 반응형 */
 @media (max-width: 480px) {
@@ -553,7 +539,6 @@ html, body { overflow: hidden; }
   .datetime-range .dt-sep { display: none; }
   .admin-card-grid.cols-3,
   .admin-card-grid.cols-2 { grid-template-columns: 1fr; }
-  .admin-info-card { padding: 14px 16px; }
 }
 
 /* ============================================================

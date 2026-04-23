@@ -81,7 +81,7 @@
             </button>
           </div>
         </div>
-        <table class="admin-table">
+        <table class="admin-table is-clickable">
           <thead>
             <tr>
               <th class="col-check"><input type="checkbox" class="form-check" id="fq-check-all"></th>
@@ -582,8 +582,8 @@
   });
 
   document.getElementById('fq-tbody').addEventListener('click', function (e) {
-    var tbtn = e.target.closest('.title-link');
-    if (tbtn) { openDetail(parseInt(tbtn.dataset.id, 10)); return; }
+    var row = e.target.closest('tr[data-id]');
+    if (row) { openDetail(parseInt(row.dataset.id, 10)); return; }
   });
   document.getElementById('fq-check-all').addEventListener('change', function () {
     var on = this.checked;

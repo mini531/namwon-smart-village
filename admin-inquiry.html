@@ -84,7 +84,7 @@
         <div class="card-header">
           <div class="card-title">문의 목록</div>
         </div>
-        <table class="admin-table">
+        <table class="admin-table is-clickable">
           <thead>
             <tr>
               <th>제목</th>
@@ -553,8 +553,8 @@
     renderList();
   });
   document.getElementById('iq-tbody').addEventListener('click', function (e) {
-    var tbtn = e.target.closest('.title-link');
-    if (tbtn) { openDetail(parseInt(tbtn.dataset.id, 10)); return; }
+    var row = e.target.closest('tr[data-id]');
+    if (row) { openDetail(parseInt(row.dataset.id, 10)); return; }
   });
 
   // 답변 작성 RTE
