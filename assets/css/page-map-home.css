@@ -263,6 +263,8 @@
   border-radius: 5px;
 }
 .job-layer:hover { background: rgba(255, 255, 255, 0.04); }
+.job-layer.disabled { opacity: 0.45; }
+.job-layer.disabled:hover { background: transparent; }
 .job-layer input[type="checkbox"] {
   width: 12px;
   height: 12px;
@@ -270,6 +272,7 @@
   flex-shrink: 0;
   cursor: pointer;
 }
+.job-layer input[type="checkbox"]:disabled { cursor: not-allowed; }
 .job-layer .layer-date { color: rgba(255, 255, 255, 0.5); flex-shrink: 0; }
 .job-layer .layer-name {
   flex: 1;

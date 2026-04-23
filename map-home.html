@@ -2176,17 +2176,19 @@
 
         body.appendChild(el);
 
-        // 하위 레이어 (펼쳐진 경우)
+        // 하위 레이어 (펼쳐진 경우) — job이 체크되어 있을 때만 하위 체크 활성화
         if (isExpanded) {
           var layers = getJobLayers(job);
           var layerWrap = document.createElement('div');
           layerWrap.className = 'job-layers';
+          var jobChecked = selectedJobIds.has(job.job_id);
           layers.forEach(function (layer) {
-            var isVisible = !hiddenLayerIds.has(layer.id);
+            // 부모 job 미체크 시 하위는 기본 체크 해제 상태. 체크 상태에서만 hiddenLayerIds가 유효
+            var isVisible = jobChecked && !hiddenLayerIds.has(layer.id);
             var row = document.createElement('div');
-            row.className = 'job-layer';
+            row.className = 'job-layer' + (jobChecked ? '' : ' disabled');
             row.innerHTML =
-              '<input type="checkbox"' + (isVisible ? ' checked' : '') + '>' +
+              '<input type="checkbox"' + (isVisible ? ' checked' : '') + (jobChecked ? '' : ' disabled') + '>' +
               '<span class="layer-date">[' + layer.date + ']</span>' +
               '<span class="layer-name">' + layer.label + '</span>';
             var cb = row.querySelector('input');
