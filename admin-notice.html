@@ -156,11 +156,15 @@
           <div class="form-field">
             <label class="form-label">게시 기간<span class="req">*</span></label>
             <div class="datetime-range">
-              <input type="date" id="f-from-date" placeholder="YYYY-MM-DD">
-              <input type="time" id="f-from-time" value="00:00">
+              <div class="dt-pair">
+                <input type="date" id="f-from-date" placeholder="YYYY-MM-DD">
+                <input type="time" id="f-from-time" value="00:00">
+              </div>
               <span class="dt-sep">~</span>
-              <input type="date" id="f-to-date" placeholder="YYYY-MM-DD">
-              <input type="time" id="f-to-time" value="23:59">
+              <div class="dt-pair">
+                <input type="date" id="f-to-date" placeholder="YYYY-MM-DD">
+                <input type="time" id="f-to-time" value="23:59">
+              </div>
               <label class="check-inline">
                 <input type="checkbox" class="form-check" id="f-unlimited">무한 게시
               </label>
@@ -175,15 +179,21 @@
               <label class="check-inline" style="margin-left:0;">
                 <input type="checkbox" class="form-check" id="f-popup">메인화면 팝업 표시
               </label>
-              <input type="date" id="f-popup-from-date" placeholder="YYYY-MM-DD" disabled>
-              <input type="time" id="f-popup-from-time" value="00:00" disabled>
+              <div class="dt-pair">
+                <input type="date" id="f-popup-from-date" placeholder="YYYY-MM-DD" disabled>
+                <input type="time" id="f-popup-from-time" value="00:00" disabled>
+              </div>
               <span class="dt-sep">~</span>
-              <input type="date" id="f-popup-to-date" placeholder="YYYY-MM-DD" disabled>
-              <input type="time" id="f-popup-to-time" value="23:59" disabled>
-              <button type="button" class="board-quick-btn" data-weeks="1" disabled>1주일</button>
-              <button type="button" class="board-quick-btn" data-weeks="2" disabled>2주일</button>
-              <button type="button" class="board-quick-btn" data-weeks="3" disabled>3주일</button>
-              <button type="button" class="board-quick-btn" data-weeks="4" disabled>4주일</button>
+              <div class="dt-pair">
+                <input type="date" id="f-popup-to-date" placeholder="YYYY-MM-DD" disabled>
+                <input type="time" id="f-popup-to-time" value="23:59" disabled>
+              </div>
+              <div class="dt-quicks">
+                <button type="button" class="board-quick-btn" data-weeks="1" disabled>1주일</button>
+                <button type="button" class="board-quick-btn" data-weeks="2" disabled>2주일</button>
+                <button type="button" class="board-quick-btn" data-weeks="3" disabled>3주일</button>
+                <button type="button" class="board-quick-btn" data-weeks="4" disabled>4주일</button>
+              </div>
             </div>
           </div>
         </div>

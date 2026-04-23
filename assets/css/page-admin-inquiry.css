@@ -1,0 +1,38 @@
+/* admin-inquiry.html 전용 — 질문/답변 카드 헤더 스타일.
+   레이아웃/테이블/폼·RTE·첨부 등 공용 규칙은 admin-common.css. */
+
+.inq-question-card,
+.inq-answer-card {
+  margin-bottom: 14px;
+}
+
+.inq-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -4px 0 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+.inq-card-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  background: #FBEEF0;
+}
+.inq-card-badge.answer {
+  border-color: #1F4E79;
+  color: #1F4E79;
+  background: #EDF2FA;
+}
+.inq-card-meta {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-left: auto;
+  font-weight: 500;
+}
