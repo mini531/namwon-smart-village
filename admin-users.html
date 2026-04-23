@@ -242,6 +242,20 @@
             </thead>
             <tbody id="login-tbody"></tbody>
           </table>
+          <div class="board-paginator" style="padding:12px 20px;">
+            <button type="button" class="board-page-btn" id="hl-first">처음</button>
+            <button type="button" class="board-page-btn" id="hl-prev">이전</button>
+            <div class="board-page-pages" id="hl-pages"></div>
+            <button type="button" class="board-page-btn" id="hl-next">다음</button>
+            <button type="button" class="board-page-btn" id="hl-last">마지막</button>
+            <div class="board-page-size-wrap">
+              <select class="board-page-size" id="hl-page-size">
+                <option value="10">10</option><option value="20">20</option><option value="50">50</option>
+              </select>
+              <span>페이지 크기</span>
+            </div>
+            <div class="board-count" id="hl-count">총 <strong>0</strong>건 중 0~0행</div>
+          </div>
         </div>
         <div class="history-panel hidden" id="history-pwd">
           <table class="admin-table">
@@ -255,6 +269,20 @@
             </thead>
             <tbody id="pwd-tbody"></tbody>
           </table>
+          <div class="board-paginator" style="padding:12px 20px;">
+            <button type="button" class="board-page-btn" id="hp-first">처음</button>
+            <button type="button" class="board-page-btn" id="hp-prev">이전</button>
+            <div class="board-page-pages" id="hp-pages"></div>
+            <button type="button" class="board-page-btn" id="hp-next">다음</button>
+            <button type="button" class="board-page-btn" id="hp-last">마지막</button>
+            <div class="board-page-size-wrap">
+              <select class="board-page-size" id="hp-page-size">
+                <option value="10">10</option><option value="20">20</option><option value="50">50</option>
+              </select>
+              <span>페이지 크기</span>
+            </div>
+            <div class="board-count" id="hp-count">총 <strong>0</strong>건 중 0~0행</div>
+          </div>
         </div>
       </div>
 
@@ -413,7 +441,10 @@
     filter: { email: '', name: '', phone: '', dept: '', status: 'all', action: 'all', from: '', to: '', quick: 0 },
     page: 1,
     pageSize: 10,
-    viewingId: null
+    viewingId: null,
+    // 상세 뷰 이력 탭 별도 페이징
+    loginPage: 1, loginPageSize: 10,
+    pwdPage: 1, pwdPageSize: 10
   };
 
   function getFiltered() {
@@ -513,11 +544,20 @@
   }
 
   function renderHistoryTables(id) {
-    var loginList = LOGIN_HISTORY[id] || [];
-    var pwdList = PWD_HISTORY[id] || [];
+    renderLoginHistory(id);
+    renderPwdHistory(id);
+  }
+
+  function renderLoginHistory(id) {
+    var list = LOGIN_HISTORY[id] || [];
+    var total = list.length;
+    var totalPages = Math.max(1, Math.ceil(total / state.loginPageSize));
+    if (state.loginPage > totalPages) state.loginPage = totalPages;
+    var startIdx = total === 0 ? 0 : (state.loginPage - 1) * state.loginPageSize;
+    var endIdx = Math.min(total, startIdx + state.loginPageSize);
     var lt = document.getElementById('login-tbody');
-    lt.innerHTML = loginList.length
-      ? loginList.map(function (r) {
+    lt.innerHTML = total
+      ? list.slice(startIdx, endIdx).map(function (r) {
           return '<tr>' +
             '<td>' + escapeHtml(r.loginId) + '</td>' +
             '<td class="col-ip">' + escapeHtml(r.ip) + '</td>' +
@@ -528,10 +568,22 @@
           '</tr>';
         }).join('')
       : '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--color-text-muted);">로그인 이력이 없습니다.</td></tr>';
+    document.getElementById('hl-count').innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (total === 0 ? '0~0' : (startIdx + 1) + '~' + endIdx) + '행';
+    renderMiniPages('hl-pages', state.loginPage, totalPages, function (p) { state.loginPage = p; renderLoginHistory(id); });
+    document.getElementById('hl-first').disabled = document.getElementById('hl-prev').disabled = state.loginPage <= 1;
+    document.getElementById('hl-next').disabled = document.getElementById('hl-last').disabled = state.loginPage >= totalPages;
+  }
 
+  function renderPwdHistory(id) {
+    var list = PWD_HISTORY[id] || [];
+    var total = list.length;
+    var totalPages = Math.max(1, Math.ceil(total / state.pwdPageSize));
+    if (state.pwdPage > totalPages) state.pwdPage = totalPages;
+    var startIdx = total === 0 ? 0 : (state.pwdPage - 1) * state.pwdPageSize;
+    var endIdx = Math.min(total, startIdx + state.pwdPageSize);
     var pt = document.getElementById('pwd-tbody');
-    pt.innerHTML = pwdList.length
-      ? pwdList.map(function (r) {
+    pt.innerHTML = total
+      ? list.slice(startIdx, endIdx).map(function (r) {
           return '<tr>' +
             '<td>' + escapeHtml(r.loginId) + '</td>' +
             '<td class="col-date">' + fmtDateTime(r.at) + '</td>' +
@@ -540,6 +592,27 @@
           '</tr>';
         }).join('')
       : '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--color-text-muted);">비밀번호 변경 이력이 없습니다.</td></tr>';
+    document.getElementById('hp-count').innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (total === 0 ? '0~0' : (startIdx + 1) + '~' + endIdx) + '행';
+    renderMiniPages('hp-pages', state.pwdPage, totalPages, function (p) { state.pwdPage = p; renderPwdHistory(id); });
+    document.getElementById('hp-first').disabled = document.getElementById('hp-prev').disabled = state.pwdPage <= 1;
+    document.getElementById('hp-next').disabled = document.getElementById('hp-last').disabled = state.pwdPage >= totalPages;
+  }
+
+  // 공용 미니 페이지네이션 렌더러 — 컨테이너 id / 현재 페이지 / 총 페이지 / 페이지 클릭 시 콜백
+  function renderMiniPages(pagesContainerId, cur, totalPages, onPick) {
+    var pagesEl = document.getElementById(pagesContainerId);
+    pagesEl.innerHTML = '';
+    var start = Math.max(1, cur - 2);
+    var end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    for (var p = start; p <= end; p++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'board-page-btn' + (p === cur ? ' active' : '');
+      btn.textContent = String(p);
+      (function (pg) { btn.addEventListener('click', function () { onPick(pg); }); })(p);
+      pagesEl.appendChild(btn);
+    }
   }
 
   function openDetail(id) {
@@ -713,6 +786,34 @@
   document.getElementById('d-save').addEventListener('click', saveDetail);
   document.getElementById('d-reset-fails').addEventListener('click', resetPwdFails);
   document.getElementById('d-withdraw').addEventListener('click', withdrawUser);
+
+  // 이력 탭 페이지네이션
+  function bindMiniPager(prefix, getPage, setPage, renderFn, getPageSize, setPageSize) {
+    document.getElementById(prefix + '-first').addEventListener('click', function () { setPage(1); renderFn(state.viewingId); });
+    document.getElementById(prefix + '-prev').addEventListener('click', function () {
+      if (getPage() > 1) { setPage(getPage() - 1); renderFn(state.viewingId); }
+    });
+    document.getElementById(prefix + '-next').addEventListener('click', function () { setPage(getPage() + 1); renderFn(state.viewingId); });
+    document.getElementById(prefix + '-last').addEventListener('click', function () {
+      var list = prefix === 'hl' ? (LOGIN_HISTORY[state.viewingId] || []) : (PWD_HISTORY[state.viewingId] || []);
+      var totalPages = Math.max(1, Math.ceil(list.length / getPageSize()));
+      setPage(totalPages);
+      renderFn(state.viewingId);
+    });
+    document.getElementById(prefix + '-page-size').addEventListener('change', function () {
+      setPageSize(parseInt(this.value, 10) || 10);
+      setPage(1);
+      renderFn(state.viewingId);
+    });
+  }
+  bindMiniPager('hl',
+    function () { return state.loginPage; }, function (p) { state.loginPage = p; },
+    renderLoginHistory,
+    function () { return state.loginPageSize; }, function (n) { state.loginPageSize = n; });
+  bindMiniPager('hp',
+    function () { return state.pwdPage; }, function (p) { state.pwdPage = p; },
+    renderPwdHistory,
+    function () { return state.pwdPageSize; }, function (n) { state.pwdPageSize = n; });
 
   renderList();
   // URL ?id=N 이 있으면 해당 사용자 상세를 바로 열기 (딥링크·테스트용)
