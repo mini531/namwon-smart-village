@@ -543,6 +543,23 @@ html, body { overflow: hidden; }
   gap: 4px;
   min-width: 0;
 }
+/* 값 영역에 pill 과 액션 버튼이 함께 오는 케이스 — pill 은 좌측, 버튼은 우측 정렬 */
+.info-value--actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.info-value--actions > .admin-pill:first-child,
+.info-value--actions > .info-value-main { margin-right: auto; }
+
+/* 카드 본문 내부에 embed 된 페이지네이터 (이력 탭 등) */
+.board-paginator--embedded { padding: 12px 20px; }
+
+/* 빈 상태 영역 공용 */
+.empty-state { padding: 50px 20px; text-align: center; color: var(--color-text-muted); font-size: 14px; }
+.empty-state p { margin: 0; font-size: 14px; }
+.admin-table td.empty-cell { text-align: center; padding: 30px; color: var(--color-text-muted); }
 
 /* 반응형 */
 @media (max-width: 480px) {

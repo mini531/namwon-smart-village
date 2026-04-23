@@ -169,7 +169,7 @@
             <div class="info-row"><span class="info-label">아이디(이메일)</span>
               <span class="info-value" id="d-email">-</span></div>
             <div class="info-row"><span class="info-label">계정 상태</span>
-              <span class="info-value" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span class="info-value info-value--actions">
                 <span class="admin-pill" id="d-status">-</span>
                 <button type="button" class="btn btn-danger btn-sm" id="d-inline-withdraw" hidden>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
@@ -186,8 +186,8 @@
             <div class="info-row"><span class="info-label">탈퇴일시</span>
               <span class="info-value" id="d-withdrawn-at">-</span></div>
             <div class="info-row"><span class="info-label">비밀번호 실패 횟수</span>
-              <span class="info-value" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-                <span><strong id="d-pwd-fails">0</strong> 회</span>
+              <span class="info-value info-value--actions">
+                <span class="info-value-main"><strong id="d-pwd-fails">0</strong> 회</span>
                 <button type="button" class="btn btn-secondary btn-sm" id="d-reset-fails">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
                   비밀번호 초기화
@@ -207,7 +207,7 @@
           </div>
           <div class="card-body card-body--sm">
             <div class="info-row"><span class="info-label">처리 상태</span>
-              <span class="info-value" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span class="info-value info-value--actions">
                 <span class="admin-pill" id="d-action-status">-</span>
                 <button type="button" class="btn btn-primary btn-sm" id="d-inline-approve" hidden>승인</button>
                 <button type="button" class="btn btn-danger btn-sm" id="d-inline-reject" hidden>거부</button>
@@ -257,7 +257,7 @@
             </thead>
             <tbody id="login-tbody"></tbody>
           </table>
-          <div class="board-paginator" style="padding:12px 20px;">
+          <div class="board-paginator board-paginator--embedded">
             <button type="button" class="board-page-btn" id="hl-first">처음</button>
             <button type="button" class="board-page-btn" id="hl-prev">이전</button>
             <div class="board-page-pages" id="hl-pages"></div>
@@ -284,7 +284,7 @@
             </thead>
             <tbody id="pwd-tbody"></tbody>
           </table>
-          <div class="board-paginator" style="padding:12px 20px;">
+          <div class="board-paginator board-paginator--embedded">
             <button type="button" class="board-page-btn" id="hp-first">처음</button>
             <button type="button" class="board-page-btn" id="hp-prev">이전</button>
             <div class="board-page-pages" id="hp-pages"></div>
@@ -328,7 +328,8 @@
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'namwon-admin-users-v3';
+  // v4 — 구 버전이 빈 배열 등 손상된 상태를 남겼을 수 있어 키 갱신.
+  var STORAGE_KEY = 'namwon-admin-users-v4';
   var ROLES = ['admin', 'analyze', 'report', 'dataset', 'map', 'unlimited'];
 
   var DEFAULT_SEED = [
@@ -433,7 +434,12 @@
   function load() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        // 빈 배열이 저장돼 있으면 시드로 복구 (사용자가 모든 계정을 의도적으로
+        // 지운 경우가 아닌 "손상된 상태" 대응).
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {}
     return DEFAULT_SEED.slice();
   }
@@ -485,8 +491,7 @@
 
     if (total === 0) {
       emptyWrap.innerHTML =
-        '<div class="uc-empty" style="padding:50px 20px;text-align:center;color:var(--color-text-muted);">' +
-          '<p style="font-size:14px;">검색 조건에 맞는 사용자가 없습니다.</p></div>';
+        '<div class="empty-state"><p>검색 조건에 맞는 사용자가 없습니다.</p></div>';
       countEl.innerHTML = '총 <strong>0</strong>건 중 0~0행';
       renderPagination(1);
       return;
@@ -579,7 +584,7 @@
             '<td class="col-date">' + (r.logoutAt ? fmtDateTime(r.logoutAt) : '-') + '</td>' +
           '</tr>';
         }).join('')
-      : '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--color-text-muted);">로그인 이력이 없습니다.</td></tr>';
+      : '<tr><td colspan="6" class="empty-cell">로그인 이력이 없습니다.</td></tr>';
     document.getElementById('hl-count').innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (total === 0 ? '0~0' : (startIdx + 1) + '~' + endIdx) + '행';
     renderMiniPages('hl-pages', state.loginPage, totalPages, function (p) { state.loginPage = p; renderLoginHistory(id); });
     document.getElementById('hl-first').disabled = document.getElementById('hl-prev').disabled = state.loginPage <= 1;
@@ -603,7 +608,7 @@
             '<td>' + escapeHtml(r.reason || '-') + '</td>' +
           '</tr>';
         }).join('')
-      : '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--color-text-muted);">비밀번호 변경 이력이 없습니다.</td></tr>';
+      : '<tr><td colspan="4" class="empty-cell">비밀번호 변경 이력이 없습니다.</td></tr>';
     document.getElementById('hp-count').innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (total === 0 ? '0~0' : (startIdx + 1) + '~' + endIdx) + '행';
     renderMiniPages('hp-pages', state.pwdPage, totalPages, function (p) { state.pwdPage = p; renderPwdHistory(id); });
     document.getElementById('hp-first').disabled = document.getElementById('hp-prev').disabled = state.pwdPage <= 1;
@@ -715,6 +720,22 @@
         state.list[idx].withdrawnAt = nowIso();
         save();
         openDetail(state.viewingId); // 인라인 버튼 가시성 갱신 포함
+      }
+    });
+  }
+
+  // 완전 삭제 — 탈퇴된 계정만 대상. 이력 포함 영구 제거.
+  function deleteUser() {
+    ConfirmModal.open({
+      title: '확인',
+      message: '사용자를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+      danger: true,
+      onConfirm: function () {
+        state.list = state.list.filter(function (n) { return n.id !== state.viewingId; });
+        save();
+        state.viewingId = null;
+        showView('list');
+        renderList();
       }
     });
   }
