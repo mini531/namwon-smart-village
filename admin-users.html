@@ -167,12 +167,14 @@
             </div>
           </div>
           <div class="card-body card-body--sm">
-            <div class="info-row"><span class="info-label">아이디</span>
+            <div class="info-row"><span class="info-label">아이디(이메일)</span>
               <span class="info-value" id="d-email">-</span></div>
             <div class="info-row"><span class="info-label">계정 상태</span>
               <span class="info-value"><span class="admin-pill" id="d-status">-</span></span></div>
-            <div class="info-row"><span class="info-label">가입일</span>
+            <div class="info-row"><span class="info-label">가입일시</span>
               <span class="info-value" id="d-joined">-</span></div>
+            <div class="info-row"><span class="info-label">탈퇴일시</span>
+              <span class="info-value" id="d-withdrawn-at">-</span></div>
             <div class="info-row"><span class="info-label">비밀번호 실패 횟수</span>
               <span class="info-value" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
                 <span><strong id="d-pwd-fails">0</strong> 회</span>
@@ -303,8 +305,8 @@
     { id: 17, email: 'kang.hw@kovis.co.kr',    name: '강해원', phone: '010-4822-1177', dept: '홍보전산과',   rank: '외부협력', status: 'active', expires: '2026-12-31', pwdFails: 0, joined: '2025-12-01T10:00:00', lastLogin: '2026-04-15T17:08:23', action: 'approved', actionBy: '이주원',        actionAt: '2025-12-01T14:12:00', roles: ['analyze','dataset'] },
     { id: 18, email: 'newreq@namwon.go.kr',    name: '신청자', phone: '063-620-9990', dept: '농업기술센터', rank: '주무관', status: 'inactive',  expires: '',           pwdFails: 0, joined: '2026-04-22T09:15:00', lastLogin: '',                    action: 'pending',  actionBy: '',              actionAt: '',                    roles: [] },
     { id: 19, email: 'parkmj@namwon.go.kr',    name: '박민지', phone: '063-620-9430', dept: '환경관리과',   rank: '주무관', status: 'inactive',  expires: '2027-12-31', pwdFails: 5, joined: '2025-12-24T10:07:00', lastLogin: '2025-12-24T10:08:00', action: 'approved', actionBy: '차남호',        actionAt: '2025-12-24T10:12:00', roles: ['map'] },
-    { id: 20, email: 'reject.aa@gmail.com',    name: '김거절', phone: '010-0000-9999', dept: '외부',         rank: '',       status: 'withdrawn', expires: '',           pwdFails: 0, joined: '2026-04-18T10:20:00', lastLogin: '',                    action: 'rejected', actionBy: '김관리',        actionAt: '2026-04-18T13:15:00', roles: [] },
-    { id: 21, email: 'choi.ys@namwon.go.kr',   name: '최영수', phone: '063-620-9320', dept: '기획감사실',   rank: '실장',   status: 'withdrawn', expires: '',           pwdFails: 0, joined: '2024-12-18T13:15:00', lastLogin: '2025-12-30T10:14:57', action: 'approved', actionBy: '김관리',        actionAt: '2024-12-18T14:02:00', roles: [] }
+    { id: 20, email: 'reject.aa@gmail.com',    name: '김거절', phone: '010-0000-9999', dept: '외부',         rank: '',       status: 'withdrawn', expires: '',           pwdFails: 0, joined: '2026-04-18T10:20:00', lastLogin: '',                    action: 'rejected', actionBy: '김관리',        actionAt: '2026-04-18T13:15:00', withdrawnAt: '2026-04-18T13:15:00', roles: [] },
+    { id: 21, email: 'choi.ys@namwon.go.kr',   name: '최영수', phone: '063-620-9320', dept: '기획감사실',   rank: '실장',   status: 'withdrawn', expires: '',           pwdFails: 0, joined: '2024-12-18T13:15:00', lastLogin: '2025-12-30T10:14:57', action: 'approved', actionBy: '김관리',        actionAt: '2024-12-18T14:02:00', withdrawnAt: '2026-01-15T09:30:00', roles: [] }
   ];
 
   // 사용자별 로그인 이력 시드 (id → array). 새 시드의 id 기준.
@@ -355,19 +357,20 @@
 
   // 비밀번호 변경 이력 (id → 변경 이벤트 목록).
   // reason: 최초 설정 / 사용자 변경 / 관리자 초기화 / 3개월 주기 정책 등.
+  // by: 변경자 이름 (부서명 금지 — 그건 소속 정보임).
   var PWD_HISTORY = {
     1: [
-      { loginId: 'admin@namwon.go.kr', at: '2026-01-15T09:00:00', by: '관리자', reason: '주기적 비밀번호 변경 정책(3개월)' },
-      { loginId: 'admin@namwon.go.kr', at: '2025-10-12T09:00:00', by: '관리자', reason: '주기적 비밀번호 변경 정책(3개월)' },
-      { loginId: 'admin@namwon.go.kr', at: '2025-04-10T11:18:00', by: '시스템',  reason: '최초 계정 발급' }
+      { loginId: 'admin@namwon.go.kr', at: '2026-01-15T09:00:00', by: '김관리', reason: '주기적 비밀번호 변경 정책(3개월)' },
+      { loginId: 'admin@namwon.go.kr', at: '2025-10-12T09:00:00', by: '김관리', reason: '주기적 비밀번호 변경 정책(3개월)' },
+      { loginId: 'admin@namwon.go.kr', at: '2025-04-10T11:18:00', by: '시스템', reason: '최초 계정 발급' }
     ],
     3: [
-      { loginId: 'ngii@kakao.com', at: '2026-04-02T11:20:00', by: '관리자', reason: '비밀번호 실패 초기화' },
-      { loginId: 'ngii@kakao.com', at: '2026-03-17T08:41:00', by: '관리자', reason: '최초 계정 발급' }
+      { loginId: 'ngii@kakao.com', at: '2026-04-02T11:20:00', by: '이주원', reason: '비밀번호 실패 초기화' },
+      { loginId: 'ngii@kakao.com', at: '2026-03-17T08:41:00', by: '김관리', reason: '최초 계정 발급' }
     ],
     4: [
       { loginId: 'jyong1@korea.kr', at: '2026-03-10T16:10:00', by: '김관리', reason: '비밀번호 실패 초기화' },
-      { loginId: 'jyong1@korea.kr', at: '2026-03-16T09:24:00', by: '남원시 홍보전산과', reason: '최초 계정 발급' }
+      { loginId: 'jyong1@korea.kr', at: '2026-03-16T09:24:00', by: '이주원', reason: '최초 계정 발급' }
     ],
     9: [
       { loginId: 'ohgilsu@namwon.go.kr', at: '2026-04-15T10:50:00', by: '이한길', reason: '비밀번호 실패 초기화' }
@@ -548,6 +551,7 @@
     statusEl.className = 'admin-pill ' + u.status;
     statusEl.textContent = STATUS_LABEL[u.status];
     document.getElementById('d-joined').textContent = fmtDateTime(u.joined);
+    document.getElementById('d-withdrawn-at').textContent = u.withdrawnAt ? fmtDateTime(u.withdrawnAt) : '-';
     document.getElementById('d-pwd-fails').textContent = u.pwdFails || 0;
     // 권한 정보 상단
     var action = u.action || 'pending';
@@ -607,10 +611,12 @@
         var idx = state.list.findIndex(function (x) { return x.id === state.viewingId; });
         if (idx < 0) return;
         state.list[idx].status = 'withdrawn';
+        state.list[idx].withdrawnAt = nowIso();
         save();
         var statusEl = document.getElementById('d-status');
         statusEl.className = 'admin-pill withdrawn';
         statusEl.textContent = STATUS_LABEL.withdrawn;
+        document.getElementById('d-withdrawn-at').textContent = fmtDateTime(state.list[idx].withdrawnAt);
       }
     });
   }
