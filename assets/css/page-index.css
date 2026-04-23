@@ -241,39 +241,21 @@ html, body { overflow: hidden; }
 
 /* (위 공통 그리드로 통합됨) */
 
-/* ── 섹션 카드 ── */
-.card {
-  background: var(--color-surface);
-  border-radius: var(--border-radius-lg);
-  border: 1px solid var(--color-border);
-  box-shadow: 0 1px 3px rgba(15,37,64,0.04);
-  overflow: hidden;
-}
+/* .card / .card-header / .card-title / .card-body 는 style.css 전역
+   정의. 여기서 중복 금지 — 단일 공급원 원칙. */
 
-.card-header {
-  padding: 0 22px;
-  height: 62px;
-  min-height: 62px;
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--color-border);
+/* 그리드 내 카드는 row 전체 높이까지 채움 + 내부 flex-col 로 body 확장 */
+.main-grid > .card,
+.bottom-grid > .card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
+  flex-direction: column;
 }
-
-.card-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--color-text);
+.main-grid > .card > .card-body,
+.bottom-grid > .card > .card-body {
+  flex: 1 1 auto;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
 }
-
-.card-title svg { color: var(--color-primary); }
-
-.card-body { padding: 20px 22px; }
 
 /* ── AI 분석 과제 카드 (실사 썸네일 상단/제목 하단) ── */
 .model-select-grid {

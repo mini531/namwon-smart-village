@@ -28,11 +28,11 @@
         <p>AI 분석 작업 단위로 실행 이력을 조회하고, 각 작업에서 탐지된 이상 객체를 관리합니다</p>
       </div>
       <div class="page-actions">
-        <button class="board-btn" onclick="exportCSV()">
+        <button class="btn btn-secondary" onclick="exportCSV()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           CSV 내보내기
         </button>
-        <a href="report.html" class="board-btn board-btn-primary">
+        <a href="report.html" class="btn btn-primary">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           보고서 생성
         </a>
@@ -184,11 +184,11 @@
           <input type="text" id="filter-keyword" placeholder="예: 포트홀, 도통동">
         </div>
         <div class="filter-actions">
-          <button class="board-btn" onclick="resetFilter()">
+          <button class="btn btn-secondary" onclick="resetFilter()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
             초기화
           </button>
-          <button class="board-btn board-btn-primary" onclick="applyFilter()">
+          <button class="btn btn-primary" onclick="applyFilter()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             검색
           </button>
@@ -283,9 +283,9 @@
       </div>
     </div>
     <div class="modal-foot">
-      <button class="board-btn" onclick="closeModal()">닫기</button>
-      <button class="board-btn" onclick="goToMap()">지도에서 보기</button>
-      <button class="board-btn board-btn-primary" onclick="saveProcessing()">저장</button>
+      <button class="btn btn-secondary" onclick="closeModal()">닫기</button>
+      <button class="btn btn-secondary" onclick="goToMap()">지도에서 보기</button>
+      <button class="btn btn-primary" onclick="saveProcessing()">저장</button>
     </div>
   </div>
 </div>

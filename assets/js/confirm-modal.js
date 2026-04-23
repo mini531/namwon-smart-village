@@ -39,8 +39,8 @@
         '</div>' +
         '<div class="confirm-body" id="confirm-modal-message"></div>' +
         '<div class="confirm-foot">' +
-          '<button type="button" class="board-btn" data-role="cancel">닫기</button>' +
-          '<button type="button" class="board-btn board-btn-primary" data-role="confirm">확인</button>' +
+          '<button type="button" class="btn btn-secondary" data-role="cancel">닫기</button>' +
+          '<button type="button" class="btn btn-primary" data-role="confirm">확인</button>' +
         '</div>' +
       '</div>';
     document.body.appendChild(rootEl);
@@ -88,8 +88,10 @@
     confirmBtn.textContent = opts.confirmText || '확인';
     cancelBtn.textContent = opts.cancelText || '닫기';
 
-    confirmBtn.classList.toggle('board-btn-primary', !opts.danger);
-    confirmBtn.classList.toggle('board-btn-danger', !!opts.danger);
+    // 확인 버튼 변형 전환 — 기본 primary, danger 옵션 시 danger.
+    // .btn 기본 클래스는 HTML 에 이미 박혀 있고, 변형만 토글.
+    confirmBtn.classList.toggle('btn-primary', !opts.danger);
+    confirmBtn.classList.toggle('btn-danger', !!opts.danger);
 
     currentOnConfirm = typeof opts.onConfirm === 'function' ? opts.onConfirm : null;
     lastFocused = document.activeElement;

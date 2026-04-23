@@ -522,7 +522,7 @@ html, body { overflow: hidden; }
   .admin-container { padding: 18px 16px 40px; }
   .board-period-row { width: 100%; }
   .admin-list-head { flex-direction: column; align-items: stretch; gap: 10px; }
-  .admin-list-actions .board-btn { flex: 1; justify-content: center; }
+  .card-actions .btn { flex: 1; justify-content: center; }
   .form-row.two-col { grid-template-columns: 1fr; }
   .admin-form-card, .admin-view-card { padding: 20px 18px; }
   .view-row { grid-template-columns: 1fr; gap: 4px; }
