@@ -160,45 +160,46 @@
             <div class="form-field" style="padding-top:8px;">
               <div class="rte-wrap">
                 <div class="rte-toolbar" id="reply-rte-toolbar">
-                <button type="button" class="rte-btn" data-cmd="bold" title="굵게"><strong>B</strong></button>
-                <button type="button" class="rte-btn" data-cmd="underline" title="밑줄"><u>U</u></button>
-                <button type="button" class="rte-btn" data-cmd="strikeThrough" title="취소선"><s>S</s></button>
-                <span class="rte-sep"></span>
-                <button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="글머리 기호">• 목록</button>
-                <button type="button" class="rte-btn" data-cmd="insertOrderedList" title="번호 목록">1. 목록</button>
-                <span class="rte-sep"></span>
-                <button type="button" class="rte-btn" id="reply-rte-link" title="링크">🔗</button>
-                <button type="button" class="rte-btn" data-cmd="removeFormat" title="서식 지우기">↺</button>
+                  <button type="button" class="rte-btn" data-cmd="bold" title="굵게"><strong>B</strong></button>
+                  <button type="button" class="rte-btn" data-cmd="underline" title="밑줄"><u>U</u></button>
+                  <button type="button" class="rte-btn" data-cmd="strikeThrough" title="취소선"><s>S</s></button>
+                  <span class="rte-sep"></span>
+                  <button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="글머리 기호">• 목록</button>
+                  <button type="button" class="rte-btn" data-cmd="insertOrderedList" title="번호 목록">1. 목록</button>
+                  <span class="rte-sep"></span>
+                  <button type="button" class="rte-btn" id="reply-rte-link" title="링크">🔗</button>
+                  <button type="button" class="rte-btn" data-cmd="removeFormat" title="서식 지우기">↺</button>
+                </div>
+                <div class="rte-editor" id="v-answer-input" contenteditable="true" data-placeholder="답변을 입력하세요. 저장 시 문의 상태가 '답변 완료'로 변경됩니다."></div>
               </div>
-              <div class="rte-editor" id="v-answer-input" contenteditable="true" data-placeholder="답변을 입력하세요. 저장 시 문의 상태가 '답변 완료'로 변경됩니다."></div>
+            </div>
+          </div>
+          <div class="view-row block">
+            <span class="label">첨부 파일</span>
+            <div class="attach-upload">
+              <input type="file" id="v-reply-file-input" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.xlsx,.xls,.doc,.docx,.ppt,.pptx,.hwp" multiple hidden>
+              <button type="button" class="btn btn-secondary" id="v-reply-file-btn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                파일 추가
+              </button>
+              <span class="attach-hint">허용 확장자: .jpg, .jpeg, .png, .gif, .bmp, .pdf, .xlsx, .xls, .doc, .docx, .ppt, .pptx, .hwp · 파일당 최대 10.0 MB · 최대 3개</span>
+              <div class="attach-list" id="v-reply-attach-list"></div>
+              <div class="attach-list-empty" id="v-reply-attach-empty">첨부된 파일이 없습니다.</div>
             </div>
           </div>
         </div>
-        <div class="view-row block">
-          <span class="label">첨부 파일</span>
-          <div class="attach-upload">
-            <input type="file" id="v-reply-file-input" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.xlsx,.xls,.doc,.docx,.ppt,.pptx,.hwp" multiple hidden>
-            <button type="button" class="btn btn-secondary" id="v-reply-file-btn">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              파일 추가
-            </button>
-            <span class="attach-hint">허용 확장자: .jpg, .jpeg, .png, .gif, .bmp, .pdf, .xlsx, .xls, .doc, .docx, .ppt, .pptx, .hwp · 파일당 최대 10.0 MB · 최대 3개</span>
-            <div class="attach-list" id="v-reply-attach-list"></div>
-            <div class="attach-list-empty" id="v-reply-attach-empty">첨부된 파일이 없습니다.</div>
-          </div>
-        </div>
       </div>
+
+      <!-- 액션: 카드 바깥 배치 — 전체 페이지 공통 표준 -->
       <div class="form-actions form-actions--split">
         <button type="button" class="btn btn-secondary" id="v-list">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           목록
         </button>
-        <div class="form-actions-group">
-          <button type="button" class="btn btn-primary" id="v-reply">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 00-4-4H4"/></svg>
-            답변 저장
-          </button>
-        </div>
+        <button type="button" class="btn btn-primary" id="v-reply">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 00-4-4H4"/></svg>
+          답변 저장
+        </button>
       </div>
     </section>
 
