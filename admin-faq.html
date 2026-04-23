@@ -60,17 +60,17 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
             초기화
           </button>
-          <button type="button" class="board-btn" id="fq-search">
+          <button type="button" class="board-btn board-btn--dark" id="fq-search">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             검색
           </button>
         </div>
       </div>
 
-      <div class="admin-list-card">
-        <div class="admin-list-head">
-          <div class="admin-list-title">질문 목록</div>
-          <div class="admin-list-actions">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">질문 목록</div>
+          <div class="card-actions">
             <button type="button" class="board-btn board-btn-danger" id="fq-del-selected">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
               선택 삭제
@@ -114,18 +114,18 @@
 
     <!-- 등록/수정 폼 뷰 -->
     <section class="admin-form-view hidden" id="form-view">
-      <div class="admin-form-card">
+      <div class="card card--pad">
         <div class="form-row two-col">
           <div class="form-field">
             <label class="form-label" for="f-cat">구분<span class="req">*</span></label>
             <select class="form-control" id="f-cat">
               <option value="">선택</option>
-              <option value="01">01 서비스 이용</option>
-              <option value="02">02 데이터 업로드</option>
-              <option value="03">03 분석 서비스</option>
-              <option value="04">04 오류 및 점검</option>
-              <option value="05">05 자료 다운로드</option>
-              <option value="06">06 기타</option>
+              <option value="01">서비스 이용</option>
+              <option value="02">데이터 업로드</option>
+              <option value="03">분석 서비스</option>
+              <option value="04">오류 및 점검</option>
+              <option value="05">자료 다운로드</option>
+              <option value="06">기타</option>
             </select>
           </div>
           <div class="form-field">
@@ -172,22 +172,22 @@
           </div>
         </div>
 
-        <div class="form-actions">
-          <button type="button" class="board-btn" id="f-cancel">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            취소
-          </button>
-          <button type="button" class="board-btn board-btn-primary" id="f-save">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            저장
-          </button>
-        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="board-btn" id="f-cancel">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          취소
+        </button>
+        <button type="button" class="board-btn board-btn-primary" id="f-save">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          저장
+        </button>
       </div>
     </section>
 
     <!-- 상세/보기 뷰 -->
     <section class="admin-view-view hidden" id="view-view">
-      <div class="admin-view-card">
+      <div class="card card--pad">
         <div class="view-row">
           <span class="label">구분</span>
           <span class="value"><span class="admin-cat" id="v-cat">-</span></span>

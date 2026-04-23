@@ -87,27 +87,7 @@ html, body { overflow: hidden; }
 .board-date-input:focus { border-color: var(--color-primary); }
 .board-period-sep { color: var(--color-text-muted); font-size: 13px; }
 
-/* 목록 카드 */
-.admin-list-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  overflow: hidden;
-}
-.admin-list-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  background: var(--color-surface-2);
-  border-bottom: 1px solid var(--color-border);
-}
-.admin-list-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-text);
-}
-.admin-list-actions { display: flex; gap: 8px; }
+/* 목록 카드는 .card / .card-header / .card-title / .card-actions 공용 사용. */
 
 /* 관리자 테이블 */
 .admin-table {
@@ -212,13 +192,7 @@ html, body { overflow: hidden; }
   background: var(--color-surface-2);
 }
 
-/* 등록/수정 폼 카드 */
-.admin-form-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  padding: 28px 32px;
-}
+/* 폼/상세 카드는 .card + .card-body(또는 --form) 공용 사용. */
 .form-row {
   display: grid;
   gap: 22px 24px;
@@ -460,13 +434,7 @@ html, body { overflow: hidden; }
 }
 .form-actions-group { display: flex; gap: 8px; flex-wrap: wrap; }
 
-/* 상세(보기) 뷰 카드 */
-.admin-view-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  padding: 28px 32px;
-}
+/* 상세 뷰 카드도 동일 — .card + .card-body--form 공용 사용. */
 .view-row {
   display: grid;
   grid-template-columns: 120px 1fr;
@@ -525,25 +493,9 @@ html, body { overflow: hidden; }
 }
 .admin-card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 .admin-card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-.admin-info-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  padding: 18px 20px;
-}
-.admin-info-card .ic-head {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-text);
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--color-border);
-}
-.admin-info-card .ic-head svg { color: var(--color-primary); }
-.admin-info-card .ic-row {
+/* info card 는 .card.card-sm + .card-header--sm + .card-body--sm. 내부
+   행은 .info-row 공용 — label/value 2열 그리드. */
+.info-row {
   display: grid;
   grid-template-columns: 84px 1fr;
   gap: 8px 12px;
@@ -551,12 +503,12 @@ html, body { overflow: hidden; }
   font-size: 13px;
   align-items: center;
 }
-.admin-info-card .ic-row .ic-label {
+.info-row .info-label {
   color: var(--color-text-muted);
   font-weight: 700;
   font-size: 12px;
 }
-.admin-info-card .ic-row .ic-value { color: var(--color-text); }
+.info-row .info-value { color: var(--color-text); }
 
 /* 반응형 */
 @media (max-width: 480px) {

@@ -736,9 +736,20 @@ select {
 .card-body { padding: 20px 22px; }
 .card-body--sm { padding: 14px 18px; }
 .card-body--flush { padding: 0; }
+/* 작은 카드 변형 (사용자 상세의 소속/계정/권한 3카드 등) */
+.card-header--sm { height: auto; min-height: 0; padding: 14px 18px; }
+.card-header--sm .card-title { font-size: 14px; }
+/* 카드 본문 변형 — form/detail 이 body 없이 card 에 바로 붙는 경우 */
+.card-body--form { padding: 28px 32px; }
+.card--pad { padding: 28px 32px; }
+/* 카드 헤더 우측 액션 그룹 (선택 삭제·등록 등) */
+.card-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 @media (max-width: 900px) {
   .card-header { padding: 0 16px; }
   .card-body { padding: 14px 16px; }
+  .card-body--form { padding: 20px 18px; }
+  .card-header { flex-direction: column; align-items: stretch; height: auto; min-height: 0; padding: 14px 16px; gap: 10px; }
+  .card-actions .board-btn { flex: 1; justify-content: center; }
 }
 
 /* =========================================================
@@ -960,6 +971,18 @@ select {
 .board-btn-danger:hover {
   background: var(--color-danger);
   border-color: var(--color-danger);
+  color: #fff;
+}
+/* 다크 그레이 채움 — 검색·조회 같은 "중간 무게" 액션 공용 표준.
+   primary(빨강) 보다 가볍고, 기본(흰) 보다는 존재감 있음. */
+.board-btn--dark {
+  background: #495057;
+  color: #fff;
+  border-color: #495057;
+}
+.board-btn--dark:hover {
+  background: #343a40;
+  border-color: #343a40;
   color: #fff;
 }
 
