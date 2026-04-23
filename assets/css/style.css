@@ -774,6 +774,167 @@ select {
 .data-table tbody tr:last-child td { border-bottom: none; }
 
 /* =========================================================
+   공용 게시판 UI — 검색 툴바 · 페이지네이션 (notice · usecase 공유)
+   ========================================================= */
+/* 검색 툴바 */
+.board-toolbar {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.board-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.board-field--grow { flex: 1; min-width: 260px; }
+.board-field > label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+.board-field-row {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+.board-search-select {
+  padding: 9px 30px 9px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 13px;
+  color: var(--color-text);
+  background: var(--color-surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236C757D' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 10px center;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+  min-width: 100px;
+  outline: none;
+  cursor: pointer;
+}
+.board-search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 9px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 13px;
+  color: var(--color-text);
+  outline: none;
+  background: var(--color-surface);
+  font-family: inherit;
+}
+.board-search-input:focus,
+.board-search-select:focus { border-color: var(--color-primary); }
+.board-toolbar-actions {
+  display: flex;
+  gap: 8px;
+  align-self: flex-end;
+  margin-left: auto;
+}
+.board-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--border-radius);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.board-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.board-btn-primary {
+  background: var(--color-text);
+  color: #fff;
+  border-color: var(--color-text);
+}
+.board-btn-primary:hover { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+
+/* 페이지네이션 (풀 형태 — 처음·이전·숫자·다음·마지막 + 페이지 크기 + 건수 표시) */
+.board-paginator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  padding: 0 4px;
+  flex-wrap: wrap;
+}
+.board-page-btn {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.board-page-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.board-page-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+.board-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.board-page-pages { display: inline-flex; gap: 6px; }
+.board-page-size-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.board-page-size {
+  padding: 6px 24px 6px 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 12px;
+  background: var(--color-surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236C757D' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 8px center;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--color-text);
+}
+.board-count {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+.board-count strong { color: var(--color-primary); }
+
+@media (max-width: 720px) {
+  .board-toolbar { padding: 14px; }
+  .board-field-row { flex-direction: column; }
+  .board-toolbar-actions { width: 100%; }
+  .board-toolbar-actions .board-btn { flex: 1; justify-content: center; }
+}
+
+/* =========================================================
    페이지네이션
    ========================================================= */
 .pagination {

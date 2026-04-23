@@ -804,7 +804,7 @@
   // job별 하위 레이어 목록 — 데이터에 없으면 카테고리 기본값 반환
   function getJobLayers(job) {
     if (Array.isArray(job.layers) && job.layers.length > 0) return job.layers;
-    var date = (job.captured_at || '').replace(/-/g, '-');
+    var date = (job.captured_at || '').replace(/-/g, '.');
     var base = job.job_id + ':';
     var cat = jobCategory(job);
     if (FEED_CROP_CATS[cat]) {

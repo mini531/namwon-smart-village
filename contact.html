@@ -197,13 +197,24 @@
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'namwon-inquiries';
+  var STORAGE_KEY = 'namwon-inquiries-v2';
   var PAGE_SIZE = 10;
   var MAX_FILES = 5;
   var MAX_SIZE_MB = 10;
 
   // 초기 샘플 데이터 (현장 공무원 맥락)
   var SEED = [
+    {
+      id: 102,
+      title: '곤포사일리지 탐지 결과가 실제 현장과 차이 나는 경우가 있어요',
+      content: '운봉면 4권역 최근 분석(26.04.11)에서 곤포 탐지 개수가 현장 확인보다 약 5~8개 적게 잡혔습니다.\n산그늘이 진 구역은 탐지율이 좀 낮은 듯한데, 이런 경우 보정 방법이나 재분석 요청 절차가 있나요?\n\n첨부로 해당 필지 지번과 현장 사진 올렸습니다. 확인 부탁드립니다.',
+      status: 'pending',
+      createdAt: '2026-04-14T14:22:10',
+      attachments: [
+        { name: '운봉면4권역_현장사진.zip', size: 4832000 },
+        { name: '필지_지번_목록.xlsx', size: 28500 }
+      ]
+    },
     {
       id: 101,
       title: 'AI 추론 보고서 활용 방법 문의',

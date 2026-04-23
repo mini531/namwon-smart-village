@@ -103,8 +103,6 @@ html, body { overflow: hidden; }
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   padding: 28px 32px 32px;
-  max-width: 960px;
-  margin: 0 auto;
 }
 .detail-header {
   padding-bottom: 18px;
@@ -240,8 +238,6 @@ html, body { overflow: hidden; }
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   padding: 28px 32px 24px;
-  max-width: 880px;
-  margin: 0 auto;
 }
 
 .form-card h2 {

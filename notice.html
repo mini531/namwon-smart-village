@@ -31,19 +31,33 @@
 
     <!-- 목록 뷰 -->
     <section class="list-view" id="list-view">
-      <div class="toolbar">
-        <div class="tab-strip" id="tab-strip">
-          <button type="button" class="active" data-cat="all">전체</button>
-          <button type="button" data-cat="important">중요</button>
-          <button type="button" data-cat="general">일반</button>
-          <button type="button" data-cat="maintenance">점검</button>
-          <button type="button" data-cat="update">업데이트</button>
+      <!-- 검색 툴바 (공용 board-* 스타일) -->
+      <div class="board-toolbar">
+        <div class="board-field">
+          <label for="notice-cat">구분</label>
+          <select class="board-search-select" id="notice-cat">
+            <option value="all">전체</option>
+            <option value="urgent">긴급</option>
+            <option value="general">일반</option>
+            <option value="work">업무</option>
+          </select>
         </div>
-        <div class="search-group">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="search-input" placeholder="제목 또는 내용 검색">
+        <div class="board-field board-field--grow">
+          <label for="search-input">검색어</label>
+          <div class="board-field-row">
+            <input type="text" class="board-search-input" id="search-input" placeholder="제목 또는 내용 검색">
+          </div>
         </div>
-        <div class="notice-count" id="notice-count">총 <strong>0</strong>건</div>
+        <div class="board-toolbar-actions">
+          <button type="button" class="board-btn" id="notice-reset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            초기화
+          </button>
+          <button type="button" class="board-btn board-btn-primary" id="notice-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            검색
+          </button>
+        </div>
       </div>
 
       <div class="notice-card">
@@ -60,7 +74,23 @@
       </div>
 
       <div id="empty-state-wrap"></div>
-      <div class="pagination" id="pagination"></div>
+
+      <div class="board-paginator">
+        <button type="button" class="board-page-btn" id="notice-first">처음</button>
+        <button type="button" class="board-page-btn" id="notice-prev">이전</button>
+        <div class="board-page-pages" id="notice-pages"></div>
+        <button type="button" class="board-page-btn" id="notice-next">다음</button>
+        <button type="button" class="board-page-btn" id="notice-last">마지막</button>
+        <div class="board-page-size-wrap">
+          <select class="board-page-size" id="notice-page-size">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+          <span>페이지 크기</span>
+        </div>
+        <div class="board-count" id="notice-count">총 <strong>0</strong>건 중 0~0행</div>
+      </div>
     </section>
 
     <!-- 상세 뷰 (페이지 전환 형태) -->
@@ -103,7 +133,7 @@
   var NOTICES = [
     {
       id: 8,
-      category: 'important',
+      category: 'urgent',
       title: '고위험 탐지 건 긴급 처리 안내',
       date: '2026-04-15',
       pinned: true,
@@ -121,7 +151,7 @@
     },
     {
       id: 7,
-      category: 'update',
+      category: 'work',
       title: '정사영상 AI 모델 v2.1 배포 완료',
       date: '2026-04-14',
       pinned: true,
@@ -140,7 +170,7 @@
     },
     {
       id: 6,
-      category: 'update',
+      category: 'work',
       title: '카메라 AI 추론 신규 클래스 2종 추가',
       date: '2026-04-10',
       pinned: false,
@@ -154,7 +184,7 @@
     },
     {
       id: 5,
-      category: 'maintenance',
+      category: 'work',
       title: '시스템 정기점검 안내 (2026.04.20 02:00 ~ 04:00)',
       date: '2026-04-08',
       pinned: false,
@@ -169,7 +199,7 @@
     },
     {
       id: 4,
-      category: 'update',
+      category: 'work',
       title: '추론 이력 조회 메뉴 개편 — 처리 상태 일괄 관리',
       date: '2026-04-05',
       pinned: false,
@@ -183,7 +213,7 @@
     },
     {
       id: 3,
-      category: 'update',
+      category: 'work',
       title: '보고서 생성 메뉴 PDF 템플릿 개선',
       date: '2026-03-28',
       pinned: false,
@@ -223,10 +253,9 @@
   ];
 
   var CAT_LABEL = {
-    important: '중요',
+    urgent: '긴급',
     general: '일반',
-    maintenance: '점검',
-    update: '업데이트'
+    work: '업무'
   };
 
   var state = {
@@ -267,25 +296,27 @@
     var countEl = document.getElementById('notice-count');
 
     var all = getFiltered();
-    countEl.innerHTML = '총 <strong>' + all.length + '</strong>건';
+    var total = all.length;
 
     tbody.innerHTML = '';
     emptyWrap.innerHTML = '';
 
-    if (all.length === 0) {
+    if (total === 0) {
       emptyWrap.innerHTML =
         '<div class="empty-state">' +
           '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
           '<p>검색 조건에 맞는 공지사항이 없습니다.</p>' +
         '</div>';
-      document.getElementById('pagination').innerHTML = '';
+      countEl.innerHTML = '총 <strong>0</strong>건 중 0~0행';
+      renderPagination(1);
       return;
     }
 
-    var totalPages = Math.max(1, Math.ceil(all.length / state.pageSize));
+    var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
     if (state.page > totalPages) state.page = totalPages;
     var startIdx = (state.page - 1) * state.pageSize;
-    var pageItems = all.slice(startIdx, startIdx + state.pageSize);
+    var endIdx = Math.min(total, startIdx + state.pageSize);
+    var pageItems = all.slice(startIdx, endIdx);
 
     pageItems.forEach(function (n) {
       var tr = document.createElement('tr');
@@ -317,32 +348,33 @@
       tbody.appendChild(tr);
     });
 
+    countEl.innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (startIdx + 1) + '~' + endIdx + '행';
     renderPagination(totalPages);
   }
 
   function renderPagination(totalPages) {
-    var cont = document.getElementById('pagination');
-    cont.innerHTML = '';
-
-    function mkBtn(label, page, opts) {
-      opts = opts || {};
-      var b = document.createElement('button');
-      b.className = 'page-btn';
-      if (opts.active) b.classList.add('active');
-      b.textContent = label;
-      if (opts.disabled) b.disabled = true;
-      else b.addEventListener('click', function () {
-        state.page = page;
-        render();
-      });
-      cont.appendChild(b);
+    var pagesEl = document.getElementById('notice-pages');
+    pagesEl.innerHTML = '';
+    var first = document.getElementById('notice-first');
+    var prev = document.getElementById('notice-prev');
+    var next = document.getElementById('notice-next');
+    var last = document.getElementById('notice-last');
+    first.disabled = prev.disabled = state.page <= 1;
+    next.disabled = last.disabled = state.page >= totalPages;
+    // 현재 페이지 주변 최대 5개 번호 표시
+    var start = Math.max(1, state.page - 2);
+    var end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    for (var p = start; p <= end; p++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'board-page-btn' + (p === state.page ? ' active' : '');
+      btn.textContent = String(p);
+      (function (pg) {
+        btn.addEventListener('click', function () { state.page = pg; render(); });
+      })(p);
+      pagesEl.appendChild(btn);
     }
-
-    mkBtn('‹', state.page - 1, { disabled: state.page <= 1 });
-    for (var p = 1; p <= Math.max(1, totalPages); p++) {
-      mkBtn(String(p), p, { active: p === state.page });
-    }
-    mkBtn('›', state.page + 1, { disabled: state.page >= totalPages });
   }
 
   function openDetail(n, pushHistory) {
@@ -429,26 +461,48 @@
       .replace(/"/g, '&quot;');
   }
 
-  // 이벤트 바인딩
-  document.getElementById('tab-strip').addEventListener('click', function (e) {
-    var btn = e.target.closest('button[data-cat]');
-    if (!btn) return;
-    document.querySelectorAll('#tab-strip button').forEach(function (b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    state.cat = btn.dataset.cat;
+  // 이벤트 바인딩 — 카테고리 select + 검색 input + 초기화/검색 버튼
+  var catSelect = document.getElementById('notice-cat');
+  var searchInput = document.getElementById('search-input');
+  var pageSize = document.getElementById('notice-page-size');
+
+  function applySearch() {
+    state.cat = catSelect.value;
+    state.keyword = searchInput.value.trim();
+    state.page = 1;
+    render();
+  }
+
+  document.getElementById('notice-search').addEventListener('click', applySearch);
+  searchInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') applySearch();
+  });
+  document.getElementById('notice-reset').addEventListener('click', function () {
+    catSelect.value = 'all';
+    searchInput.value = '';
+    state.cat = 'all';
+    state.keyword = '';
     state.page = 1;
     render();
   });
 
-  var searchInput = document.getElementById('search-input');
-  var searchTimer = null;
-  searchInput.addEventListener('input', function () {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(function () {
-      state.keyword = searchInput.value.trim();
-      state.page = 1;
-      render();
-    }, 180);
+  // 페이지네이션 내비 버튼
+  document.getElementById('notice-first').addEventListener('click', function () { state.page = 1; render(); });
+  document.getElementById('notice-prev').addEventListener('click', function () {
+    if (state.page > 1) { state.page -= 1; render(); }
+  });
+  document.getElementById('notice-next').addEventListener('click', function () {
+    state.page += 1; render();
+  });
+  document.getElementById('notice-last').addEventListener('click', function () {
+    var total = getFiltered().length;
+    state.page = Math.max(1, Math.ceil(total / state.pageSize));
+    render();
+  });
+  pageSize.addEventListener('change', function () {
+    state.pageSize = parseInt(pageSize.value, 10) || 10;
+    state.page = 1;
+    render();
   });
 
   document.getElementById('detail-back').addEventListener('click', function () { closeDetail(); });
