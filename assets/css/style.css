@@ -58,6 +58,9 @@ button { cursor: pointer; font-family: inherit; }
 input, select, textarea { font-family: inherit; }
 ul, ol { list-style: none; }
 
+/* `hidden` 속성을 전역에서 확실히 적용 — 작성자 display 규칙이 UA보다 우선되는 문제 방지 */
+[hidden] { display: none !important; }
+
 /* =========================================================
    헤더 - 레퍼런스 스타일 (다크 프로스티드 글라스)
    ========================================================= */
@@ -66,8 +69,6 @@ ul, ol { list-style: none; }
   top: 0; left: 0; right: 0;
   height: var(--header-height);
   background: var(--header-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   z-index: 1000;
@@ -246,7 +247,6 @@ ul, ol { list-style: none; }
 .float-panel {
   position: absolute;
   background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(12px);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--panel-shadow-lg);
   z-index: 100;
@@ -887,8 +887,6 @@ select {
   position: fixed;
   inset: 0;
   background: rgba(15, 37, 64, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -970,6 +968,15 @@ select {
   display: block;
 }
 
+/* 실제 이미지가 들어가는 variant — height는 고정이 아니라 max-height로 제한, object-fit 으로 비율 유지 */
+img.modal-thumb,
+.modal-thumb.modal-thumb-img {
+  height: auto;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
 .modal-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -999,6 +1006,83 @@ select {
   gap: 8px;
 }
 .modal-foot .mf-spacer { flex: 1; }
+
+/* =========================================================
+   정책 모달 — 개인정보처리방침/이용약관/이메일무단수집거부
+   (풋터 data-policy 링크에서 공용 사용)
+   ========================================================= */
+.policy-modal .modal-card {
+  width: 720px;
+  max-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.policy-modal .modal-body {
+  padding: 24px 32px 20px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+.policy-modal .modal-foot { flex-shrink: 0; }
+
+.policy-content {
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--color-text);
+}
+.policy-content .pc-intro {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  padding: 14px 16px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+.policy-content h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 24px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+.policy-content h3:first-child { margin-top: 0; }
+.policy-content p {
+  margin: 0 0 10px;
+  color: var(--color-text);
+}
+.policy-content ul,
+.policy-content ol {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+.policy-content li { margin-bottom: 4px; }
+.policy-content strong { font-weight: 700; color: var(--color-text); }
+.policy-content .pc-muted {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+.policy-content .pc-muted--footer { margin-top: 20px; }
+.policy-content .pc-notice-box {
+  padding: 16px 20px;
+  background: #FBEEF0;
+  border: 1px solid rgba(200, 16, 46, 0.2);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+@media (max-width: 720px) {
+  .policy-modal .modal-card { width: calc(100vw - 24px); }
+  .policy-modal .modal-body { padding: 20px 22px 16px; }
+  .policy-content { font-size: 13px; }
+  .policy-content h3 { font-size: 14px; }
+}
 
 .m-action-section {
   margin-top: 4px;
@@ -1152,8 +1236,6 @@ select {
 .notify-toast {
   pointer-events: all;
   background: rgba(14, 18, 24, 0.68);
-  backdrop-filter: blur(18px) saturate(1.4);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 14px;
   padding: 12px 18px;
@@ -1217,8 +1299,6 @@ select {
   position: fixed;
   inset: 0;
   background: rgba(10, 15, 25, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   z-index: 5000;
   display: none;
   align-items: center;
@@ -1364,8 +1444,6 @@ select {
   position: fixed;
   inset: 0;
   background: rgba(10, 15, 25, 0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   z-index: 3000;
   display: none;
   align-items: center;
@@ -1641,73 +1719,65 @@ select {
    지도용 글래스 패널 시스템 (레퍼런스: clean/national)
    ========================================================= */
 :root {
-  --bg-glass: rgba(0, 0, 0, 0.42);
-  --bg-glass-dark: rgba(0, 0, 0, 0.6);
-  --blur-md: blur(10px) saturate(1.3);
-  --blur-lg: blur(16px) saturate(1.4);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-border-strong: rgba(255, 255, 255, 0.18);
+  /* 지도 위 패널: 반투명은 WebGL 레이어와 충돌해 불투명 네이비로 고정 */
+  --bg-glass: #12202f;
+  --bg-glass-dark: #0c1723;
+  --blur-md: none;
+  --blur-lg: none;
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-strong: rgba(255, 255, 255, 0.22);
 }
 
 /* 좌측 스택 컨테이너 - 고정 최대 높이, 카드마다 독립 크기 */
 .db-left-stack {
   position: absolute;
   left: 14px;
-  top: 14px;
+  top: 58px;
+  bottom: 14px;
   width: 320px;
-  max-height: calc(100vh - var(--header-height) - 90px);
-  overflow-y: auto;
-  overflow-x: visible;
+  overflow: hidden;
   z-index: 400;
   display: flex;
   flex-direction: column;
   gap: 10px;
   pointer-events: none;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
 }
 
 .db-left-stack > * { pointer-events: all; }
 
-.db-left-stack::-webkit-scrollbar { width: 6px; }
-.db-left-stack::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 6px; }
+.db-left-stack::-webkit-scrollbar { width: 3px; }
+.db-left-stack::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 3px; }
 
-/* 우측 상단 스택 (탐지 결과 KPI 등) */
+/* 우측 상단 스택 — 결과 패널은 도구 바보다 바깥(최우측)에 고정 */
 .db-right-stack {
   position: absolute;
-  right: 80px;
-  top: 14px;
+  right: 14px;
+  top: 58px;
   width: 310px;
   z-index: 400;
   display: flex;
   flex-direction: column;
   gap: 10px;
   pointer-events: none;
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .db-right-stack > * { pointer-events: all; }
-
-/* 검색 / 도구 서브메뉴 열림 시 KPI 카드가 왼쪽으로 밀려서 공간 확보 */
-.map-wrapper.search-active .db-right-stack {
-  right: 370px;
-}
-
-.map-wrapper.submenu-active .db-right-stack {
-  right: 380px;
-}
 
 /* =========================================================
    map-home 반응형
    ========================================================= */
 @media (max-width: 1280px) {
   .db-left-stack { width: 290px; }
-  .db-right-stack { width: 280px; right: 70px; }
+  .db-right-stack { width: 280px; right: 14px; }
+  .map-wrapper { --tools-right: 308px; }
+  .map-wrapper.no-result-panel { --tools-right: 14px; }
 }
 
 @media (max-width: 1024px) {
   .db-left-stack { width: 270px; left: 10px; top: 10px; }
-  .db-right-stack { width: 250px; right: 60px; top: 10px; }
+  .db-right-stack { width: 250px; right: 10px; top: 10px; }
+  .map-wrapper { --tools-right: 270px; }
+  .map-wrapper.no-result-panel { --tools-right: 10px; }
 }
 
 /* 모바일 패널 드로어: 기본은 숨김, FAB 토글로 열림 */
@@ -1725,9 +1795,7 @@ select {
     overflow-y: auto;
     overflow-x: hidden;
     pointer-events: all;
-    background: rgba(14, 18, 24, 0.92);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    background: #0e1218;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 14px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
@@ -1785,9 +1853,7 @@ select {
     width: 52px;
     height: 52px;
     border-radius: 14px;
-    background: rgba(14, 18, 24, 0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: #0e1218;
     border: 1px solid rgba(255, 255, 255, 0.18);
     color: rgba(255, 255, 255, 0.92);
     align-items: center;
@@ -1806,10 +1872,10 @@ select {
     bottom: -22px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: rgba(255, 255, 255, 0.92);
-    background: rgba(14, 18, 24, 0.9);
+    background: #0e1218;
     padding: 2px 8px;
     border-radius: 6px;
     white-space: nowrap;
@@ -1834,9 +1900,7 @@ select {
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     position: sticky;
     top: 0;
-    background: rgba(14, 18, 24, 0.92);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    background: #0e1218;
     z-index: 2;
     margin-left: -8px;
     margin-right: -8px;
@@ -1882,11 +1946,9 @@ select {
   .map-mobile-fab-right { right: 70px; }
 }
 
-/* 글래스 카드 */
+/* 글래스 카드 (이름은 관례상 유지, 실제로는 불투명 네이비 패널) */
 .glass-card {
   background: var(--bg-glass);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -1898,14 +1960,14 @@ select {
 }
 
 .glass-card--grow {
-  flex: 0 0 auto;
-  max-height: 540px;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
 .glass-card--grow .glass-card-body {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
 }
@@ -1973,10 +2035,21 @@ select {
   padding: 14px 16px;
   overflow-y: auto;
   color: rgba(255, 255, 255, 0.85);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
 }
 
-.glass-card-body::-webkit-scrollbar { width: 6px; }
-.glass-card-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 6px; }
+.glass-card-body::-webkit-scrollbar,
+.glass-card--grow .glass-card-body::-webkit-scrollbar,
+#job-list-container::-webkit-scrollbar { width: 3px; }
+
+.glass-card-body::-webkit-scrollbar-track,
+.glass-card--grow .glass-card-body::-webkit-scrollbar-track,
+#job-list-container::-webkit-scrollbar-track { background: transparent; }
+
+.glass-card-body::-webkit-scrollbar-thumb,
+.glass-card--grow .glass-card-body::-webkit-scrollbar-thumb,
+#job-list-container::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 3px; }
 
 /* 과제 선택 카드 */
 .task-current {
@@ -2213,8 +2286,6 @@ select {
   height: 44px;
   padding: 0 16px;
   background: var(--bg-glass);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
@@ -2283,11 +2354,74 @@ select {
 /* =========================================================
    우측 도구 바 (레퍼런스: clean/national)
    ========================================================= */
+/* 도구 바·하단 패널 offset 변수 */
+.map-wrapper {
+  --tools-right: 338px;
+  --bottom-left: 348px;
+}
+.map-wrapper.no-result-panel,
+.map-wrapper.right-hidden { --tools-right: 14px; }
+.map-wrapper.left-hidden { --bottom-left: 14px; }
+
+/* 좌/우 패널 접기 토글 */
+.panel-toggle {
+  position: absolute;
+  top: 14px;
+  z-index: 500;
+  height: 30px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #12202f;
+  color: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.15s;
+}
+.panel-toggle:hover { background: #1a2d42; color: #fff; }
+.panel-toggle svg { width: 14px; height: 14px; transition: transform 0.25s; flex-shrink: 0; }
+.panel-toggle .panel-toggle-label { white-space: nowrap; }
+
+/* 좌측 토글: 좌상단 고정 */
+.panel-toggle-left { left: 14px; }
+.map-wrapper.left-hidden .panel-toggle-left svg { transform: rotate(180deg); }
+
+.map-wrapper.left-hidden .db-left-stack {
+  transform: translateX(calc(-100% - 20px));
+  opacity: 0;
+  pointer-events: none;
+}
+.db-left-stack {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+
+/* 우측 토글: 우상단 고정 */
+.panel-toggle-right { right: 14px; }
+.map-wrapper.right-hidden .panel-toggle-right svg { transform: rotate(180deg); }
+/* 결과 패널 자체가 없는 상태(자세히 안 누름)면 우측 토글 숨김 — 의미 없음 */
+.map-wrapper.no-result-panel .panel-toggle-right { display: none; }
+
+.map-wrapper.right-hidden .db-right-stack {
+  transform: translateX(calc(100% + 20px));
+  opacity: 0;
+  pointer-events: none;
+}
+.db-right-stack {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+
 .db-right-tools {
   position: absolute;
-  right: 14px;
-  top: 14px;
-  bottom: 62px;
+  right: var(--tools-right);
+  top: 58px;
   z-index: 800;
   display: flex;
   flex-direction: column;
@@ -2295,6 +2429,7 @@ select {
   padding: 0;
   gap: 10px;
   pointer-events: none;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .db-right-tools .rt-group {
@@ -2303,8 +2438,6 @@ select {
   gap: 4px;
   pointer-events: all;
   background: var(--bg-glass);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -2346,7 +2479,7 @@ select {
   margin: 2px 4px;
 }
 
-.rt-spacer { flex: 1; pointer-events: none; }
+.rt-spacer { display: none; }
 
 .zoom-btn {
   width: 40px;
@@ -2383,9 +2516,7 @@ select {
   top: 50%;
   transform: translateY(-50%);
   display: flex;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: #12202f;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   height: 54px;
@@ -2443,18 +2574,17 @@ select {
   white-space: nowrap;
 }
 
-/* 검색 오버레이 (상단 우측, KPI 좌측) */
+/* 검색 오버레이 — 도구 바 좌측에 배치 */
 .db-search-overlay {
   position: absolute;
-  top: 14px;
-  right: 70px;
+  top: 58px;
+  right: calc(var(--tools-right, 14px) + 56px);
   width: 280px;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 600;
   display: none;
   align-items: center;
   background: var(--bg-glass);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -2508,14 +2638,13 @@ select {
 
 .db-search-results {
   position: absolute;
-  top: 68px;
-  right: 70px;
+  top: 112px;
+  right: calc(var(--tools-right, 14px) + 56px);
   width: 280px;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: 440px;
   box-sizing: border-box;
   background: var(--bg-glass);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
@@ -2572,7 +2701,12 @@ select {
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
 }
+
+.res-scroll-area::-webkit-scrollbar { width: 3px; }
+.res-scroll-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 3px; }
 
 .res-summary {
   padding: 10px 14px;
@@ -2729,8 +2863,6 @@ select {
 
 .glass-ctrl-cluster {
   background: var(--bg-glass);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
@@ -2771,8 +2903,6 @@ select {
 .glass-basemap-switcher {
   display: flex;
   background: var(--bg-glass);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border);
   border-radius: 10px;
   overflow: hidden;
@@ -2853,7 +2983,6 @@ select {
   bottom: 0; left: 0; right: 0;
   height: 48px;
   background: rgba(26,28,30,0.94);
-  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   padding: 0 18px;
@@ -2927,8 +3056,13 @@ select {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
   flex-shrink: 0;
+  min-width: 0;
 }
+
+.side-panel > * { min-width: 0; }
 
 .side-panel-section {
   border-bottom: 1px solid var(--color-border);
@@ -3577,8 +3711,6 @@ body.mobile-nav-open .gnb-backdrop {
     height: calc(100vh - var(--header-height));
     height: calc(100dvh - var(--header-height));
     background: rgba(20, 22, 24, 0.98);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     padding: 12px 16px 24px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;

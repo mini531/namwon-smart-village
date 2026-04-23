@@ -9,368 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
-  <style>
-    html, body { overflow: hidden; }
-
-    .page-body {
-      padding-top: var(--header-height);
-      height: 100vh;
-      background: var(--color-page-bg);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-    #footer-include { flex-shrink: 0; }
-
-    .history-container {
-      max-width: 1380px;
-      margin: 0 auto;
-      padding: 24px 32px 56px;
-      flex: 1 0 auto;
-    }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 22px;
-    }
-
-    .page-title-wrap h1 {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--color-text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 4px;
-    }
-
-    .page-title-wrap h1 svg { color: var(--color-primary); }
-
-    .page-title-wrap p {
-      font-size: 13px;
-      color: var(--color-text-muted);
-    }
-
-    .page-actions { display: flex; gap: 8px; }
-
-    /* 통계 요약 카드 */
-    .summary-strip {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 14px;
-      margin-bottom: 22px;
-      min-width: 0;
-    }
-    .summary-strip > * { min-width: 0; }
-
-    .summary-card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--border-radius-lg);
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
-      cursor: pointer;
-      font-family: inherit;
-      color: inherit;
-      text-align: left;
-      width: 100%;
-      outline: none;
-    }
-
-    .summary-card:hover {
-      border-color: var(--color-primary);
-      box-shadow: 0 4px 16px rgba(15,37,64,0.08);
-      transform: translateY(-1px);
-    }
-
-    .summary-card:focus,
-    .summary-card:focus-visible { outline: none; }
-
-    .summary-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 11px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .summary-icon {
-      background: #F1F3F5;
-      color: #495057;
-    }
-    .summary-icon.red {
-      background: #FBEEF0;
-      color: var(--color-primary);
-    }
-    /* alias - 모두 중성 톤으로 통합 */
-    .summary-icon.blue,
-    .summary-icon.orange,
-    .summary-icon.green,
-    .summary-icon.purple {
-      background: #F1F3F5;
-      color: #495057;
-    }
-
-    .summary-info .label {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      font-weight: 500;
-      margin-bottom: 2px;
-    }
-
-    .summary-info .value {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--color-text);
-      line-height: 1.1;
-    }
-
-    .summary-info .unit {
-      font-size: 13px;
-      color: var(--color-text-muted);
-      font-weight: 500;
-      margin-left: 3px;
-    }
-
-    /* 필터 패널 */
-    .filter-panel {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--border-radius-lg);
-      padding: 18px 22px;
-      margin-bottom: 18px;
-    }
-
-    .filter-row {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr) auto;
-      gap: 12px;
-      align-items: end;
-    }
-
-    .filter-field { display: flex; flex-direction: column; }
-
-    .filter-field label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 5px;
-    }
-
-    .filter-field input,
-    .filter-field select {
-      padding: 8px 11px;
-      border: 1.5px solid var(--color-border);
-      border-radius: var(--border-radius);
-      font-size: 13px;
-      background: var(--color-surface);
-      color: var(--color-text);
-      outline: none;
-      transition: border-color var(--transition);
-    }
-
-    .filter-field input:focus,
-    .filter-field select:focus {
-      border-color: var(--color-accent);
-    }
-
-    .filter-actions { display: flex; gap: 6px; }
-
-    /* ── 탭 ── */
-    .view-tabs {
-      display: flex;
-      gap: 0;
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--border-radius-lg);
-      padding: 6px;
-      margin-bottom: 18px;
-      width: 100%;
-    }
-
-    .view-tab {
-      flex: 1;
-      padding: 10px 18px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      cursor: pointer;
-      border-radius: 6px;
-      transition: all 0.15s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-    }
-
-    .view-tab.active {
-      background: var(--color-text);
-      color: #fff;
-    }
-
-    .view-tab:hover:not(.active) {
-      background: var(--color-page-bg);
-      color: var(--color-text);
-    }
-
-    .view-panel { display: none; }
-    .view-panel.active { display: block; }
-
-    /* 작업 뷰 테이블 전용 */
-    .job-row-clickable { cursor: pointer; }
-    .job-row-clickable:hover { background: #F8FBFF; }
-
-    .job-source-cell {
-      font-weight: 600;
-      max-width: 260px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .job-class-summary {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-
-    .job-class-chip {
-      font-size: 12px;
-      padding: 2px 8px;
-      background: var(--color-page-bg);
-      border: 1px solid var(--color-border);
-      border-radius: 3px;
-      color: var(--color-text);
-      font-weight: 500;
-    }
-
-    /* 작업 필터 배너 (탐지 객체 탭이 작업으로 필터링 중일 때 표시) */
-    .job-filter-banner {
-      background: #FBEEF0;
-      border: 1px solid #F5DDE1;
-      border-radius: var(--border-radius);
-      padding: 10px 16px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 13px;
-      color: var(--color-primary);
-    }
-
-    .job-filter-banner strong {
-      font-weight: 700;
-      margin: 0 4px;
-    }
-
-    .job-filter-banner button {
-      background: none;
-      border: none;
-      color: var(--color-primary);
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 13px;
-    }
-
-
-    .table-wrap {
-      overflow-x: auto;
-    }
-
-    .data-table { margin: 0; }
-
-    .data-table .col-id { width: 90px; color: var(--color-text-muted); font-size: 12px; }
-    .data-table .col-thumb { width: 60px; }
-    .data-table th.col-actions,
-    .data-table td.col-actions {
-      width: 110px;
-      text-align: center;
-      padding-right: 14px;
-    }
-
-    .row-thumb {
-      width: 44px;
-      height: 32px;
-      border-radius: 4px;
-      background: #1a2535;
-      display: block;
-    }
-
-    .badge-camera,
-    .badge-orthophoto {
-      background: #F1F3F5;
-      color: #495057;
-    }
-    .badge-camera::before,
-    .badge-orthophoto::before { background: #868E96; }
-
-    .row-action-btn {
-      padding: 5px 10px;
-      font-size: 12px;
-      border: 1.5px solid var(--color-border);
-      border-radius: 6px;
-      background: var(--color-surface);
-      color: var(--color-text-muted);
-      cursor: pointer;
-      transition: all var(--transition);
-    }
-
-    .row-action-btn:hover {
-      border-color: var(--color-accent);
-      color: var(--color-accent);
-    }
-
-    /* 빈 상태 */
-    .empty-state {
-      padding: 60px 20px;
-      text-align: center;
-      color: var(--color-text-muted);
-    }
-
-    .empty-state svg { opacity: 0.35; margin-bottom: 12px; }
-    .empty-state p { font-size: 14px; }
-
-    .history-container { min-width: 0; width: 100%; }
-
-    @media (max-width: 1200px) {
-      .summary-strip { grid-template-columns: repeat(3, 1fr); }
-      .filter-row { grid-template-columns: repeat(3, 1fr); }
-    }
-
-    @media (max-width: 1024px) {
-      .history-container { padding: 22px 22px 44px; }
-      .page-header { flex-wrap: wrap; gap: 12px; }
-      .page-actions { flex-wrap: wrap; }
-    }
-
-    @media (max-width: 720px) {
-      .history-container { padding: 18px 14px 36px; }
-      .summary-strip { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .filter-row { grid-template-columns: 1fr 1fr; }
-      .page-header h1 { font-size: 22px; }
-      .page-actions .btn { font-size: 13px; padding: 7px 11px; }
-    }
-
-    @media (max-width: 480px) {
-      .summary-strip { grid-template-columns: 1fr; }
-      .filter-row { grid-template-columns: 1fr; }
-      .history-container { padding: 14px 12px 30px; }
-      .page-header { flex-direction: column; align-items: stretch; }
-      .page-actions { width: 100%; justify-content: stretch; }
-      .page-actions .btn { flex: 1; justify-content: center; }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/page-history.css">
 </head>
 <body>
 
@@ -472,17 +111,17 @@
           <div class="th-info" id="jobs-table-info">총 0건</div>
         </div>
         <div class="table-wrap">
-          <table class="data-table">
+          <table class="data-table jobs-data-table">
             <thead>
               <tr>
-                <th style="width:130px;">작업 ID</th>
+                <th class="col-job-id">작업 ID</th>
                 <th>원본 영상/이미지</th>
                 <th>모델</th>
-                <th style="white-space:nowrap;">촬영일</th>
-                <th style="white-space:nowrap;">분석일</th>
-                <th style="width:110px;text-align:center;white-space:nowrap;">탐지</th>
+                <th class="col-cap">촬영일</th>
+                <th class="col-ana">분석일</th>
+                <th class="col-detect">탐지</th>
                 <th>주요 클래스</th>
-                <th style="width:100px;text-align:center;white-space:nowrap;">상태</th>
+                <th class="col-status-head">상태</th>
               </tr>
             </thead>
             <tbody id="jobs-tbody"></tbody>
@@ -495,12 +134,12 @@
     <div class="view-panel" id="view-detections">
 
     <!-- 작업 필터 배너 -->
-    <div class="job-filter-banner" id="job-filter-banner" style="display:none;">
+    <div class="job-filter-banner" id="job-filter-banner" hidden>
       <span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         분석 작업 <strong id="banner-job-id"></strong> 의 탐지 결과만 표시 중입니다
       </span>
-      <button onclick="clearJobFilter()">× 전체 보기</button>
+      <button type="button" onclick="clearJobFilter()">× 전체 보기</button>
     </div>
 
     <!-- 필터 패널 -->
@@ -586,7 +225,7 @@
         </table>
       </div>
       <div id="empty-state-wrap"></div>
-      <div class="pagination" id="pagination" style="margin: 18px 0;"></div>
+      <div class="pagination pagination--history" id="pagination"></div>
     </div>
     </div><!-- /view-detections -->
 
@@ -603,14 +242,12 @@
       <button class="close-btn" onclick="closeModal()">×</button>
     </div>
     <div class="modal-body">
-      <img class="modal-thumb" id="modal-thumb" style="width:100%;border-radius:6px;object-fit:cover;max-height:180px;" alt="썸네일">
+      <img class="modal-thumb modal-thumb-img" id="modal-thumb" alt="썸네일">
       <div class="modal-info-grid">
         <div class="info-item"><div class="label">탐지 ID</div><div class="value" id="m-id">-</div></div>
         <div class="info-item"><div class="label">탐지 클래스</div><div class="value" id="m-class">-</div></div>
         <div class="info-item"><div class="label">심각도</div><div class="value" id="m-severity">-</div></div>
         <div class="info-item full"><div class="label">위치</div><div class="value" id="m-addr">-</div></div>
-        <div class="info-item"><div class="label">위도</div><div class="value" id="m-lat">-</div></div>
-        <div class="info-item"><div class="label">경도</div><div class="value" id="m-lng">-</div></div>
         <div class="info-item"><div class="label">탐지 일시</div><div class="value" id="m-date">-</div></div>
         <div class="info-item"><div class="label">처리 상태</div><div class="value" id="m-status">-</div></div>
         <div class="info-item full"><div class="label">원본 파일</div><div class="value" id="m-file">-</div></div>
@@ -654,6 +291,7 @@
 </div>
 
 <script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
 <script>
 (function () {
   'use strict';
@@ -767,16 +405,16 @@
       var banner = document.getElementById('job-filter-banner');
       if (currentJobFilter) {
         document.getElementById('banner-job-id').textContent = currentJobFilter;
-        banner.style.display = 'flex';
+        banner.hidden = false;
       } else {
-        banner.style.display = 'none';
+        banner.hidden = true;
       }
     }
   };
 
   window.clearJobFilter = function () {
     currentJobFilter = null;
-    document.getElementById('job-filter-banner').style.display = 'none';
+    document.getElementById('job-filter-banner').hidden = true;
     // URL 쿼리 제거
     if (window.history && window.history.replaceState) {
       window.history.replaceState({}, '', window.location.pathname);
@@ -791,8 +429,8 @@
 
     allJobs.forEach(function (job) {
       var modelBadge = job.source_type === 'orthophoto'
-        ? '<span class="badge badge-primary" style="font-size:12px;">정사영상</span>'
-        : '<span class="badge" style="font-size:12px;">카메라</span>';
+        ? '<span class="badge badge-primary">정사영상</span>'
+        : '<span class="badge">카메라</span>';
 
       var captured = job.captured_at.replace(/-/g, '.');
       var analyzed = job.analyzed_at.substring(0, 10).replace(/-/g, '.');
@@ -805,21 +443,21 @@
         }).join('');
 
       var highMark = job.high_count > 0
-        ? '<div style="font-size:12px;color:var(--color-primary);font-weight:700;margin-top:2px;">고위험 ' + job.high_count + '건</div>'
+        ? '<div class="job-high-mark">고위험 ' + job.high_count + '건</div>'
         : '';
 
       var tr = document.createElement('tr');
       tr.className = 'job-row-clickable';
       tr.innerHTML =
-        '<td style="color:var(--color-text-muted);font-size:12px;font-weight:600;">' + job.job_id + '</td>' +
+        '<td class="job-id-cell">' + job.job_id + '</td>' +
         '<td class="job-source-cell" title="' + job.source_name + '">' + (job.source_label || job.source_name) +
-          '<div style="font-size:12px;color:var(--color-text-muted);font-weight:400;margin-top:1px;">' + job.source_name + '</div></td>' +
-        '<td>' + modelBadge + '<div style="font-size:12px;color:var(--color-text-muted);margin-top:2px;">' + job.model + ' ' + job.model_version + '</div></td>' +
-        '<td style="font-size:12px;color:var(--color-text-muted);">' + captured + '</td>' +
-        '<td style="font-size:12px;color:var(--color-text-muted);">' + analyzed + '</td>' +
-        '<td style="text-align:center;white-space:nowrap;"><div style="font-size:18px;font-weight:800;color:var(--color-text);">' + job.detection_count + '</div>' + highMark + '</td>' +
+          '<div class="job-source-sub">' + job.source_name + '</div></td>' +
+        '<td>' + modelBadge + '<div class="job-model-sub">' + job.model + ' ' + job.model_version + '</div></td>' +
+        '<td class="job-date-cell">' + captured + '</td>' +
+        '<td class="job-date-cell">' + analyzed + '</td>' +
+        '<td class="job-count-cell"><div class="job-count-big">' + job.detection_count + '</div>' + highMark + '</td>' +
         '<td><div class="job-class-summary">' + classChips + '</div></td>' +
-        '<td style="text-align:center;white-space:nowrap;"><span class="badge ' + statusClass + '">' + job.status + '</span></td>';
+        '<td class="col-status-cell"><span class="badge ' + statusClass + '">' + job.status + '</span></td>';
 
       tr.addEventListener('click', function () {
         currentJobFilter = job.job_id;
@@ -895,7 +533,7 @@
       var job = allJobs.find(function (j) { return j.job_id === currentJobFilter; });
       if (job) jobDetIds = new Set(job.detection_ids);
       document.getElementById('banner-job-id').textContent = currentJobFilter;
-      document.getElementById('job-filter-banner').style.display = 'flex';
+      document.getElementById('job-filter-banner').hidden = false;
     }
 
     filtered = allDetections.filter(function (d) {
@@ -957,12 +595,12 @@
 
       tr.innerHTML =
         '<td class="col-id">' + d.id + '</td>' +
-        '<td><img class="row-thumb" src="' + thumbSrc + '" width="44" height="32" style="object-fit:cover;border-radius:4px;"></td>' +
+        '<td><img class="row-thumb" src="' + thumbSrc + '" width="44" height="32"></td>' +
         '<td><span class="badge ' + modelBadge + '">' + modelLabel + '</span></td>' +
         '<td><strong>' + d.class_ko + '</strong></td>' +
         '<td><span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + SEVERITY_KO[d.severity] + '</span></td>' +
-        '<td style="font-size:12px;">' + d.address + '</td>' +
-        '<td style="font-size:12px;">' + d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.') + '</td>' +
+        '<td class="det-addr-cell">' + d.address + '</td>' +
+        '<td class="det-date-cell">' + d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.') + '</td>' +
         '<td><span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span></td>' +
         '<td class="col-actions"><button class="row-action-btn" data-id="' + d.id + '">처리</button></td>';
 
@@ -1034,8 +672,6 @@
     document.getElementById('m-severity').innerHTML =
       '<span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + SEVERITY_KO[d.severity] + '</span>';
     document.getElementById('m-addr').textContent = d.address;
-    document.getElementById('m-lat').textContent = d.lat.toFixed(6);
-    document.getElementById('m-lng').textContent = d.lng.toFixed(6);
     document.getElementById('m-date').textContent = d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
     document.getElementById('m-status').innerHTML =
       '<span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span>';
@@ -1148,15 +784,13 @@
       NotifyUI.warn('내보낼 데이터가 없습니다.');
       return;
     }
-    var headers = ['ID', '모델', '클래스', '심각도', '위도', '경도', '주소', '탐지일시', '상태', '원본파일'];
+    var headers = ['ID', '모델', '클래스', '심각도', '주소', '탐지일시', '상태', '원본파일'];
     var rows = filtered.map(function (d) {
       return [
         d.id,
         d.model_type === 'orthophoto' ? '정사영상' : '카메라',
         d.class_ko,
         SEVERITY_KO[d.severity],
-        d.lat,
-        d.lng,
         d.address,
         d.detected_at,
         d.status,

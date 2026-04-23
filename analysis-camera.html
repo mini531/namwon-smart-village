@@ -9,861 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
-  <style>
-    body { overflow: hidden; }
-
-    .page-body {
-      padding-top: var(--header-height);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .analysis-layout {
-      display: grid;
-      grid-template-columns: 320px 1fr 340px;
-      flex: 1;
-      min-height: 0;
-      overflow: hidden;
-    }
-
-    /* ── 좌측 설정 패널 ── */
-    .side-panel {
-      width: auto;
-      border-right: 1px solid var(--color-border);
-      background: var(--color-surface);
-      overflow-y: auto;
-      overflow-x: hidden;
-      scrollbar-gutter: stable;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-    .side-panel > * { min-width: 0; }
-
-    .side-panel-header {
-      padding: 22px 22px 18px;
-      border-bottom: 1px solid var(--color-border);
-      background: var(--color-surface);
-      flex-shrink: 0;
-    }
-
-    .side-panel-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--color-text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 4px;
-    }
-
-    .side-panel-title svg { color: var(--color-primary); }
-
-    .side-panel-sub {
-      font-size: 13px;
-      color: var(--color-text-muted);
-    }
-
-    .side-section {
-      padding: 18px 22px;
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    .side-section:last-of-type { border-bottom: none; }
-
-    .side-section-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      margin-bottom: 12px;
-    }
-
-    /* 영상 파일 리스트 */
-    .video-file-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .video-file-item {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 11px 13px;
-      border-radius: var(--border-radius);
-      border: 1.5px solid var(--color-border);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      background: var(--color-surface);
-    }
-
-    .video-file-item:hover { border-color: var(--color-primary); }
-    .video-file-item.selected {
-      border-color: var(--color-primary);
-      background: #FBEEF0;
-    }
-
-    .video-file-item input[type="radio"] {
-      accent-color: var(--color-primary);
-      width: 14px;
-      height: 14px;
-      flex-shrink: 0;
-    }
-
-    .video-thumb {
-      width: 46px;
-      height: 32px;
-      border-radius: 4px;
-      background: #1a2535;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255, 255, 255, 0.55);
-    }
-
-    .video-info { flex: 1; min-width: 0; }
-
-    .video-name {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--color-text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.3;
-    }
-
-    .video-meta {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      margin-top: 2px;
-    }
-
-    /* 모델 카드 */
-    .model-card-radio {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .model-radio-item {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 13px 14px;
-      border-radius: var(--border-radius);
-      border: 1.5px solid var(--color-border);
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .model-radio-item:hover { border-color: var(--color-primary); }
-    .model-radio-item.active {
-      border-color: var(--color-primary);
-      background: #FBEEF0;
-    }
-
-    .model-radio-item input[type="radio"] {
-      accent-color: var(--color-primary);
-      width: 14px;
-      height: 14px;
-      flex-shrink: 0;
-    }
-
-    .model-radio-info { min-width: 0; }
-    .model-radio-info .model-radio-name { font-size: 13px; font-weight: 700; color: var(--color-text); }
-    .model-radio-info .model-radio-sub { font-size: 12px; color: var(--color-text-muted); margin-top: 2px; }
-
-    /* 설정 필드 */
-    .config-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 11px;
-      gap: 10px;
-    }
-
-    .config-label { font-size: 13px; font-weight: 600; color: var(--color-text); }
-
-    .config-select {
-      padding: 7px 32px 7px 11px !important;
-      border-radius: var(--border-radius);
-      border: 1.5px solid var(--color-border);
-      font-size: 13px;
-      background: var(--color-surface);
-      color: var(--color-text);
-      outline: none;
-      cursor: pointer;
-      min-width: 130px;
-    }
-
-    .config-select:focus { border-color: var(--color-primary); }
-
-    .slider-row { margin-bottom: 12px; }
-
-    .slider-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-      font-size: 13px;
-    }
-
-    .slider-value { font-weight: 700; color: var(--color-primary); }
-
-    input[type="range"].config-slider {
-      width: 100%;
-      accent-color: var(--color-primary);
-      height: 4px;
-      cursor: pointer;
-    }
-
-    /* 분석 실행 버튼 */
-    .analyze-btn {
-      margin: 18px 22px 22px;
-      padding: 14px 16px;
-      background: var(--color-primary);
-      color: #fff;
-      border: none;
-      border-radius: var(--border-radius-lg);
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-    }
-
-    .analyze-btn:hover:not(:disabled) {
-      background: var(--color-primary-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(200, 16, 46, 0.25);
-    }
-
-    .analyze-btn:disabled {
-      background: #CED4DA;
-      cursor: not-allowed;
-    }
-
-    /* ── 중앙 뷰어 영역 ── */
-    .viewer-area {
-      background: #0F1923;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .viewer-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 18px;
-      background: rgba(255, 255, 255, 0.03);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      flex-shrink: 0;
-    }
-
-    .viewer-toolbar-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.78);
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .viewer-ctrl-btn {
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.05);
-      color: rgba(255, 255, 255, 0.75);
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.15s;
-    }
-
-    .viewer-ctrl-btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-    }
-
-    .viewer-canvas-wrap {
-      flex: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      min-height: 0;
-    }
-
-    #cam-viewer-canvas {
-      max-width: 100%;
-      max-height: 100%;
-      display: block;
-    }
-
-    /* 분석 진행 오버레이 */
-    .analysis-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(10, 15, 25, 0.9);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .analysis-overlay.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .overlay-pct {
-      font-size: 72px;
-      font-weight: 800;
-      color: #fff;
-      line-height: 1;
-      letter-spacing: -3px;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .overlay-step {
-      font-size: 16px;
-      color: rgba(255, 255, 255, 0.6);
-      margin-top: 12px;
-      font-weight: 500;
-    }
-
-    .overlay-progress-bar {
-      width: 320px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.12);
-      border-radius: 2px;
-      margin-top: 24px;
-      overflow: hidden;
-    }
-
-    .overlay-progress-fill {
-      height: 100%;
-      background: #fff;
-      border-radius: 2px;
-      transition: width 0.3s ease;
-    }
-
-    /* 결과 리스트 (뷰어 하단) - 세로 텍스트 목록, 썸네일 없음 */
-    .viewer-area > .result-section {
-      background: var(--color-surface);
-      border-top: 1px solid var(--color-border);
-      flex-shrink: 0;
-      height: 320px;
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .viewer-area > .result-section.maximized {
-      flex: 1;
-      height: auto;
-      min-height: 0;
-    }
-    .viewer-area.result-max > .viewer-canvas-wrap {
-      flex: 0 0 160px;
-      min-height: 0;
-    }
-
-    .result-section .result-tabs {
-      display: flex;
-      padding: 0 8px 0 20px;
-      border-bottom: 1px solid var(--color-border);
-      background: var(--color-surface-2);
-      flex-shrink: 0;
-      gap: 2px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      align-items: center;
-    }
-    .result-section .result-tabs::-webkit-scrollbar { display: none; }
-    .result-section .result-tabs .rt-spacer { flex: 1; }
-    .result-section .result-max-btn {
-      flex-shrink: 0;
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      border: 1px solid var(--color-border);
-      background: var(--color-surface);
-      color: var(--color-text-muted);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      transition: all 0.15s;
-    }
-    .result-section .result-max-btn:hover {
-      border-color: var(--color-primary);
-      color: var(--color-primary);
-    }
-    .result-section .result-max-btn svg { width: 16px; height: 16px; }
-
-    .result-section .result-tab {
-      padding: 11px 12px;
-      font-size: 13px;
-      color: var(--color-text-muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.15s;
-      white-space: nowrap;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .result-section .result-tab .rt-count {
-      display: inline-block;
-      background: rgba(15, 25, 40, 0.08);
-      color: var(--color-text-muted);
-      font-size: 12px;
-      font-weight: 700;
-      padding: 1px 7px;
-      border-radius: 10px;
-      min-width: 18px;
-      text-align: center;
-    }
-
-    .result-section .result-tab.active {
-      color: var(--color-primary);
-      border-bottom-color: var(--color-primary);
-      font-weight: 700;
-    }
-    .result-section .result-tab.active .rt-count {
-      background: #FBEEF0;
-      color: var(--color-primary);
-    }
-
-    .result-section .result-tab:hover:not(.active) { color: var(--color-text); }
-
-    .viewer-area .result-section > .result-panel {
-      width: auto;
-      padding: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
-      flex: 1;
-      min-height: 0;
-      background: var(--color-surface);
-      display: block;
-      border-left: none;
-      border-top: none;
-      scrollbar-width: thin;
-    }
-
-    .viewer-area .result-section > .result-panel::-webkit-scrollbar { width: 8px; }
-    .viewer-area .result-section > .result-panel::-webkit-scrollbar-thumb { background: #CED4DA; border-radius: 4px; }
-
-    /* 리스트 헤더 (컬럼 라벨) */
-    .result-list-head {
-      display: grid;
-      grid-template-columns: 20px minmax(0, 1.3fr) minmax(0, 2fr) 130px 150px;
-      gap: 14px;
-      align-items: center;
-      padding: 7px 20px;
-      background: var(--color-surface-2);
-      border-bottom: 1px solid var(--color-border);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-
-    .result-row {
-      display: grid;
-      grid-template-columns: 20px minmax(0, 1.3fr) minmax(0, 2fr) 130px 150px;
-      gap: 14px;
-      align-items: center;
-      padding: 6px 20px;
-      border-bottom: 1px solid #F1F3F5;
-      font-size: 13px;
-      color: var(--color-text);
-      cursor: pointer;
-      transition: background 0.12s;
-      min-height: 32px;
-    }
-    .result-row:hover { background: #F8F9FA; }
-    .result-row.selected {
-      background: #FBEEF0;
-    }
-    .result-row.no-detect {
-      color: var(--color-text-muted);
-    }
-
-    .result-row .rr-sev {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      justify-self: center;
-    }
-    .result-row .rr-class {
-      font-weight: 700;
-      font-size: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-width: 0;
-    }
-    .result-row.no-detect .rr-class {
-      font-weight: 500;
-      color: var(--color-text-muted);
-    }
-    .result-row .rr-meta {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-width: 0;
-      font-family: 'Inter', sans-serif;
-    }
-    .result-row .rr-frame {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      text-align: right;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .result-list-footer {
-      padding: 7px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      background: var(--color-surface);
-      border-top: 1px solid #F1F3F5;
-      flex-shrink: 0;
-    }
-    .result-list-footer .rf-info {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      font-weight: 600;
-    }
-    .result-list-footer .rf-load-more {
-      padding: 7px 14px;
-      background: var(--color-surface-2);
-      border: 1px solid var(--color-border);
-      border-radius: var(--border-radius);
-      color: var(--color-text);
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .result-list-footer .rf-load-more:hover {
-      border-color: var(--color-primary);
-      color: var(--color-primary);
-    }
-
-    .result-list-empty {
-      padding: 40px 20px;
-      text-align: center;
-      color: var(--color-text-muted);
-      font-size: 13px;
-    }
-
-    /* 컬럼 밀도 — 1024 이하 */
-    @media (max-width: 1024px) {
-      .result-list-head,
-      .result-row {
-        grid-template-columns: 18px minmax(0, 1.2fr) minmax(0, 1.8fr) 110px 130px;
-        gap: 10px;
-        padding-left: 14px;
-        padding-right: 14px;
-      }
-    }
-    @media (max-width: 640px) {
-      .result-list-head {
-        display: none;
-      }
-      .result-row {
-        grid-template-columns: 16px minmax(0, 1fr) 120px;
-        gap: 8px;
-        padding: 8px 14px;
-      }
-      .result-row .rr-meta { display: none; }
-      .result-row .rr-frame { font-size: 11px; }
-    }
-
-    /* ── 우측 파이프라인 + 정보 패널 ── */
-    .pipeline-panel {
-      border-left: 1px solid var(--color-border);
-      background: var(--color-surface);
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .pipeline-header {
-      padding: 22px 22px 16px;
-      border-bottom: 1px solid var(--color-border);
-      flex-shrink: 0;
-    }
-
-    .pipeline-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--color-text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 4px;
-    }
-
-    .pipeline-title svg { color: var(--color-primary); }
-
-    .pipeline-sub {
-      font-size: 13px;
-      color: var(--color-text-muted);
-    }
-
-    /* 파이프라인 단계 */
-    .pipeline-steps {
-      padding: 16px 22px;
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    .pipeline-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 9px 0;
-      position: relative;
-    }
-
-    .pipeline-step:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      left: 11px;
-      top: 32px;
-      bottom: -9px;
-      width: 2px;
-      background: var(--color-border);
-      z-index: 0;
-    }
-
-    .step-dot {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      border: 2px solid var(--color-border);
-      background: var(--color-surface);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--color-text-muted);
-      position: relative;
-      z-index: 1;
-      transition: all 0.3s ease;
-    }
-
-    .step-dot.running {
-      border-color: var(--color-primary);
-      background: var(--color-primary);
-      color: #fff;
-      animation: pulse-dot 1.2s infinite;
-    }
-
-    .step-dot.done {
-      border-color: #495057;
-      background: #495057;
-      color: #fff;
-    }
-
-    @keyframes pulse-dot {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.35); }
-      50% { box-shadow: 0 0 0 6px rgba(200, 16, 46, 0); }
-    }
-
-    .step-content { flex: 1; min-width: 0; }
-    .step-name { font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px; }
-    .step-desc { font-size: 12px; color: var(--color-text-muted); line-height: 1.4; }
-    .step-status { font-size: 12px; font-weight: 600; margin-top: 3px; }
-    .step-status.pending { color: var(--color-text-muted); }
-    .step-status.running { color: var(--color-primary); }
-    .step-status.done { color: #495057; }
-
-    /* GNSS 정보 - 라이트 테마 (패널 전체와 동일) */
-    .gnss-panel {
-      padding: 18px 22px;
-      border-bottom: 1px solid var(--color-border);
-      background: var(--color-surface);
-    }
-
-    .gnss-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      margin-bottom: 12px;
-    }
-
-    .gnss-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid #F1F3F5;
-      font-size: 13px;
-      gap: 10px;
-    }
-
-    .gnss-row:last-child { border-bottom: none; }
-    .gnss-row .gnss-label {
-      color: var(--color-text-muted);
-      flex-shrink: 0;
-      font-weight: 500;
-    }
-    .gnss-row .gnss-val {
-      font-weight: 600;
-      color: var(--color-text);
-      text-align: right;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      min-width: 0;
-    }
-
-    /* AI 캡셔닝 */
-    .caption-section {
-      padding: 18px 22px;
-    }
-
-    .caption-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      margin-bottom: 10px;
-    }
-
-    .caption-box {
-      background: var(--color-page-bg);
-      border-radius: var(--border-radius);
-      border: 1px solid var(--color-border);
-      padding: 12px 14px;
-      font-size: 13px;
-      line-height: 1.65;
-      color: var(--color-text);
-      min-height: 62px;
-    }
-
-    .caption-box.empty {
-      color: var(--color-text-muted);
-      font-style: italic;
-    }
-
-    /* 대기 메시지 */
-    .idle-message {
-      padding: 36px 22px;
-      text-align: center;
-      color: var(--color-text-muted);
-    }
-
-    .idle-message svg { opacity: 0.3; margin-bottom: 12px; }
-    .idle-message p { font-size: 13px; line-height: 1.6; }
-
-    /* 결과 요약 박스 */
-    .result-summary-box {
-      margin: 16px 22px 0;
-      padding: 16px 18px;
-      background: var(--color-surface-2);
-      border: 1px solid var(--color-border);
-      border-radius: var(--border-radius);
-    }
-
-    .result-summary-box .rs-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
-
-    .result-summary-box .rs-value {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--color-text);
-      line-height: 1;
-    }
-
-    .result-summary-box .rs-unit {
-      font-size: 13px;
-      color: var(--color-text-muted);
-      margin-left: 4px;
-    }
-
-    @media (max-width: 1280px) {
-      .analysis-layout { grid-template-columns: 280px 1fr 280px; }
-    }
-
-    @media (max-width: 1024px) {
-      .page-body { display: flex; flex-direction: column; }
-      .analysis-layout {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-height: 0;
-        height: auto;
-      }
-      .side-panel,
-      .pipeline-panel {
-        max-height: 36vh;
-        border-right: 0;
-        border-left: 0;
-        border-bottom: 1px solid var(--color-border);
-        flex-shrink: 0;
-        width: 100%;
-      }
-      .pipeline-panel { border-top: 1px solid var(--color-border); border-bottom: 0; }
-      .viewer-area { flex: 1; min-height: 240px; }
-    }
-
-    @media (max-width: 640px) {
-      .side-panel,
-      .pipeline-panel { max-height: 30vh; }
-      .side-panel-header { padding: 16px 16px 12px; }
-      .side-section { padding: 14px 16px; }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/page-analysis-camera.css">
 </head>
 <body>
 
@@ -884,7 +30,7 @@
 
       <div class="side-section">
         <div class="side-section-title">이미지셋 선택</div>
-        <div style="font-size:12px; color:var(--color-text-muted); margin-bottom:10px; line-height:1.45;">
+        <div class="section-hint">
           차량 카메라로 수집된 이미지셋 묶음 하나를 선택하세요.
         </div>
         <div class="video-file-list" id="video-file-list"></div>
@@ -931,7 +77,7 @@
           </select>
         </div>
 
-        <div class="config-row" style="margin-top:4px;">
+        <div class="config-row config-row--gap">
           <span class="config-label">프레임 간격</span>
           <select class="config-select form-select">
             <option>1 fps</option>
@@ -972,12 +118,12 @@
           <div class="overlay-pct" id="overlay-pct">0%</div>
           <div class="overlay-step" id="overlay-step">분석 준비 중...</div>
           <div class="overlay-progress-bar">
-            <div class="overlay-progress-fill" id="overlay-progress-fill" style="width:0%;"></div>
+            <div class="overlay-progress-fill" id="overlay-progress-fill"></div>
           </div>
         </div>
       </div>
 
-      <div class="result-section" id="result-section" style="display:none;">
+      <div class="result-section" id="result-section" hidden>
         <div class="result-tabs" id="result-tabs">
           <div class="result-tab active" data-tab="all">전체 탐지<span class="rt-count" id="tab-count-all">0</span></div>
           <div class="result-tab" data-tab="high">고위험<span class="rt-count" id="tab-count-high">0</span></div>
@@ -987,7 +133,7 @@
           <div class="rt-spacer"></div>
           <button type="button" class="result-max-btn" id="result-max-btn" title="패널 최대화">
             <svg id="result-max-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
-            <svg id="result-max-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+            <svg id="result-max-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
           </button>
         </div>
         <div class="result-panel" id="result-list-panel">
@@ -999,7 +145,7 @@
           </div>
           <div id="result-rows"></div>
         </div>
-        <div class="result-list-footer" id="result-list-footer" style="display:none;">
+        <div class="result-list-footer" id="result-list-footer" hidden>
           <span class="rf-info" id="rf-info">0 / 0</span>
           <a class="rf-load-more" id="rf-load-more" href="history.html">추론 이력 조회에서 전체 보기 →</a>
         </div>
@@ -1018,14 +164,14 @@
 
       <div class="pipeline-steps" id="pipeline-steps"></div>
 
-      <div id="result-summary-area" style="display:none;">
+      <div id="result-summary-area" hidden>
         <div class="result-summary-box">
           <div class="rs-label">탐지 완료</div>
           <div class="rs-value"><span id="result-count">0</span><span class="rs-unit">건</span></div>
         </div>
       </div>
 
-      <div class="gnss-panel" id="gnss-panel" style="display:none;">
+      <div class="gnss-panel" id="gnss-panel" hidden>
         <div class="gnss-title">GNSS 위치 정보</div>
         <div class="gnss-row">
           <span class="gnss-label">위도</span>
@@ -1037,15 +183,15 @@
         </div>
         <div class="gnss-row">
           <span class="gnss-label">주소</span>
-          <span class="gnss-val" style="font-size:12px;font-family:inherit;" id="gnss-addr">–</span>
+          <span class="gnss-val gnss-val--sm" id="gnss-addr">–</span>
         </div>
         <div class="gnss-row">
           <span class="gnss-label">탐지 시각</span>
-          <span class="gnss-val" style="font-family:inherit;font-size:12px;" id="gnss-time">–</span>
+          <span class="gnss-val gnss-val--sm" id="gnss-time">–</span>
         </div>
       </div>
 
-      <div class="caption-section" id="caption-section" style="display:none;">
+      <div class="caption-section" id="caption-section" hidden>
         <div class="caption-title">AI 캡셔닝</div>
         <div class="caption-box empty" id="caption-text">탐지 항목을 선택하면 AI 설명이 표시됩니다.</div>
       </div>
@@ -1313,11 +459,11 @@
     isRunning = true;
     updateAnalyzeBtn();
     resetPipeline();
-    document.getElementById('result-section').style.display = 'none';
-    document.getElementById('gnss-panel').style.display = 'none';
-    document.getElementById('caption-section').style.display = 'none';
-    document.getElementById('result-summary-area').style.display = 'none';
-    document.getElementById('idle-message').style.display = 'none';
+    document.getElementById('result-section').hidden = true;
+    document.getElementById('gnss-panel').hidden = true;
+    document.getElementById('caption-section').hidden = true;
+    document.getElementById('result-summary-area').hidden = true;
+    document.getElementById('idle-message').hidden = true;
 
     var overlay = document.getElementById('analysis-overlay');
     overlay.classList.add('visible');
@@ -1429,14 +575,14 @@
     drawCameraScene(canvas, currentResults.slice(0, 5));
 
     document.getElementById('result-count').textContent = currentResults.length;
-    document.getElementById('result-summary-area').style.display = 'block';
+    document.getElementById('result-summary-area').hidden = false;
 
     updateTabCounts();
     renderResultList('all');
 
-    document.getElementById('result-section').style.display = 'flex';
-    document.getElementById('gnss-panel').style.display = 'block';
-    document.getElementById('caption-section').style.display = 'block';
+    document.getElementById('result-section').hidden = false;
+    document.getElementById('gnss-panel').hidden = false;
+    document.getElementById('caption-section').hidden = false;
   }
 
   function updateTabCounts() {
@@ -1475,7 +621,7 @@
           ? '모든 프레임에 탐지 결과가 있습니다.'
           : '해당 조건의 결과가 없습니다.') +
         '</div>';
-      footer.style.display = 'none';
+      footer.hidden = true;
       return;
     }
     if (tab === 'none') {
@@ -1505,7 +651,7 @@
       var addr = det ? det.address : '–';
 
       row.innerHTML =
-        '<div class="rr-sev" style="background:' + sevColor + ';"></div>' +
+        '<div class="rr-sev" style="--sev-color:' + sevColor + '"></div>' +
         '<div class="rr-class" title="' + className + (det ? ' · ' + sevKo[f.severity] : '') + '">' + className + '</div>' +
         '<div class="rr-meta" title="' + addr + '">' + addr + '</div>' +
         '<div class="rr-frame">#' + f.frameNo + ' · ' + f.timeStr + '</div>';
@@ -1528,16 +674,16 @@
     var footer = document.getElementById('result-list-footer');
     var info = document.getElementById('rf-info');
     var btn = document.getElementById('rf-load-more');
-    footer.style.display = 'flex';
+    footer.hidden = false;
     info.textContent = renderedCount.toLocaleString() + ' / ' + totalCount.toLocaleString();
     // 더 보기는 항상 표시 (추론 이력 조회 메뉴로 이동)
-    btn.style.display = 'inline-block';
+    btn.hidden = false;
   }
 
   function showFrameInfo(frame) {
     var mainCanvas = document.getElementById('cam-viewer-canvas');
     var titleEl = document.getElementById('viewer-title');
-    var iconSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+    var iconSvg = '<svg class="viewer-title-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
     var srcName = selectedSource ? selectedSource.file_name : '';
 
     if (frame.detection) {
@@ -1604,8 +750,8 @@
     viewer.classList.toggle('result-max', maxed);
     btn.setAttribute('title', maxed ? '패널 축소' : '패널 최대화');
     if (iconOpen && iconClose) {
-      iconOpen.style.display = maxed ? 'none' : '';
-      iconClose.style.display = maxed ? '' : 'none';
+      iconOpen.hidden = maxed;
+      iconClose.hidden = !maxed;
     }
   }
 })();

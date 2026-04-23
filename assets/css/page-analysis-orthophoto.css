@@ -1,0 +1,341 @@
+/* analysis-orthophoto.html 전용 스타일 (inline에서 추출) */
+
+body { overflow: hidden; }
+.page-body--no-scroll { overflow: hidden; }
+
+/* ============================================================
+   레이아웃 유틸리티 — HTML inline style="..." 대체 클래스
+   ============================================================ */
+
+/* 섹션 설명 힌트 */
+.section-hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+/* 섹션 타이틀 변형: 하단 여백 축소 */
+.section-title--tight { margin-bottom: 8px; }
+
+/* 모델 카드 하위: 클래스 배지 리스트 */
+.class-badge-row {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.class-badge {
+  font-size: 12px;
+  padding: 2px 6px;
+  background: rgba(45, 125, 210, 0.1);
+  color: var(--color-accent);
+  border-radius: 3px;
+}
+
+/* 범위 선택 — 라디오 그룹 */
+.range-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.range-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.range-option input[type="radio"] { accent-color: var(--color-accent); }
+
+/* 타일 크기 그룹 */
+.field-group { margin-top: 10px; }
+.form-select--compact { font-size: 13px; }
+
+/* 파이프라인 영역 래퍼 */
+.pipeline-wrap { margin-top: 12px; }
+
+/* 정사영상 지도 컨테이너 */
+#ortho-map { width: 100%; height: 100%; }
+
+/* 진행 캡션 */
+.progress-caption {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* progress-bar-wrap: 가운데 정렬 고정 너비 */
+.progress-bar-wrap {
+  width: 220px;
+  margin: 0 auto 8px;
+}
+
+/* 뷰어 우상단 컨트롤 */
+.viewer-ctrl-bar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 5;
+}
+.viewer-ctrl-btn {
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.viewer-ctrl-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
+
+/* 뷰어 하단 상태 바 */
+.viewer-status-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  display: flex;
+  gap: 16px;
+}
+
+/* 결과 패널 헤더 */
+.result-head {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+.result-head-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.result-head-sub {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.result-body {
+  padding: 16px 18px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 결과 요약 섹션 */
+.result-summary-area { margin-top: 12px; }
+.result-cards-area { margin-top: 10px; }
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+/* 데이터셋 빈 상태 */
+.dataset-empty {
+  text-align: center;
+  padding: 14px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+
+/* 파이프라인 태그 */
+.pipeline-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.pipeline-tag {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(45,125,210,0.1);
+  color: var(--color-accent);
+  border: 1px solid rgba(45,125,210,0.2);
+  transition: all 0.2s;
+}
+.pipeline-tag.done {
+  background: rgba(42,157,143,0.1);
+  color: var(--color-success);
+  border-color: rgba(42,157,143,0.3);
+}
+.pipeline-tag.running {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+/* 분석 버튼 */
+.analyze-btn {
+  width: 100%;
+  padding: 14px 0;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  margin-top: 12px;
+}
+.analyze-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45,125,210,0.4);
+}
+.analyze-btn:disabled {
+  background: #CBD5E1;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 뷰어 오버레이 */
+.viewer-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: rgba(255,255,255,0.3);
+  font-size: 14px;
+  gap: 12px;
+}
+
+/* 진행 오버레이 */
+.analysis-progress {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.progress-card {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: 28px 36px;
+  text-align: center;
+  min-width: 300px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.progress-card .progress-pct {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--color-accent);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.progress-card .progress-step {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 16px;
+}
+
+/* 결과 카드 */
+.result-summary {
+  padding: 14px 16px;
+  background: rgba(42,157,143,0.08);
+  border: 1px solid rgba(42,157,143,0.2);
+  border-radius: var(--border-radius);
+  margin-bottom: 12px;
+}
+
+.result-summary .rs-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-success);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.result-summary .rs-count {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.result-summary .rs-unit {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-left: 4px;
+}
+
+/* 데이터셋 리스트 */
+.dataset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.dataset-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 13px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dataset-item:hover { border-color: var(--color-primary); }
+.dataset-item.active {
+  border-color: var(--color-primary);
+  background: #FBEEF0;
+}
+
+.dataset-item input[type="radio"] {
+  accent-color: var(--color-primary);
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.dataset-info { flex: 1; min-width: 0; }
+
+.dataset-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 3px;
+}
+
+.dataset-meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.dataset-meta strong {
+  color: var(--color-text);
+  font-weight: 600;
+}

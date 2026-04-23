@@ -444,13 +444,13 @@ var NamwonMap = (function () {
             coords = geom.getCoordinates();
           }
           overlay.setPosition(coords);
-          popupEl.style.display = 'block';
+          popupEl.hidden = false;
           if (contentFn) contentFn(data, popupEl);
           return;
         }
       }
       overlay.setPosition(undefined);
-      popupEl.style.display = 'none';
+      popupEl.hidden = true;
     });
 
     // 커서 변경
@@ -467,7 +467,7 @@ var NamwonMap = (function () {
   ------------------------------------------------------- */
   function closePopup(overlay, popupEl) {
     overlay.setPosition(undefined);
-    popupEl.style.display = 'none';
+    popupEl.hidden = true;
   }
 
   /* -------------------------------------------------------
@@ -1116,26 +1116,7 @@ var NamwonMap = (function () {
         '</div>' +
       '</aside>';
 
-    // ── 하단 상태바 ──
-    var bottomLinks = options.bottomLinks || [
-      { href: 'history.html', icon: '<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/>', label: '분석 이력' },
-      { href: 'report.html', icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>', label: '보고서' }
-    ];
-    var linksHtml = bottomLinks.map(function (l) {
-      return '<a href="' + l.href + '" class="bb-link"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + l.icon + '</svg>' + l.label + '</a>';
-    }).join('');
-
-    var bottomHtml =
-      '<div class="glass-bottombar">' +
-        '<span class="bb-link" style="padding:0;cursor:default;">' +
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>' +
-          '<span id="coord-display">위도 – / 경도 –</span>' +
-        '</span>' +
-        '<div class="bb-divider"></div>' +
-        (options.bottomExtra || '') +
-        '<div class="bb-spacer"></div>' +
-        linksHtml +
-      '</div>';
+    var bottomHtml = '';
 
     // ── 내보내기(다운로드) 모달 ──
     var today = new Date();
@@ -1381,13 +1362,6 @@ var NamwonMap = (function () {
     // 바깥 클릭 시 서브메뉴 닫기
     document.addEventListener('click', function (e) {
       if (!e.target.closest('.rt-group-wrap')) closeAllSubmenus();
-    });
-
-    // 좌표 표시
-    map.on('pointermove', function (e) {
-      var lonLat = ol.proj.toLonLat(e.coordinate);
-      var disp = wrapper.querySelector('#coord-display');
-      if (disp) disp.textContent = '위도 ' + lonLat[1].toFixed(4) + ' / 경도 ' + lonLat[0].toFixed(4);
     });
 
     // 검색

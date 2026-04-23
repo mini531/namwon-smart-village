@@ -59,8 +59,6 @@
               '<div class="info-item"><div class="label">탐지 클래스</div><div class="value" data-f="class">-</div></div>' +
               '<div class="info-item"><div class="label">심각도</div><div class="value" data-f="severity">-</div></div>' +
               '<div class="info-item full"><div class="label">위치</div><div class="value" data-f="addr">-</div></div>' +
-              '<div class="info-item"><div class="label">위도</div><div class="value" data-f="lat">-</div></div>' +
-              '<div class="info-item"><div class="label">경도</div><div class="value" data-f="lng">-</div></div>' +
               '<div class="info-item"><div class="label">탐지 일시</div><div class="value" data-f="date">-</div></div>' +
               '<div class="info-item"><div class="label">처리 상태</div><div class="value" data-f="status">-</div></div>' +
               '<div class="info-item full"><div class="label">원본 파일</div><div class="value" data-f="file">-</div></div>' +
@@ -141,8 +139,6 @@
     m.querySelector('[data-f="class"]').textContent = d.class_ko + (d.class_en ? ' (' + d.class_en + ')' : '');
     m.querySelector('[data-f="severity"]').innerHTML = '<span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + SEVERITY_KO[d.severity] + '</span>';
     m.querySelector('[data-f="addr"]').textContent = d.address || '-';
-    m.querySelector('[data-f="lat"]').textContent = (d.lat != null) ? d.lat.toFixed(6) : '-';
-    m.querySelector('[data-f="lng"]').textContent = (d.lng != null) ? d.lng.toFixed(6) : '-';
     m.querySelector('[data-f="date"]').textContent = d.detected_at
       ? d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.')
       : '-';

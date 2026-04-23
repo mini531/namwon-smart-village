@@ -9,702 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
-  <style>
-    html, body { overflow: hidden; }
-    .page-body { overflow-y: auto; overflow-x: hidden; height: 100vh; flex-direction: column; }
-
-    .dashboard {
-      width: 100%;
-      max-width: 1380px;
-      min-width: 0;
-      margin: 0 auto;
-      padding: 24px 32px 56px;
-    }
-
-    /* ── 상단 공지 스트립 (한 줄) ── */
-    .notice-strip {
-      background: #0F2540;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--border-radius-lg);
-      padding: 12px 20px;
-      margin-bottom: 22px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      box-shadow: 0 2px 8px rgba(15,37,64,0.25);
-    }
-
-    .notice-strip-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 11px;
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 700;
-      flex-shrink: 0;
-      border: none;
-    }
-
-    .notice-strip-text {
-      flex: 1;
-      min-width: 0;
-      font-size: 15px;
-      color: rgba(255,255,255,0.92);
-      font-weight: 500;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      cursor: pointer;
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-
-    .notice-strip-text:hover {
-      color: #fff;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-
-    .notice-strip-date {
-      font-size: 13px;
-      color: rgba(255,255,255,0.6);
-      font-weight: 500;
-      flex-shrink: 0;
-    }
-
-    .notice-strip-more {
-      color: rgba(255,255,255,0.75);
-      font-size: 13px;
-      flex-shrink: 0;
-      padding-left: 14px;
-      border-left: 1px solid rgba(255,255,255,0.14);
-    }
-
-    .notice-strip-more:hover { color: #fff; }
-
-    /* ── 페이지 타이틀 ── */
-    .dash-title {
-      margin-bottom: 22px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-    }
-
-    .dash-title h2 {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--color-text);
-      letter-spacing: -0.5px;
-      line-height: 1.2;
-    }
-
-    .dash-title .dash-subtitle {
-      font-size: 16px;
-      color: var(--color-text-muted);
-      margin-top: 6px;
-      font-weight: 500;
-    }
-
-    .dash-date {
-      font-size: 14px;
-      color: var(--color-text-muted);
-      text-align: right;
-    }
-
-    .dash-date strong {
-      display: block;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--color-primary);
-      margin-bottom: 2px;
-    }
-
-    /* ── 공통 4열 그리드 (KPI + 메인 + 바텀 정렬 일치) ── */
-    .kpi-grid,
-    .main-grid,
-    .bottom-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
-    }
-
-    .kpi-grid {
-      margin-bottom: 26px;
-      padding: 220px 28px 26px;
-      border-radius: var(--border-radius-lg);
-      min-height: 340px;
-      align-items: end;
-      background-image:
-        linear-gradient(180deg, rgba(15,37,64,0) 0%, rgba(15,37,64,0) 50%, rgba(15,37,64,0.75) 68%, rgba(15,37,64,0.96) 88%, rgba(15,37,64,0.98) 100%),
-        url('assets/images/hero.png');
-      background-size: cover;
-      background-position: 50% 80%;
-      background-repeat: no-repeat;
-      box-shadow: 0 6px 24px rgba(15,37,64,0.12);
-    }
-    .main-grid { margin-bottom: 20px; }
-
-    .main-grid > .dash-card,
-    .bottom-grid > .dash-card {
-      grid-column: span 2;
-    }
-
-    .kpi-card {
-      background: transparent;
-      border-radius: 0;
-      padding: 8px 22px;
-      border: none;
-      border-left: 1px solid rgba(255,255,255,0.18);
-      box-shadow: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transition: all var(--transition);
-      color: #fff;
-    }
-
-    .kpi-card:first-child { border-left: none; padding-left: 4px; }
-
-    .kpi-card:hover { transform: translateY(-2px); }
-
-    .kpi-grid .kpi-label { color: rgba(255,255,255,0.85); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-    .kpi-grid .kpi-value { color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.55); }
-    .kpi-grid .kpi-value .unit { color: rgba(255,255,255,0.8); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-    .kpi-grid .kpi-card.is-danger .kpi-value { color: #ffb3bc; }
-    .kpi-grid .kpi-delta { color: rgba(255,255,255,0.78); }
-    .kpi-grid .kpi-delta strong { color: #fff; }
-    .kpi-grid .kpi-delta.warn strong { color: #ffb3bc; }
-    .kpi-grid .kpi-icon {
-      background: rgba(255,255,255,0.18);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.25);
-    }
-    .kpi-grid .kpi-icon.danger {
-      background: rgba(255,120,135,0.28);
-      color: #fff;
-    }
-
-    .kpi-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .kpi-label {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--color-text-muted);
-    }
-
-    .kpi-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: #F1F3F5;
-      color: #495057;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .kpi-icon.danger {
-      background: #FBEEF0;
-      color: var(--color-primary);
-    }
-
-    .kpi-value {
-      font-size: 48px;
-      font-weight: 800;
-      color: var(--color-text);
-      line-height: 1;
-      letter-spacing: -1.2px;
-    }
-
-    .kpi-value .unit {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      margin-left: 5px;
-      letter-spacing: 0;
-    }
-
-    .kpi-card.is-danger .kpi-value { color: var(--color-danger); }
-
-    .kpi-delta {
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      color: var(--color-text-muted);
-      font-weight: 500;
-    }
-
-    .kpi-delta strong {
-      color: var(--color-primary);
-      font-weight: 700;
-    }
-
-    .kpi-delta.warn strong { color: var(--color-danger); }
-
-    /* (위 공통 그리드로 통합됨) */
-
-    /* ── 섹션 카드 ── */
-    .dash-card {
-      background: var(--color-surface);
-      border-radius: var(--border-radius-lg);
-      border: 1px solid var(--color-border);
-      box-shadow: 0 1px 3px rgba(15,37,64,0.04);
-      overflow: hidden;
-    }
-
-    .dash-card-header {
-      padding: 0 22px;
-      height: 62px;
-      min-height: 62px;
-      flex-shrink: 0;
-      border-bottom: 1px solid var(--color-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-sizing: border-box;
-    }
-
-    .dash-card-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--color-text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .dash-card-title svg { color: var(--color-primary); }
-
-    .dash-card-body { padding: 20px 22px; }
-
-    /* ── AI 분석 과제 카드 (실사 썸네일 상단/제목 하단) ── */
-    .model-select-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .model-select-card {
-      border: 1.5px solid var(--color-border);
-      border-radius: var(--border-radius-lg);
-      cursor: pointer;
-      transition: all 0.25s ease;
-      text-decoration: none;
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      background: var(--color-surface);
-      overflow: hidden;
-      position: relative;
-      min-height: 132px;
-    }
-
-    .model-select-card:hover {
-      border-color: var(--color-primary);
-      box-shadow: 0 12px 28px rgba(15,37,64,0.12);
-      transform: translateY(-2px);
-    }
-
-    /* 좌측: 실사 썸네일 이미지 영역 */
-    .model-thumb {
-      position: relative;
-      width: 100%;
-      min-height: 100%;
-      background: #1a2535;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: flex-end;
-      overflow: hidden;
-    }
-
-    .model-thumb::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(15,37,64,0.05) 0%, rgba(15,37,64,0.55) 100%);
-    }
-
-    .model-thumb-fallback {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255,255,255,0.35);
-      font-size: 12px;
-      letter-spacing: 1px;
-    }
-
-    .model-thumb-tag {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      padding: 4px 10px;
-      background: rgba(255,255,255,0.95);
-      color: var(--color-primary);
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      backdrop-filter: blur(4px);
-    }
-
-    /* 우측: 모델 정보 */
-    .model-info {
-      padding: 16px 20px;
-      background: var(--color-surface);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .model-name-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .model-name-strong {
-      font-size: 19px;
-      font-weight: 800;
-      color: var(--color-text);
-      letter-spacing: -0.3px;
-      line-height: 1.2;
-    }
-
-    .model-action-inline {
-      font-size: 13px;
-      color: var(--color-primary);
-      font-weight: 700;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-
-    .model-version {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      font-weight: 500;
-    }
-
-    .model-version strong {
-      color: var(--color-text);
-      font-weight: 700;
-    }
-
-    .model-classes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-
-    .class-tag {
-      background: var(--color-page-bg);
-      border: 1px solid var(--color-border);
-      border-radius: 3px;
-      padding: 2px 7px;
-      font-size: 12px;
-      color: var(--color-text-muted);
-      font-weight: 500;
-    }
-
-    /* ── 최근 분석 작업 카드 리스트 ── */
-    .recent-job-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .recent-job-card {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 14px;
-      align-items: center;
-      padding: 14px 16px;
-      background: var(--color-surface-2);
-      border: 1px solid var(--color-border);
-      border-radius: 10px;
-      transition: all 0.15s;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .recent-job-card:hover {
-      border-color: var(--color-primary);
-      transform: translateX(2px);
-      box-shadow: 0 4px 14px rgba(200,16,46,0.08);
-    }
-
-    .recent-job-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: #F1F3F5;
-      color: #495057;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .recent-job-main { min-width: 0; }
-
-    .recent-job-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--color-text);
-      line-height: 1.3;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      margin-bottom: 3px;
-    }
-
-    .recent-job-meta {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .recent-job-meta .meta-chip {
-      font-size: 12px;
-      padding: 2px 7px;
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 3px;
-    }
-
-    .recent-job-stat {
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    .recent-job-stat .stat-num {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--color-text);
-      line-height: 1;
-    }
-
-    .recent-job-stat .stat-unit {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      font-weight: 600;
-    }
-
-    .recent-job-stat .stat-high {
-      display: block;
-      font-size: 12px;
-      color: var(--color-primary);
-      font-weight: 700;
-      margin-top: 3px;
-    }
-
-    /* (bottom-grid는 공통 그리드를 따름) */
-
-    /* 활동 로그 (단색 톤) */
-    .activity-log { display: flex; flex-direction: column; }
-
-    .activity-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 12px 0;
-      border-bottom: 1px solid #F1F5F9;
-      font-size: 14px;
-    }
-
-    .activity-item:last-child { border-bottom: none; }
-
-    .activity-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 7px;
-      background: #CED4DA;
-    }
-
-    .activity-dot.danger { background: var(--color-primary); }
-
-    .activity-time {
-      color: var(--color-text-muted);
-      white-space: nowrap;
-      min-width: 60px;
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .activity-text { color: var(--color-text); }
-
-    /* 처리 현황 요약 */
-    .stat-summary {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .stat-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      background: var(--color-page-bg);
-      border-radius: var(--border-radius);
-      border: 1px solid transparent;
-    }
-
-    .stat-row.danger {
-      background: #FBEEF0;
-      border-color: #F5DDE1;
-    }
-
-    .stat-label {
-      font-size: 14px;
-      color: var(--color-text);
-      font-weight: 600;
-    }
-
-    .stat-value {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--color-text);
-    }
-
-    .stat-row.danger .stat-value { color: var(--color-primary); }
-
-    .stat-bar-wrap {
-      margin-top: 18px;
-      padding-top: 16px;
-      border-top: 1px solid var(--color-border);
-    }
-
-    .stat-bar-label {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
-    }
-
-    .stat-bar-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 9px;
-      font-size: 13px;
-    }
-
-    .stat-bar-name {
-      width: 90px;
-      color: var(--color-text);
-      font-weight: 500;
-    }
-
-    .stat-bar {
-      flex: 1;
-      height: 8px;
-      background: var(--color-page-bg);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .stat-bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      background: #868E96;
-      transition: width 0.8s ease;
-    }
-
-    .stat-bar-item:first-child .stat-bar-fill { background: var(--color-primary); }
-
-    .stat-bar-count {
-      width: 32px;
-      text-align: right;
-      font-weight: 700;
-      color: var(--color-primary);
-      font-size: 13px;
-    }
-
-    @media (max-width: 1100px) {
-      .dashboard { padding: 22px 24px 48px; }
-      .kpi-grid,
-      .main-grid,
-      .bottom-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .main-grid > .dash-card,
-      .bottom-grid > .dash-card {
-        grid-column: span 2;
-      }
-      .kpi-grid {
-        padding: 170px 22px 22px;
-        min-height: 320px;
-        background-position: 50% 45%;
-        row-gap: 20px;
-      }
-      .kpi-card:nth-child(3) { border-left: none; padding-left: 4px; }
-    }
-
-    @media (max-width: 640px) {
-      .dashboard { padding: 18px 14px 40px; }
-      .dash-title { flex-direction: column; align-items: flex-start; gap: 6px; }
-      .dash-title h2 { font-size: 24px; }
-      .dash-date { align-self: flex-end; font-size: 13px; }
-      .kpi-grid,
-      .main-grid,
-      .bottom-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
-      .main-grid > .dash-card,
-      .bottom-grid > .dash-card {
-        grid-column: span 1;
-      }
-      .kpi-grid {
-        padding: 150px 18px 20px;
-        min-height: 300px;
-        row-gap: 16px;
-        background-position: 50% 48%;
-      }
-      .kpi-card,
-      .kpi-card:nth-child(n) {
-        padding: 12px 4px 0;
-        border-left: none;
-        border-top: 1px solid rgba(255,255,255,0.16);
-      }
-      .kpi-card:first-child {
-        padding-top: 0;
-        border-top: none;
-      }
-      .kpi-grid .kpi-value { font-size: 38px; }
-      .dash-card-header { padding: 14px 16px; }
-      .dash-card-body { padding: 14px 16px; }
-      .model-select-card { grid-template-columns: 1fr; }
-      .model-thumb { aspect-ratio: 16 / 9; min-height: auto; }
-      .notice-strip { padding: 10px 14px; gap: 10px; }
-      .notice-strip-more { display: none; }
-      .notice-strip-date { display: none; }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/page-index.css">
 </head>
 <body>
 
@@ -770,13 +75,13 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
           AI 분석 과제
         </div>
-        <span class="badge badge-primary" style="font-size:12px;">2종 운영중</span>
+        <span class="badge badge-primary">2종 운영중</span>
       </div>
       <div class="dash-card-body">
         <div class="model-select-grid">
           <!-- 정사영상 모델 -->
           <a href="analysis-orthophoto.html" class="model-select-card">
-            <div class="model-thumb" style="background-image:url('assets/images/model_orthophoto.jpg');">
+            <div class="model-thumb model-thumb--orthophoto">
 <span class="model-thumb-tag">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                 드론 정사영상
@@ -803,7 +108,7 @@
 
           <!-- 카메라 모델 -->
           <a href="analysis-camera.html" class="model-select-card">
-            <div class="model-thumb" style="background-image:url('assets/images/model_camera.jpg');">
+            <div class="model-thumb model-thumb--camera">
 <span class="model-thumb-tag">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
                 차량 카메라
@@ -830,12 +135,12 @@
         </div>
 
         <!-- 빠른 이동 -->
-        <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--color-border); display:flex; gap:10px;">
-          <a href="map-home.html" class="btn btn-primary btn-sm" style="flex:1; justify-content:center;">
+        <div class="quick-nav-row">
+          <a href="map-home.html" class="btn btn-primary btn-sm">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
             지도 홈 바로가기
           </a>
-          <a href="report.html" class="btn btn-ghost btn-sm" style="flex:1; justify-content:center;">
+          <a href="report.html" class="btn btn-ghost btn-sm">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
             보고서 생성
           </a>
@@ -852,7 +157,7 @@
         </div>
         <a href="history.html" class="btn btn-ghost btn-sm">작업 이력</a>
       </div>
-      <div class="dash-card-body" style="padding:14px 18px;">
+      <div class="dash-card-body dash-card-body--sm">
         <div class="recent-job-list" id="recent-jobs-list"></div>
       </div>
     </div>
@@ -860,7 +165,7 @@
 
   <!-- 하단: 처리 대기 고위험 탐지 -->
   <div class="bottom-grid">
-    <div class="dash-card" style="grid-column: span 4;">
+    <div class="dash-card dash-card--span-4">
       <div class="dash-card-header">
         <div class="dash-card-title">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/></svg>
@@ -868,7 +173,7 @@
         </div>
         <a href="history.html" class="btn btn-ghost btn-sm">전체 이력</a>
       </div>
-      <div class="dash-card-body" style="padding:0;">
+      <div class="dash-card-body dash-card-body--flush">
         <div class="table-scroll">
           <table class="data-table">
             <thead>
@@ -894,6 +199,7 @@
 </div><!-- /page-body -->
 
 <script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
 <script src="assets/js/detection-modal.js"></script>
 <script>
 (function () {
@@ -945,7 +251,7 @@
     var ptbody = document.getElementById('priority-tbody');
     ptbody.innerHTML = '';
     if (priority.length === 0) {
-      ptbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);padding:28px;">처리 대기 중인 고위험 탐지가 없습니다</td></tr>';
+      ptbody.innerHTML = '<tr><td colspan="6" class="priority-empty-cell">처리 대기 중인 고위험 탐지가 없습니다</td></tr>';
       return;
     }
     priority.forEach(function (det) {
@@ -954,11 +260,11 @@
       var tr = document.createElement('tr');
       tr.className = 'clickable-row';
       tr.innerHTML =
-        '<td style="font-size:12px;color:var(--color-text-muted);">' + det.id + '</td>' +
-        '<td style="font-weight:700;">' + det.class_ko + '</td>' +
+        '<td class="priority-id-cell">' + det.id + '</td>' +
+        '<td class="priority-class-cell">' + det.class_ko + '</td>' +
         '<td><span class="badge">' + modelLabel + '</span></td>' +
-        '<td style="font-size:12px;color:var(--color-text-muted);">' + det.address + '</td>' +
-        '<td style="font-size:12px;color:var(--color-text-muted);">' + dateStr + '</td>';
+        '<td class="priority-addr-cell">' + det.address + '</td>' +
+        '<td class="priority-date-cell">' + dateStr + '</td>';
       tr.addEventListener('click', function () {
         if (!window.DetectionModal) return;
         DetectionModal.open(det, {
@@ -1022,7 +328,7 @@
     })
     .catch(function () {
       document.getElementById('recent-jobs-list').innerHTML =
-        '<div style="text-align:center;color:var(--color-text-muted);padding:24px;">분석 작업 데이터를 불러올 수 없습니다.</div>';
+        '<div class="recent-jobs-error">분석 작업 데이터를 불러올 수 없습니다.</div>';
     });
 })();
 </script>

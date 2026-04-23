@@ -9,205 +9,13 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.5.2/ol.css">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
-  <style>
-    body { overflow: hidden; }
-
-    /* 파이프라인 태그 */
-    .pipeline-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-    }
-    .pipeline-tag {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      background: rgba(45,125,210,0.1);
-      color: var(--color-accent);
-      border: 1px solid rgba(45,125,210,0.2);
-      transition: all 0.2s;
-    }
-    .pipeline-tag.done {
-      background: rgba(42,157,143,0.1);
-      color: var(--color-success);
-      border-color: rgba(42,157,143,0.3);
-    }
-    .pipeline-tag.running {
-      background: var(--color-accent);
-      color: #fff;
-      border-color: var(--color-accent);
-    }
-
-    /* 분석 버튼 */
-    .analyze-btn {
-      width: 100%;
-      padding: 14px 0;
-      background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
-      color: #fff;
-      border: none;
-      border-radius: var(--border-radius);
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-      margin-top: 12px;
-    }
-    .analyze-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(45,125,210,0.4);
-    }
-    .analyze-btn:disabled {
-      background: #CBD5E1;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* 뷰어 오버레이 */
-    .viewer-overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      color: rgba(255,255,255,0.3);
-      font-size: 14px;
-      gap: 12px;
-    }
-
-    /* 진행 오버레이 */
-    .analysis-progress {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-    }
-
-    .progress-card {
-      background: var(--color-surface);
-      border-radius: var(--border-radius-lg);
-      padding: 28px 36px;
-      text-align: center;
-      min-width: 300px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    }
-
-    .progress-card .progress-pct {
-      font-size: 48px;
-      font-weight: 700;
-      color: var(--color-accent);
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .progress-card .progress-step {
-      font-size: 13px;
-      color: var(--color-text-muted);
-      margin-bottom: 16px;
-    }
-
-    /* 결과 카드 */
-    .result-summary {
-      padding: 14px 16px;
-      background: rgba(42,157,143,0.08);
-      border: 1px solid rgba(42,157,143,0.2);
-      border-radius: var(--border-radius);
-      margin-bottom: 12px;
-    }
-
-    .result-summary .rs-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--color-success);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .result-summary .rs-count {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--color-primary);
-    }
-
-    .result-summary .rs-unit {
-      font-size: 14px;
-      color: var(--color-text-muted);
-      margin-left: 4px;
-    }
-
-    /* 데이터셋 리스트 */
-    .dataset-list {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .dataset-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 12px 13px;
-      border: 1.5px solid var(--color-border);
-      border-radius: var(--border-radius);
-      background: var(--color-surface);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .dataset-item:hover { border-color: var(--color-primary); }
-    .dataset-item.active {
-      border-color: var(--color-primary);
-      background: #FBEEF0;
-    }
-
-    .dataset-item input[type="radio"] {
-      accent-color: var(--color-primary);
-      width: 14px;
-      height: 14px;
-      margin-top: 2px;
-      flex-shrink: 0;
-    }
-
-    .dataset-info { flex: 1; min-width: 0; }
-
-    .dataset-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--color-text);
-      margin-bottom: 3px;
-    }
-
-    .dataset-meta {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      line-height: 1.5;
-    }
-
-    .dataset-meta strong {
-      color: var(--color-text);
-      font-weight: 600;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/page-analysis-orthophoto.css">
 </head>
 <body>
 
 <div id="header-include"></div>
 
-<div class="page-body" style="overflow:hidden;">
+<div class="page-body page-body--no-scroll">
   <div class="analysis-layout">
 
     <!-- 좌측 설정 패널 -->
@@ -218,7 +26,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           정사영상 데이터셋 선택
         </div>
-        <div style="font-size:12px; color:var(--color-text-muted); margin-bottom:10px; line-height:1.4;">
+        <div class="section-hint">
           등록된 ECW 정사영상 중 분석할 데이터셋 하나를 선택하세요.
         </div>
         <div class="dataset-list" id="dataset-list"></div>
@@ -234,12 +42,12 @@
           <div class="model-card active" id="model-yolo">
             <div class="model-name">YOLOv8-Road-Orthophoto-v2.1</div>
             <div class="model-desc">정사영상 도로 결함 탐지 · mAP 0.87</div>
-            <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:3px;">
-              <span style="font-size:12px; padding:2px 6px; background:rgba(45,125,210,0.1); color:var(--color-accent); border-radius:3px;">포트홀</span>
-              <span style="font-size:12px; padding:2px 6px; background:rgba(45,125,210,0.1); color:var(--color-accent); border-radius:3px;">크랙</span>
-              <span style="font-size:12px; padding:2px 6px; background:rgba(45,125,210,0.1); color:var(--color-accent); border-radius:3px;">보수흔적</span>
-              <span style="font-size:12px; padding:2px 6px; background:rgba(45,125,210,0.1); color:var(--color-accent); border-radius:3px;">공동의심</span>
-              <span style="font-size:12px; padding:2px 6px; background:rgba(45,125,210,0.1); color:var(--color-accent); border-radius:3px;">쓰레기</span>
+            <div class="class-badge-row">
+              <span class="class-badge">포트홀</span>
+              <span class="class-badge">크랙</span>
+              <span class="class-badge">보수흔적</span>
+              <span class="class-badge">공동의심</span>
+              <span class="class-badge">쓰레기</span>
             </div>
           </div>
           <div class="model-card" id="model-sam">
@@ -255,21 +63,21 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           범위 선택
         </div>
-        <div style="display:flex; flex-direction:column; gap:6px;">
-          <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
-            <input type="radio" name="range-type" value="full" checked style="accent-color:var(--color-accent);"> 전체 영상
+        <div class="range-options">
+          <label class="range-option">
+            <input type="radio" name="range-type" value="full" checked> 전체 영상
           </label>
-          <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
-            <input type="radio" name="range-type" value="roi" style="accent-color:var(--color-accent);"> ROI 직접 지정
+          <label class="range-option">
+            <input type="radio" name="range-type" value="roi"> ROI 직접 지정
           </label>
-          <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
-            <input type="radio" name="range-type" value="grid" style="accent-color:var(--color-accent);"> 격자 기반 분할
+          <label class="range-option">
+            <input type="radio" name="range-type" value="grid"> 격자 기반 분할
           </label>
         </div>
 
-        <div style="margin-top:10px;">
+        <div class="field-group">
           <div class="form-label">타일 크기 (px)</div>
-          <select class="form-control form-select" style="font-size:13px;">
+          <select class="form-control form-select form-select--compact">
             <option>512 x 512</option>
             <option>256 x 256</option>
             <option>1024 x 1024</option>
@@ -285,8 +93,8 @@
         </button>
 
         <!-- 파이프라인 표시 -->
-        <div style="margin-top:12px;">
-          <div class="section-title" style="margin-bottom:8px;">추론 파이프라인</div>
+        <div class="pipeline-wrap">
+          <div class="section-title section-title--tight">추론 파이프라인</div>
           <div class="pipeline-tags" id="pipeline-tags">
             <span class="pipeline-tag" data-step="0">크롭</span>
             <span class="pipeline-tag" data-step="1">타일링</span>
@@ -307,32 +115,32 @@
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         <span>데이터셋을 선택하면 정사영상이 표시됩니다</span>
       </div>
-      <div id="ortho-map" style="width:100%;height:100%;display:none;"></div>
+      <div id="ortho-map" hidden></div>
 
       <!-- 분석 진행 오버레이 -->
-      <div class="analysis-progress" id="analysis-progress" style="display:none;">
+      <div class="analysis-progress" id="analysis-progress" hidden>
         <div class="progress-card">
           <div class="progress-pct" id="progress-pct">0%</div>
           <div class="progress-step" id="progress-step">초기화 중...</div>
-          <div class="progress-bar-wrap" style="width:220px; margin: 0 auto 8px;">
+          <div class="progress-bar-wrap">
             <div class="progress-bar-fill" id="progress-fill"></div>
           </div>
-          <div style="font-size:12px; color:var(--color-text-muted);">AI 추론을 실행하고 있습니다</div>
+          <div class="progress-caption">AI 추론을 실행하고 있습니다</div>
         </div>
       </div>
 
       <!-- 뷰어 컨트롤 (우측 상단) -->
-      <div style="position:absolute; top:12px; right:12px; display:flex; gap:6px; z-index:5;">
-        <button style="padding:6px 12px; background:rgba(0,0,0,0.5); color:rgba(255,255,255,0.8); border:1px solid rgba(255,255,255,0.2); border-radius:6px; font-size:12px; cursor:pointer;" onclick="toggleBBox()">
+      <div class="viewer-ctrl-bar">
+        <button class="viewer-ctrl-btn" type="button" onclick="toggleBBox()">
           Bounding Box 토글
         </button>
-        <button style="padding:6px 12px; background:rgba(0,0,0,0.5); color:rgba(255,255,255,0.8); border:1px solid rgba(255,255,255,0.2); border-radius:6px; font-size:12px; cursor:pointer;" onclick="exportResults()">
+        <button class="viewer-ctrl-btn" type="button" onclick="exportResults()">
           결과 내보내기
         </button>
       </div>
 
       <!-- 뷰어 하단 정보 바 -->
-      <div style="position:absolute; bottom:0; left:0; right:0; padding:8px 14px; background:rgba(0,0,0,0.6); color:rgba(255,255,255,0.7); font-size:12px; display:flex; gap:16px;">
+      <div class="viewer-status-bar">
         <span id="viewer-filename">-</span>
         <span id="viewer-size">-</span>
         <span id="viewer-tiles">-</span>
@@ -341,22 +149,22 @@
 
     <!-- 우측 결과 패널 -->
     <aside class="result-panel">
-      <div style="padding:16px 18px; border-bottom:1px solid var(--color-border);">
-        <div style="font-size:14px; font-weight:700; color:var(--color-primary); margin-bottom:4px; display:flex; align-items:center; gap:7px;">
+      <div class="result-head">
+        <div class="result-head-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           추론 파이프라인
         </div>
-        <div style="font-size:12px; color:var(--color-text-muted);">단계별 처리 현황</div>
+        <div class="result-head-sub">단계별 처리 현황</div>
       </div>
 
       <!-- 파이프라인 단계 시각화 -->
-      <div style="padding:16px 18px; flex:1; overflow-y:auto;">
+      <div class="result-body">
         <div class="pipeline-steps" id="pipeline-steps-visual">
           <!-- JS로 채움 -->
         </div>
 
         <!-- 결과 요약 (분석 후 표시) -->
-        <div id="result-summary-area" style="display:none; margin-top:12px;">
+        <div id="result-summary-area" class="result-summary-area" hidden>
           <div class="result-summary">
             <div class="rs-title">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/></svg>
@@ -365,9 +173,9 @@
             <div><span class="rs-count" id="result-count">0</span><span class="rs-unit">건</span></div>
           </div>
 
-          <div id="result-cards-area" style="margin-top:10px;"></div>
+          <div id="result-cards-area" class="result-cards-area"></div>
 
-          <div style="display:flex; flex-direction:column; gap:6px; margin-top:12px;">
+          <div class="result-actions">
             <a href="map-home.html?type=orthophoto" class="btn btn-primary btn-sm btn-block">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>
               결과 지도 보기
@@ -420,12 +228,12 @@
     })
     .catch(function () {
       document.getElementById('dataset-list').innerHTML =
-        '<div style="text-align:center;padding:14px;color:var(--color-text-muted);font-size:12px;">등록된 데이터셋이 없습니다.</div>';
+        '<div class="dataset-empty">등록된 데이터셋이 없습니다.</div>';
     });
 
   function initOrthoMap() {
     var mapDiv = document.getElementById('ortho-map');
-    mapDiv.style.display = 'block';
+    mapDiv.hidden = false;
 
     orthoMap = new ol.Map({
       target: 'ortho-map',
@@ -439,7 +247,7 @@
       controls: ol.control.defaults.defaults({ attribution: false, zoom: false })
     });
 
-    document.getElementById('viewer-placeholder').style.display = 'none';
+    document.getElementById('viewer-placeholder').hidden = true;
   }
 
   function buildDatasetList() {
@@ -570,8 +378,8 @@
     analysisRunning = true;
 
     document.getElementById('analyze-btn').disabled = true;
-    document.getElementById('analysis-progress').style.display = 'flex';
-    document.getElementById('result-summary-area').style.display = 'none';
+    document.getElementById('analysis-progress').hidden = false;
+    document.getElementById('result-summary-area').hidden = true;
     results = [];
 
     // 파이프라인 태그 리셋
@@ -616,7 +424,7 @@
         updateDetectionLayer();
 
         // 진행 오버레이 닫기
-        document.getElementById('analysis-progress').style.display = 'none';
+        document.getElementById('analysis-progress').hidden = true;
         document.getElementById('analyze-btn').disabled = false;
         analysisRunning = false;
 
@@ -628,7 +436,7 @@
 
   function showResults(dets) {
     document.getElementById('result-count').textContent = dets.length;
-    document.getElementById('result-summary-area').style.display = 'block';
+    document.getElementById('result-summary-area').hidden = false;
 
     var area = document.getElementById('result-cards-area');
     area.innerHTML = '';
@@ -639,7 +447,7 @@
       card.innerHTML =
         '<div class="rc-class">' +
         (NamwonMap.CLASS_KO[det.class_en] || det.class_en) +
-        '<span class="badge badge-' + det.severity + '" style="font-size:12px;">' + NamwonMap.SEVERITY_KO[det.severity] + '</span>' +
+        '<span class="badge badge-' + det.severity + '">' + NamwonMap.SEVERITY_KO[det.severity] + '</span>' +
         '</div>' +
         '</div>';
       area.appendChild(card);

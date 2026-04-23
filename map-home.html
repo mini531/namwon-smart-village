@@ -10,314 +10,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.5.2/ol.css">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
-  <style>
-    /* 지도 고정 배경 (글래스 패널이 위에 얹힘) */
-    #map { background: #1a2535; }
-
-    /* 작업 리스트 항목 */
-    .job-list-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      margin-bottom: 6px;
-      cursor: pointer;
-      transition: all 0.15s;
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .job-list-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.18);
-    }
-
-    .job-list-item.active {
-      background: rgba(200, 16, 46, 0.2);
-      border-color: rgba(200, 16, 46, 0.5);
-    }
-
-    .job-list-item input[type="checkbox"] {
-      width: 14px;
-      height: 14px;
-      accent-color: var(--color-primary);
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-
-    .job-list-info { flex: 1; min-width: 0; }
-
-    .job-list-name {
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.3;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .job-list-meta {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
-      margin-top: 2px;
-    }
-
-    .job-list-badge {
-      background: rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.85);
-      font-size: 12px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
-
-    .job-list-badge.ortho { background: rgba(255, 255, 255, 0.12); }
-    .job-list-badge.cam { background: rgba(255, 255, 255, 0.08); }
-
-    /* 전체 선택/해제 버튼 */
-    .sel-actions {
-      display: flex;
-      gap: 5px;
-      margin-top: 3px;
-    }
-
-    .sel-btn {
-      flex: 1;
-      padding: 5px 8px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      color: rgba(255, 255, 255, 0.85);
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.15s;
-      line-height: 1.3;
-    }
-
-    .sel-btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.25);
-      color: #fff;
-    }
-
-    /* 클래스 분포 리스트 */
-    .class-distrib-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .class-distrib-item {
-      display: grid;
-      grid-template-columns: 90px 1fr 32px;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.85);
-    }
-
-    .class-distrib-bar {
-      height: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .class-distrib-bar > span {
-      display: block;
-      height: 100%;
-      border-radius: 3px;
-    }
-
-    .class-distrib-item .cnt {
-      text-align: right;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    /* 처리 상태 카드 */
-    .status-bar-row {
-      display: grid;
-      grid-template-columns: 12px 1fr auto;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 8px;
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.85);
-      border-radius: 6px;
-      transition: background 0.15s;
-    }
-
-    .status-bar-row.clickable {
-      cursor: pointer;
-    }
-
-    .status-bar-row.clickable:hover {
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    .status-dot.unprocessed { background: #C8102E; }
-    .status-dot.processing { background: #F4A261; }
-    .status-dot.done { background: #6C757D; }
-
-    .status-cnt {
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .status-progress {
-      display: flex;
-      height: 6px;
-      border-radius: 3px;
-      overflow: hidden;
-      margin-top: 10px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .status-seg { height: 100%; transition: width 0.3s; }
-    .status-seg.unprocessed { background: #C8102E; }
-    .status-seg.processing { background: #F4A261; }
-    .status-seg.done { background: #6C757D; }
-
-    /* 로드 경고 배너 */
-    .load-warning {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 8px 10px;
-      background: rgba(200, 16, 46, 0.15);
-      border: 1px solid rgba(200, 16, 46, 0.35);
-      border-radius: 6px;
-      margin: 8px 0;
-      font-size: 12px;
-      color: #ff8fa0;
-      line-height: 1.4;
-      font-weight: 500;
-    }
-
-    .load-warning svg { flex-shrink: 0; color: #ff8fa0; }
-
-    /* 필터 탭 (정사영상 / 카메라 / 전체) */
-    .source-type-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 2px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 3px;
-      border-radius: 7px;
-      margin-bottom: 12px;
-    }
-
-    .source-type-tab {
-      text-align: center;
-      padding: 7px 6px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.55);
-      cursor: pointer;
-      border-radius: 5px;
-      font-weight: 600;
-      transition: all 0.15s;
-    }
-
-    .source-type-tab.active {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-    }
-
-    /* 팝업 - 글래스 카드 스타일 통일 */
-    .ol-popup {
-      background: var(--bg-glass);
-      backdrop-filter: var(--blur-md);
-      -webkit-backdrop-filter: var(--blur-md);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      min-width: 280px;
-      max-width: 320px;
-      color: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.06);
-      overflow: hidden;
-    }
-
-    .ol-popup::after {
-      border-top-color: rgba(0, 0, 0, 0.42) !important;
-    }
-    .ol-popup::before {
-      border-top-color: rgba(255, 255, 255, 0.08) !important;
-    }
-
-    .popup-header {
-      padding: 14px 16px 12px;
-      background: transparent;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .popup-header .popup-title {
-      color: #fff;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-
-    .popup-close {
-      color: rgba(255, 255, 255, 0.5);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 2px;
-      line-height: 1;
-    }
-    .popup-close:hover { color: #fff; }
-
-    .popup-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-      font-size: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      gap: 10px;
-    }
-
-    .popup-row:last-child { border-bottom: none; }
-    .popup-row .label {
-      color: rgba(255, 255, 255, 0.5);
-      font-weight: 500;
-      flex-shrink: 0;
-    }
-    .popup-row .value {
-      color: rgba(255, 255, 255, 0.95);
-      font-weight: 600;
-      text-align: right;
-    }
-
-    .popup-link-btn {
-      background: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-    }
-
-    .popup-link-btn:hover {
-      background: var(--color-primary);
-      color: #fff;
-      border-color: var(--color-primary);
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/page-map-home.css">
 </head>
 <body>
 
@@ -326,6 +19,81 @@
 <div class="page-body map-layout">
   <div class="map-wrapper">
     <div id="map"></div>
+
+    <!-- 하단 행정정보 테이블 (사료작물 생산기 전용) -->
+    <div class="db-bottom-panel" id="bottom-panel" data-panel="stats" hidden>
+      <div class="bp-head">
+        <div class="bp-title" id="bp-title"></div>
+        <div class="bp-head-actions">
+          <button type="button" class="bp-search-toggle" id="bp-search-toggle">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span class="bp-search-label">검색</span>
+          </button>
+          <button type="button" class="bp-collapse-toggle" id="bp-collapse-toggle">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="bp-collapse-label">행정정보 접기</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 펼쳐지는 검색 영역 -->
+      <div class="bp-search-row" id="bp-search-row" hidden>
+        <div class="bp-field">
+          <label>검색어</label>
+          <div class="bp-field-input">
+            <select class="bp-select" id="bp-search-field"></select>
+            <input type="text" class="bp-input" placeholder="검색어를 입력하세요">
+          </div>
+        </div>
+        <div class="bp-actions">
+          <button type="button" class="bp-btn bp-btn-ghost">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+            초기화
+          </button>
+          <button type="button" class="bp-btn bp-btn-primary">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            검색
+          </button>
+        </div>
+      </div>
+
+      <div class="bp-table-wrap">
+        <table class="bp-table" id="bp-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="bp-foot">
+        <div class="bp-paginator">
+          <button class="bp-page-btn">처음</button>
+          <button class="bp-page-btn">이전</button>
+          <button class="bp-page-btn active">1</button>
+          <button class="bp-page-btn">2</button>
+          <button class="bp-page-btn">3</button>
+          <button class="bp-page-btn">4</button>
+          <button class="bp-page-btn">5</button>
+          <button class="bp-page-btn">다음</button>
+          <button class="bp-page-btn">마지막</button>
+          <select class="bp-page-size">
+            <option>10</option>
+            <option>20</option>
+            <option>50</option>
+          </select>
+        </div>
+        <div class="bp-count" id="bp-count">총 0건 중 0~0행</div>
+      </div>
+    </div>
+
+    <!-- 좌/우 패널 접기 토글 -->
+    <button type="button" class="panel-toggle panel-toggle-left" id="panel-toggle-left">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span class="panel-toggle-label">설정 패널 접기</span>
+    </button>
+    <button type="button" class="panel-toggle panel-toggle-right" id="panel-toggle-right">
+      <span class="panel-toggle-label">분석 결과 접기</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
 
     <!-- 모바일 전용 패널 토글 FAB -->
     <button type="button" class="map-mobile-fab map-mobile-fab-left" id="fab-left-panel" aria-label="분석 작업 패널 열기">
@@ -341,60 +109,84 @@
     <!-- ── 좌측 글래스 스택 ── -->
     <div class="db-left-stack">
 
-      <!-- 분석 작업 선택 -->
-      <div class="glass-card glass-card--grow">
-        <div class="glass-card-header">
-          <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          <span class="gc-title">분석 작업 선택</span>
-          <span class="gc-subtitle" id="jobs-count-label">0 / 0</span>
+      <!-- AI 분석 결과 · 레이어 통합 카드 -->
+      <div class="glass-card glass-card--grow left-main-card">
+        <!-- 상단 툴바: 필터 + 모두 열기/접기 -->
+        <div class="left-toolbar">
+          <div class="filter-dropdown" id="filter-dropdown">
+            <button type="button" class="filter-btn" id="filter-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              <span>필터</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="filter-menu" id="filter-menu">
+              <label class="filter-item"><input type="checkbox" data-filter="mine" checked><span>내 분석 결과</span></label>
+              <label class="filter-item"><input type="checkbox" data-filter="shared" checked><span>공유 받은 분석 결과</span></label>
+            </div>
+          </div>
+          <div class="left-toolbar-spacer"></div>
+          <button type="button" class="mini-btn" id="expand-all-btn">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            모두 열기
+          </button>
+          <button type="button" class="mini-btn" id="collapse-all-btn">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            모두 접기
+          </button>
         </div>
 
-        <div class="gc-section">
-          <div class="source-type-tabs">
-            <div class="source-type-tab active" data-type="all">전체</div>
-            <div class="source-type-tab" data-type="orthophoto">정사영상</div>
-            <div class="source-type-tab" data-type="camera">카메라</div>
-          </div>
-          <div class="load-warning" id="load-warning" style="display:none;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            <span id="load-warning-text">선택된 정사영상이 많아 로드 시간이 길어질 수 있습니다</span>
-          </div>
-          <div class="sel-actions">
-            <button class="sel-btn" onclick="selectAllJobs(true)">전체 선택</button>
-            <button class="sel-btn" onclick="selectAllJobs(false)">전체 해제</button>
-          </div>
+        <!-- 탭: AI 분석 결과 / 레이어 -->
+        <div class="left-tabs">
+          <button type="button" class="left-tab active" data-tab="result">AI 분석 결과</button>
+          <button type="button" class="left-tab" data-tab="layer">레이어</button>
         </div>
 
-        <div class="glass-card-body" id="job-list-container" style="padding:10px 14px;"></div>
+        <div class="glass-card-body gc-body--flush">
+          <div class="left-tab-content tab-content-inner active" data-tab="result" id="job-list-container"></div>
+          <div class="left-tab-content tab-content-inner" data-tab="layer" id="layer-tree" hidden></div>
+        </div>
       </div>
 
-      <!-- 색상 기준 + 범례 -->
-      <div class="glass-card">
+      <!-- 색상 기준 (도로안전 상세 활성화 시만 표시) -->
+      <div class="glass-card" id="color-mode-card" hidden>
         <div class="glass-card-header">
           <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
           <span class="gc-title">색상 기준</span>
         </div>
-        <div class="glass-card-body" style="padding:14px 16px;">
+        <div class="glass-card-body gc-body--lg">
           <div class="color-mode-toggle">
             <button class="color-mode-btn active" data-mode="class">클래스</button>
             <button class="color-mode-btn" data-mode="severity">심각도</button>
           </div>
-          <div id="legend-container" style="margin-top:14px;"></div>
         </div>
       </div>
 
     </div>
 
+    <!-- 지도 위 플로팅 범례 (사이드바 높이 잠식하지 않도록 분리) -->
+    <div class="db-map-floating-stack">
+      <!-- 범례 (체크된 작업이 1개 이상일 때만 표시) -->
+      <div class="glass-card glass-card--floating glass-card--compact" id="legend-card" hidden>
+        <div class="glass-card-header">
+          <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/></svg>
+          <span class="gc-title">범례</span>
+        </div>
+        <div class="glass-card-body gc-body--md">
+          <div id="legend-container"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- 우측 상단 결과 카드 스택 -->
     <div class="db-right-stack">
+      <!-- 도로안전 전용 결과 패널 -->
       <!-- 탐지 현황 KPI -->
-      <div class="glass-card">
+      <div class="glass-card" data-panel="road">
         <div class="glass-card-header">
           <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
           <span class="gc-title">탐지 현황</span>
-          <span class="gc-subtitle" id="kpi-scope">전체</span>
         </div>
-        <div class="glass-card-body" style="padding:14px;">
+        <div class="glass-card-body gc-body--pad14">
           <div class="gc-kpi-grid">
             <div class="gc-kpi">
               <div class="k-label">총 탐지</div>
@@ -417,58 +209,179 @@
       </div>
 
       <!-- 클래스 분포 (Top 5) -->
-      <div class="glass-card">
+      <div class="glass-card" data-panel="road">
         <div class="glass-card-header">
           <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           <span class="gc-title">클래스 분포</span>
           <span class="gc-subtitle">Top 5</span>
         </div>
-        <div class="glass-card-body" style="padding:14px 16px;">
+        <div class="glass-card-body gc-body--lg">
           <div id="class-distrib-list" class="class-distrib-list"></div>
         </div>
       </div>
 
       <!-- 심각도 분포 -->
-      <div class="glass-card">
+      <div class="glass-card" data-panel="road">
         <div class="glass-card-header">
           <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>
           <span class="gc-title">심각도 분포</span>
         </div>
-        <div class="glass-card-body" style="padding:14px 16px;">
-          <canvas id="severity-chart" width="280" height="130" style="display:block;width:100%;"></canvas>
+        <div class="glass-card-body gc-body--lg">
+          <canvas id="severity-chart" class="chart-canvas" width="280" height="130"></canvas>
         </div>
       </div>
 
       <!-- 처리 상태 -->
-      <div class="glass-card">
+      <div class="glass-card" data-panel="road">
         <div class="glass-card-header">
           <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           <span class="gc-title">처리 상태</span>
         </div>
-        <div class="glass-card-body" style="padding:14px 16px;">
+        <div class="glass-card-body gc-body--lg">
           <div class="status-bar-row clickable" data-status="미처리"><span class="status-dot unprocessed"></span><span class="status-lbl">미처리</span><span class="status-cnt" id="stat-unproc">0</span></div>
           <div class="status-bar-row clickable" data-status="처리중"><span class="status-dot processing"></span><span class="status-lbl">처리중</span><span class="status-cnt" id="stat-proc">0</span></div>
           <div class="status-bar-row clickable" data-status="완료"><span class="status-dot done"></span><span class="status-lbl">완료</span><span class="status-cnt" id="stat-done">0</span></div>
           <div class="status-progress">
-            <div class="status-seg unprocessed" id="stat-seg-unproc" style="width:0%;"></div>
-            <div class="status-seg processing" id="stat-seg-proc" style="width:0%;"></div>
-            <div class="status-seg done" id="stat-seg-done" style="width:0%;"></div>
+            <div class="status-seg unprocessed" id="stat-seg-unproc"></div>
+            <div class="status-seg processing" id="stat-seg-proc"></div>
+            <div class="status-seg done" id="stat-seg-done"></div>
           </div>
+        </div>
+      </div>
+
+      <!-- 사료작물(생산기) 탐지 전용 결과 패널 -->
+
+      <!-- 통계 기준 설정 -->
+      <div class="glass-card" data-panel="stats">
+        <div class="glass-card-header">
+          <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          <span class="gc-title">통계 기준 설정</span>
+          <svg class="gc-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="glass-card-body gc-body--md">
+          <label class="fc-check fc-check-all"><input type="checkbox" id="fc-check-all" checked><span>클래스</span></label>
+          <div id="fc-check-list" class="fc-check-list"></div>
+          <div class="fc-search-row">
+            <button class="fc-search-btn" id="fc-search-btn" type="button">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              검색
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 분석 개요 -->
+      <div class="glass-card" data-panel="stats">
+        <div class="glass-card-header">
+          <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+          <span class="gc-title">분석 개요</span>
+          <svg class="gc-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="glass-card-body gc-body--sm">
+          <table class="fc-table" id="fc-overview-table">
+            <thead><tr><th>클래스</th><th class="num">분석 면적(m²)</th></tr></thead>
+            <tbody></tbody>
+            <tfoot><tr><td>합계</td><td class="num" id="fc-overview-total">0</td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- 클래스별 면적 파이 -->
+      <div class="glass-card" data-panel="stats">
+        <div class="glass-card-header">
+          <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>
+          <span class="gc-title">클래스별 면적</span>
+          <svg class="gc-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="glass-card-body gc-body--md">
+          <canvas id="fc-pie" class="chart-canvas" width="280" height="160"></canvas>
+        </div>
+      </div>
+
+      <!-- 지역 별 면적 -->
+      <div class="glass-card" data-panel="stats">
+        <div class="glass-card-header">
+          <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span class="gc-title">지역 별 면적</span>
+          <svg class="gc-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="glass-card-body gc-body--sm">
+          <table class="fc-table" id="fc-region-table">
+            <thead><tr><th>지역</th><th class="num">면적(m²)</th><th>비율</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 곤포사일리지 전용 결과 패널 -->
+
+      <!-- 분석 개요 (개체 수 · AI 생산량) -->
+      <div class="glass-card" data-panel="silage">
+        <div class="glass-card-header">
+          <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+          <span class="gc-title">분석 개요</span>
+          <svg class="gc-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="glass-card-body gc-body--sm">
+          <table class="fc-table" id="sb-overview-table">
+            <tbody>
+              <tr><td>분석 개체 수</td><td class="num" id="sb-count">0</td></tr>
+              <tr><td>AI 생산량</td><td class="num" id="sb-yield">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PNU별 탐지 개수 분포 -->
+      <div class="glass-card" data-panel="silage">
+        <div class="glass-card-header">
+          <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="gc-title">PNU별 탐지 개수 분포</span>
+          <svg class="gc-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="glass-card-body gc-body--md">
+          <canvas id="sb-pnu-hist" class="chart-canvas" width="280" height="160"></canvas>
+        </div>
+      </div>
+
+      <!-- 지역 별 개체 수 -->
+      <div class="glass-card" data-panel="silage">
+        <div class="glass-card-header">
+          <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span class="gc-title">지역 별 개체 수</span>
+          <svg class="gc-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="glass-card-body gc-body--sm">
+          <table class="fc-table" id="sb-region-table">
+            <thead><tr><th>지역</th><th class="num">개체 수</th><th>비율</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 기타 모델 placeholder (아직 전용 패널 없음) -->
+      <div class="glass-card" data-panel="generic">
+        <div class="glass-card-header">
+          <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span class="gc-title">결과 패널 준비 중</span>
+        </div>
+        <div class="glass-card-body gc-body--prompt">
+          이 모델의 전용 결과 패널은 아직 준비 중이에요. 지도상 범례와 작업 선택만 이용 가능해요.
         </div>
       </div>
     </div>
 
     <!-- 처리 상태 상세 모달 -->
     <div class="pledge-overlay" id="status-modal">
-      <div class="pledge-box" style="width: 680px;">
+      <div class="pledge-box pledge-box--wide">
         <button class="pledge-close" id="status-modal-close">&times;</button>
         <header class="pledge-header">
           <h1 id="status-modal-title">미처리 탐지 목록</h1>
           <p class="pledge-sub" id="status-modal-sub">선택된 작업에서 해당 상태의 탐지 객체 목록입니다</p>
         </header>
-        <div class="pledge-content" style="padding:0;">
-          <div style="max-height:420px;overflow-y:auto;">
-            <table class="data-table" style="border-radius:0;font-size:13px;">
+        <div class="pledge-content pledge-content--flush">
+          <div class="pledge-scroll">
+            <table class="data-table data-table--flat">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -490,10 +403,10 @@
     </div>
 
     <!-- 팝업 -->
-    <div id="map-popup" class="ol-popup" style="display:none;">
+    <div id="map-popup" class="ol-popup" hidden>
       <div class="popup-header">
         <span class="popup-title" id="popup-title">탐지 정보</span>
-        <button class="popup-close" onclick="document.getElementById('map-popup').style.display='none'">
+        <button class="popup-close" onclick="document.getElementById('map-popup').hidden=true">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
@@ -510,14 +423,12 @@
       <button class="close-btn" id="detail-close-btn">×</button>
     </div>
     <div class="modal-body">
-      <img class="modal-thumb" id="detail-thumb-img" style="width:100%;border-radius:6px;object-fit:cover;max-height:180px;" alt="썸네일">
+      <img class="modal-thumb modal-thumb-img" id="detail-thumb-img" alt="썸네일">
       <div class="modal-info-grid">
         <div class="info-item"><div class="label">탐지 ID</div><div class="value" id="dm-id">-</div></div>
         <div class="info-item"><div class="label">탐지 클래스</div><div class="value" id="dm-class">-</div></div>
         <div class="info-item"><div class="label">심각도</div><div class="value" id="dm-severity">-</div></div>
         <div class="info-item full"><div class="label">위치</div><div class="value" id="dm-addr">-</div></div>
-        <div class="info-item"><div class="label">위도</div><div class="value" id="dm-lat">-</div></div>
-        <div class="info-item"><div class="label">경도</div><div class="value" id="dm-lng">-</div></div>
         <div class="info-item"><div class="label">탐지 일시</div><div class="value" id="dm-date">-</div></div>
         <div class="info-item"><div class="label">처리 상태</div><div class="value" id="dm-status">-</div></div>
         <div class="info-item full"><div class="label">원본 파일</div><div class="value" id="dm-file">-</div></div>
@@ -571,12 +482,367 @@
   var cameraLayer = null;
   var map = null;
   var overlay = null;
-  // URL ?type=orthophoto|camera|all 로 진입 컨텍스트 지정
-  var initialType = (function () {
+  // 전체 카테고리 정의 (아코디언 순서 기준)
+  var CATEGORY_ORDER = [
+    { id: 'road_ortho', label: '도로안전 정사영상' },
+    { id: 'road_camera', label: '도로안전 카메라' },
+    { id: 'feed_crop_growth', label: '사료작물(생육기) 탐지' },
+    { id: 'feed_crop_harvest', label: '사료작물(생산기) 탐지' },
+    { id: 'silage_bale', label: '곤포사일리지 탐지' },
+    { id: 'greenhouse', label: '비닐하우스 탐지' },
+    { id: 'farmland', label: '농지 활용 분석' },
+    { id: 'abandoned_waste', label: '방치 쓰레기 탐지' }
+  ];
+  var CATEGORY_LABEL = CATEGORY_ORDER.reduce(function (m, c) { m[c.id] = c.label; return m; }, {});
+
+  // URL ?type= 은 초기에 해당 아코디언을 펼쳐놓는 용도
+  var initialExpandedCat = (function () {
     var p = new URLSearchParams(window.location.search).get('type');
-    return (p === 'orthophoto' || p === 'camera') ? p : 'all';
+    if (CATEGORY_LABEL[p]) return p;
+    if (p === 'orthophoto') return 'road_ortho';
+    if (p === 'camera') return 'road_camera';
+    return 'road_ortho';
   })();
-  var activeTypeFilter = initialType;
+  var expandedCategories = new Set([initialExpandedCat]);
+  // 펼쳐진 job(레이어 노출)
+  var expandedJobs = new Set();
+  // 숨긴 레이어 id (기본 모두 표시, 해제된 것만 추적)
+  var hiddenLayerIds = new Set();
+  // 좌측 카드 탭 상태
+  var activeLeftTab = 'result';  // 'result' | 'layer'
+  // 공유 필터 (기본 모두 체크)
+  var jobFilters = { mine: true, shared: true };
+  // 레이어 트리 펼침 상태
+  var expandedLayerGroups = new Set([
+    'lx-mgmt', 'lx-map', 'lx-ortho',
+    'admin-info', 'feed-crop', 'farm-use', 'farm-facility',
+    'dataset', 'ds-ortho', 'ds-spatial', 'ds-imageset'
+  ]);
+  var hiddenLayerTreeIds = new Set();
+
+  // 레이어 트리 데이터 (더미)
+  var LAYER_TREE = [
+    {
+      id: 'lx-mgmt', label: 'LX 맵', children: [
+        {
+          id: 'lx-map', label: 'LX 맵', type: 'group', children: [
+            { id: 'lxm-1', date: '2025-08-01', label: '남원시 8월' },
+            { id: 'lxm-2', date: '2025-06-01', label: '남원시 6월' },
+            { id: 'lxm-3', date: '2025-04-01', label: '남원시 4월' }
+          ]
+        },
+        {
+          id: 'lx-ortho', label: 'LX 정사영상', type: 'group', children: [
+            { id: 'lxo-01', date: '2025-10-31', label: '남원_금지면_10월' },
+            { id: 'lxo-02', date: '2025-08-31', label: '남원시_사매면_8월' },
+            { id: 'lxo-03', date: '2025-06-30', label: '남원_운봉읍_6월' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'admin-info', label: '행정정보', children: [
+        {
+          id: 'feed-crop', label: '사료작물 정보', type: 'group', children: [
+            { id: 'fc-layer-1', date: '2025-10-31', label: '사료작물(하계)_사매면' },
+            { id: 'fc-layer-2', date: '2025-06-30', label: '사료작물(IRG,호밀) 1권역' }
+          ]
+        },
+        {
+          id: 'farm-use', label: '농지이용 정보', type: 'group', children: [
+            { id: 'fu-1', date: '2025-09-30', label: '농지이용현황_사매면' },
+            { id: 'fu-2', date: '2025-06-30', label: '농지이용현황_운봉읍' }
+          ]
+        },
+        {
+          id: 'farm-facility', label: '영농시설 정보', type: 'group', children: [
+            { id: 'ff-1', date: '2025-10-31', label: '영농시설_사매면' },
+            { id: 'ff-2', date: '2025-09-30', label: '영농시설_금지면' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'dataset', label: '데이터셋', children: [
+        {
+          id: 'ds-ortho', label: '정사영상', type: 'group', children: [
+            { id: 'dso-1', date: '2025-10-31', label: '사매면_정사영상_10월' },
+            { id: 'dso-2', date: '2025-08-31', label: '운봉읍_정사영상_8월' }
+          ]
+        },
+        {
+          id: 'ds-spatial', label: '공간정보', type: 'group', children: [
+            { id: 'dss-1', date: '2025-10-31', label: '도로망_전체' },
+            { id: 'dss-2', date: '2025-09-30', label: '지적도_전체' }
+          ]
+        },
+        {
+          id: 'ds-imageset', label: '이미지셋', type: 'group', children: [
+            { id: 'dsi-1', date: '2025-10-15', label: '사매면 순찰 이미지셋' },
+            { id: 'dsi-2', date: '2025-09-20', label: '운봉읍 순찰 이미지셋' }
+          ]
+        }
+      ]
+    }
+  ];
+  // 약 40%에만 공유 아이콘 표시 (id 해시 기반 고정) + 레이어 기본 전부 미체크
+  (function initLeafFlags() {
+    function hash(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
+    function walk(node) {
+      if (node.children) node.children.forEach(walk);
+      else if (!node.type) {
+        node.shared = (Math.abs(hash(node.id)) % 10) < 4;
+        hiddenLayerTreeIds.add(node.id);
+      }
+    }
+    LAYER_TREE.forEach(walk);
+  })();
+
+  // job이 속한 분석 카테고리 — 레거시 jobs에 analysis_category가 없으면 source_type으로 도로안전 자동 매핑
+  function jobCategory(job) {
+    if (job.analysis_category) return job.analysis_category;
+    if (job.source_type === 'orthophoto') return 'road_ortho';
+    if (job.source_type === 'camera') return 'road_camera';
+    return 'other';
+  }
+
+  // 상세 패널을 여는 단일 job — 체크박스는 이와 별개로 자유 다중 선택
+  var detailJobId = null;
+  var ROAD_CATS = { road_ortho: true, road_camera: true };
+  // 사료작물(생육기/생산기) — 우측·하단 패널을 공용으로 사용
+  var FEED_CROP_CATS = { feed_crop_growth: true, feed_crop_harvest: true };
+  // 우측 통계 패널(통계기준/분석개요/파이/지역별)을 공유하는 카테고리 — 클래스만 다르게
+  var STATS_PANEL_CATS = { feed_crop_growth: true, feed_crop_harvest: true, farmland: true };
+  // 하단 행정정보 테이블 — 카테고리별 컬럼·데이터가 다르므로 스키마 분기
+  var ADMIN_TABLE_CATS = { feed_crop_growth: true, feed_crop_harvest: true, farmland: true, silage_bale: true };
+
+  // detail job → 현재 활성 카테고리 (우측 패널 스위치 기준)
+  function activeCategoryOfDetail() {
+    if (!detailJobId || !jobsData) return null;
+    var j = jobsData.jobs.find(function (x) { return x.job_id === detailJobId; });
+    return j ? jobCategory(j) : null;
+  }
+
+  // 범례/KPI는 detail job의 카테고리로 단일
+  function selectedCategories() {
+    var set = new Set();
+    var cat = activeCategoryOfDetail();
+    if (cat) set.add(cat);
+    return set;
+  }
+
+  // 레이어 트리의 모든 리프를 숨김 상태로 만들어 지도에서 해제
+  function hideAllLayerTreeLeaves() {
+    function walk(node) {
+      if (node.children) node.children.forEach(walk);
+      else if (!node.type) hiddenLayerTreeIds.add(node.id);
+    }
+    LAYER_TREE.forEach(walk);
+    if (activeLeftTab === 'layer') renderLayerTree();
+  }
+
+  // "자세히" 클릭 → 해당 job을 상세(행정정보·통계) 패널 대상으로 설정
+  // 체크(레이어 표시)는 건드리지 않는다 — 이미 체크된 다른 작업들은 그대로 유지
+  // 자세히 대상 자신은 자동 체크(통계·지도 레이어에 반영되도록)
+  function activateDetail(job) {
+    detailJobId = job.job_id;
+    if (!selectedJobIds.has(job.job_id)) selectedJobIds.add(job.job_id);
+    // 우측 결과 패널이 접혀 있으면 강제로 펼침
+    var wrapper = document.querySelector('.map-wrapper');
+    if (wrapper && wrapper.classList.contains('right-hidden')) {
+      wrapper.classList.remove('right-hidden');
+      var rightBtn = document.getElementById('panel-toggle-right');
+      if (rightBtn) rightBtn.querySelector('.panel-toggle-label').textContent = '분석 결과 접기';
+    }
+    // 하단 행정정보 패널이 접혀 있으면 강제로 펼침
+    var bottomPanel = document.getElementById('bottom-panel');
+    if (bottomPanel && bottomPanel.classList.contains('collapsed')) {
+      bottomPanel.classList.remove('collapsed');
+      var bpCollapseLabel = document.querySelector('#bp-collapse-toggle .bp-collapse-label');
+      if (bpCollapseLabel) bpCollapseLabel.textContent = '행정정보 접기';
+    }
+    renderJobList();
+    updateMapLayers();
+    updateKPI();
+    renderLegend();
+    flyToJob(job);
+  }
+
+  // 공유 필터 통과 여부
+  function passesJobFilter(job) {
+    var isShared = !!job.shared_from;
+    if (isShared && !jobFilters.shared) return false;
+    if (!isShared && !jobFilters.mine) return false;
+    return true;
+  }
+
+  // 레이어 트리 렌더
+  function renderLayerTree() {
+    var root = document.getElementById('layer-tree');
+    if (!root) return;
+    var html = '';
+    LAYER_TREE.forEach(function (group) {
+      var gOpen = expandedLayerGroups.has(group.id);
+      html += '<div class="lt-group ' + (gOpen ? 'expanded' : '') + '" data-id="' + group.id + '">' +
+        '<button type="button" class="lt-group-head">' +
+          '<svg class="lt-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+          '<span class="lt-name">' + group.label + '</span>' +
+        '</button>' +
+        '<div class="lt-body">';
+      (group.children || []).forEach(function (child) {
+        if (child.type === 'group') {
+          var sOpen = expandedLayerGroups.has(child.id);
+          html += '<div class="lt-subgroup ' + (sOpen ? 'expanded' : '') + '" data-id="' + child.id + '">' +
+            '<button type="button" class="lt-subgroup-head">' +
+              '<svg class="lt-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+              '<span class="lt-name">' + child.label + '</span>' +
+            '</button>' +
+            '<div class="lt-body">';
+          (child.children || []).forEach(function (leaf) {
+            var isVisible = !hiddenLayerTreeIds.has(leaf.id);
+            html += '<div class="lt-leaf">' +
+              '<input type="checkbox" data-layer="' + leaf.id + '"' + (isVisible ? ' checked' : '') + '>' +
+              '<span class="lt-leaf-date">[' + (leaf.date || '') + ']</span>' +
+              '<span class="lt-leaf-name">' + leaf.label + '</span>' +
+              (leaf.shared ? '<span class="job-share-indicator" data-tooltip="공유받은 레이어"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span>' : '') +
+            '</div>';
+          });
+          html += '</div></div>';
+        } else {
+          var visible = !hiddenLayerTreeIds.has(child.id);
+          html += '<div class="lt-leaf">' +
+            '<input type="checkbox" data-layer="' + child.id + '"' + (visible ? ' checked' : '') + '>' +
+            '<span class="lt-leaf-name">' + child.label + '</span>' +
+          '</div>';
+        }
+      });
+      html += '</div></div>';
+    });
+    root.innerHTML = html;
+
+    // 그룹/서브그룹 펼침 토글
+    root.querySelectorAll('.lt-group-head, .lt-subgroup-head').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var parent = btn.parentElement;
+        var id = parent.dataset.id;
+        if (expandedLayerGroups.has(id)) expandedLayerGroups.delete(id);
+        else expandedLayerGroups.add(id);
+        renderLayerTree();
+      });
+    });
+    // 레이어 체크
+    root.querySelectorAll('input[data-layer]').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        var id = cb.dataset.layer;
+        if (cb.checked) hiddenLayerTreeIds.delete(id);
+        else hiddenLayerTreeIds.add(id);
+      });
+    });
+  }
+
+  function initLeftCardUI() {
+    // 탭 전환
+    document.querySelectorAll('.left-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        activeLeftTab = tab.dataset.tab;
+        document.querySelectorAll('.left-tab').forEach(function (t) {
+          t.classList.toggle('active', t.dataset.tab === activeLeftTab);
+        });
+        document.querySelectorAll('.left-tab-content').forEach(function (c) {
+          c.hidden = c.dataset.tab !== activeLeftTab;
+        });
+        if (activeLeftTab === 'layer') renderLayerTree();
+      });
+    });
+
+    // 필터 드롭다운 열고 닫기
+    var fBtn = document.getElementById('filter-btn');
+    var fMenu = document.getElementById('filter-menu');
+    if (fBtn && fMenu) {
+      fBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        fMenu.classList.toggle('open');
+      });
+      document.addEventListener('click', function () { fMenu.classList.remove('open'); });
+      fMenu.addEventListener('click', function (e) { e.stopPropagation(); });
+      fMenu.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          jobFilters[cb.dataset.filter] = cb.checked;
+          renderJobList();
+        });
+      });
+    }
+
+    // 모두 열기/접기
+    var expandAll = document.getElementById('expand-all-btn');
+    var collapseAll = document.getElementById('collapse-all-btn');
+    if (expandAll) expandAll.addEventListener('click', function () {
+      if (activeLeftTab === 'layer') {
+        LAYER_TREE.forEach(function (g) {
+          expandedLayerGroups.add(g.id);
+          (g.children || []).forEach(function (c) { if (c.type === 'group') expandedLayerGroups.add(c.id); });
+        });
+        renderLayerTree();
+      } else {
+        CATEGORY_ORDER.forEach(function (c) { expandedCategories.add(c.id); });
+        jobsData.jobs.forEach(function (j) { expandedJobs.add(j.job_id); });
+        renderJobList();
+      }
+    });
+    if (collapseAll) collapseAll.addEventListener('click', function () {
+      if (activeLeftTab === 'layer') {
+        expandedLayerGroups.clear();
+        renderLayerTree();
+      } else {
+        expandedCategories.clear();
+        expandedJobs.clear();
+        renderJobList();
+      }
+    });
+  }
+
+  // job별 하위 레이어 목록 — 데이터에 없으면 카테고리 기본값 반환
+  function getJobLayers(job) {
+    if (Array.isArray(job.layers) && job.layers.length > 0) return job.layers;
+    var date = (job.captured_at || '').replace(/-/g, '-');
+    var base = job.job_id + ':';
+    var cat = jobCategory(job);
+    if (FEED_CROP_CATS[cat]) {
+      return [
+        { id: base + 'result',  date: date, label: '탐지 결과 폴리곤' },
+        { id: base + 'source',  date: date, label: '원본 정사영상' },
+        { id: base + 'parcel',  date: date, label: '필지 경계' }
+      ];
+    }
+    return [
+      { id: base + 'result',  date: date, label: '탐지 결과' },
+      { id: base + 'source',  date: date, label: '원본 영상' },
+      { id: base + 'area',    date: date, label: '분석 영역' }
+    ];
+  }
+
+  // 체크박스 토글 — 자유 다중. 체크가 1개뿐이면 그 job을 자동 상세 대상으로.
+  function toggleJobCheck(job) {
+    if (selectedJobIds.has(job.job_id)) {
+      selectedJobIds.delete(job.job_id);
+      if (detailJobId === job.job_id) detailJobId = null;
+    } else {
+      // 새로 체크 시 레이어 트리에서 표시 중이던 레이어 해제
+      hideAllLayerTreeLeaves();
+      selectedJobIds.add(job.job_id);
+      flyToJob(job);
+    }
+    // 1개만 체크된 경우 자동 active
+    if (selectedJobIds.size === 1) {
+      detailJobId = Array.from(selectedJobIds)[0];
+    } else if (selectedJobIds.size === 0) {
+      detailJobId = null;
+    }
+    renderJobList();
+    updateMapLayers();
+    updateKPI();
+    renderLegend();
+  }
   var selectedJobIds = new Set();
   var colorMode = 'class'; // 'class' 또는 'severity'
 
@@ -598,13 +864,7 @@
         if (overrides[d.id]) d.status = overrides[d.id];
       });
     } catch (e) {}
-    // 기본 선택: 진입 타입에 따라 가장 최근 작업 1건 선택
-    // (orthophoto는 50GB+ 대용량이므로 1건만)
-    var preferType = initialType === 'all' ? 'camera' : initialType;
-    var latestJob = jobsData.jobs
-      .filter(function (j) { return j.source_type === preferType; })
-      .sort(function (a, b) { return b.analyzed_at.localeCompare(a.analyzed_at); })[0];
-    if (latestJob) selectedJobIds.add(latestJob.job_id);
+    // 기본 선택 없음 — 사용자가 아코디언에서 직접 선택
     initPage();
   }).catch(function (err) {
     console.error('데이터 로드 실패:', err);
@@ -714,28 +974,14 @@
   }
 
   function initPage() {
-    // 진입 타입에 맞춰 탭 활성 상태 동기화
-    document.querySelectorAll('.source-type-tab').forEach(function (t) {
-      t.classList.toggle('active', t.dataset.type === activeTypeFilter);
-    });
     renderJobList();
     initMap();
     updateKPI();
     renderLegend();
     NamwonMap.initGlassCardCollapse();
-
-    // 타입 탭
-    document.querySelectorAll('.source-type-tab').forEach(function (tab) {
-      tab.addEventListener('click', function (e) {
-        e.stopPropagation();
-        document.querySelectorAll('.source-type-tab').forEach(function (t) { t.classList.remove('active'); });
-        tab.classList.add('active');
-        activeTypeFilter = tab.dataset.type;
-        renderJobList();
-        updateMapLayers();
-        updateKPI();
-      });
-    });
+    initPanelToggles();
+    initBottomPanel();
+    initLeftCardUI();
 
     // 색상 기준 토글
     document.querySelectorAll('.color-mode-btn').forEach(function (btn) {
@@ -743,8 +989,8 @@
         document.querySelectorAll('.color-mode-btn').forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
         colorMode = btn.dataset.mode;
-        updateMapLayers();
         renderLegend();
+        updateMapLayers();
       });
     });
 
@@ -891,7 +1137,7 @@
     tbody.innerHTML = '';
     _statusModalDets = [];
     if (dets.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--color-text-muted);">해당 상태의 탐지가 없습니다.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="table-empty-cell">해당 상태의 탐지가 없습니다.</td></tr>';
     } else {
       var sevKo = { high: '고위험', medium: '주의', low: '양호' };
       var sevCol = { high: '#C8102E', medium: '#F4A261', low: '#2A9D8F' };
@@ -905,11 +1151,11 @@
         tr.className = 'clickable-row';
         tr.dataset.detIdx = i;
         tr.innerHTML =
-          '<td style="color:var(--color-text-muted);font-size:12px;">' + d.id + '</td>' +
-          '<td style="font-weight:600;">' + d.class_ko + '</td>' +
-          '<td style="color:' + sevCol[d.severity] + ';font-weight:700;">' + sevKo[d.severity] + '</td>' +
-          '<td style="font-size:12px;">' + d.address + '</td>' +
-          '<td style="font-size:12px;color:var(--color-text-muted);">' + date + '</td>';
+          '<td class="status-detail-id">' + d.id + '</td>' +
+          '<td class="status-detail-class">' + d.class_ko + '</td>' +
+          '<td class="status-detail-sev" style="--sev-color:' + sevCol[d.severity] + '">' + sevKo[d.severity] + '</td>' +
+          '<td class="status-detail-addr">' + d.address + '</td>' +
+          '<td class="status-detail-date">' + date + '</td>';
         tr.addEventListener('click', function () {
           // 상태 모달을 닫고 상세 모달로 교체 — 이전으로 누르면 같은 상태로 재오픈
           document.getElementById('status-modal').classList.remove('show');
@@ -967,8 +1213,6 @@
     document.getElementById('dm-severity').innerHTML =
       '<span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + sevKo[d.severity] + '</span>';
     document.getElementById('dm-addr').textContent = d.address;
-    document.getElementById('dm-lat').textContent = d.lat.toFixed(6);
-    document.getElementById('dm-lng').textContent = d.lng.toFixed(6);
     document.getElementById('dm-date').textContent = d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
     document.getElementById('dm-status').innerHTML =
       '<span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span>';
@@ -996,7 +1240,7 @@
     }
 
     // 이전으로 버튼은 처리 상태 모달에서 진입한 경우에만 노출
-    document.getElementById('detail-back-btn').style.display = detailCameFromStatus ? 'inline-flex' : 'none';
+    document.getElementById('detail-back-btn').hidden = !detailCameFromStatus;
 
     document.getElementById('detail-modal').classList.add('show');
     // 처리 상태 모달은 뒤에 그대로 둔다 (백 버튼으로 돌아가기)
@@ -1050,60 +1294,775 @@
     if (window.NotifyUI) NotifyUI.toast('처리 상태가 저장되었습니다', '저장 완료');
   }
 
+  // 카테고리별 클래스 팔레트 — 모델이 붙으면 추가 확장
+  var CATEGORY_CLASS_PALETTE = {
+    road_ortho: {
+      shape: 'poly',
+      items: [
+        { label: '포트홀', color: '#E63946' },
+        { label: '크랙', color: '#F4A261' },
+        { label: '보수흔적', color: '#2A9D8F' },
+        { label: '공동의심', color: '#9B5DE5' },
+        { label: '쓰레기', color: '#FFB703' }
+      ]
+    },
+    road_camera: {
+      shape: 'pin',
+      items: [
+        { label: '포트홀', color: '#E63946' },
+        { label: '중앙분리대', color: '#F4A261' },
+        { label: '시선유도봉', color: '#2A9D8F' },
+        { label: '보행시설', color: '#9B5DE5' },
+        { label: '교통표지판', color: '#FFB703' },
+        { label: '차선불량', color: '#00B4D8' },
+        { label: '컬러맨홀', color: '#F15BB5' },
+        { label: '불법주정차', color: '#8AC926' }
+      ]
+    },
+    feed_crop_harvest: {
+      shape: 'poly',
+      items: [
+        { label: 'IRG(생산기)', color: '#744700' },
+        { label: '호밀(생산기)', color: '#8fce00' },
+        { label: '옥수수(생산기)', color: '#16537e' },
+        { label: '수단그라스(생산기)', color: '#c90076' }
+      ]
+    },
+    feed_crop_growth: {
+      shape: 'poly',
+      items: [
+        { label: 'IRG(생육기)', color: '#f44336' },
+        { label: '호밀(생육기)', color: '#ce7e00' },
+        { label: '옥수수(생육기)', color: '#2986cc' },
+        { label: '수단그라스(생육기)', color: '#6a329f' }
+      ]
+    },
+    farmland: {
+      shape: 'poly',
+      items: [
+        { label: '경작지', color: '#38761d' },
+        { label: '비경작지', color: '#134f5c' }
+      ]
+    },
+    silage_bale: {
+      shape: 'pin',
+      items: [
+        { label: '곤포사일리지', color: '#bf9000' }
+      ]
+    }
+  };
+
   function renderLegend() {
+    var card = document.getElementById('legend-card');
     var container = document.getElementById('legend-container');
-    if (!container) return;
-    if (colorMode === 'severity') {
-      container.innerHTML =
-        '<div class="gc-legend-list" style="flex-direction:row;gap:14px;flex-wrap:wrap;">' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(200,16,46,0.40);border-color:#C8102E;"></span>고위험</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(244,162,97,0.38);border-color:#F4A261;"></span>주의</div>' +
-          '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(42,157,143,0.36);border-color:#2A9D8F;"></span>양호</div>' +
+    if (!card || !container) return;
+
+    // 체크된 job이 하나도 없으면 범례 숨김
+    if (selectedJobIds.size === 0 || !jobsData) {
+      card.hidden = true;
+      return;
+    }
+
+    // 체크된 모든 job의 카테고리 수집 (detail 한 건이 아닌 체크된 전체 기준)
+    var cats = new Set();
+    jobsData.jobs.forEach(function (j) {
+      if (selectedJobIds.has(j.job_id)) cats.add(jobCategory(j));
+    });
+    var catArr = CATEGORY_ORDER.map(function (c) { return c.id; }).filter(function (id) { return cats.has(id); });
+    if (catArr.length === 0) {
+      card.hidden = true;
+      return;
+    }
+    card.hidden = false;
+
+    // 색상 기준 토글의 심각도 모드는 도로안전 계열만 영향. 나머지는 항상 클래스 팔레트.
+    // 선택에 도로안전 계열이 존재 + severity 모드면 도로안전 블록을 심각도 팔레트로 대체.
+    var roadCats = catArr.filter(function (id) { return ROAD_CATS[id]; });
+    var otherCats = catArr.filter(function (id) { return !ROAD_CATS[id]; });
+
+    var blocks = [];
+    if (roadCats.length > 0) {
+      if (colorMode === 'severity') {
+        var roadLabel = roadCats.map(function (id) { return CATEGORY_LABEL[id]; }).join(' · ') + ' (심각도)';
+        blocks.push(
+          '<div class="gc-legend-group">' +
+            '<div class="gc-legend-group-title">' + roadLabel + '</div>' +
+            '<div class="gc-legend-list">' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch gc-legend-swatch--sev-high"></span>고위험</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch gc-legend-swatch--sev-warn"></span>주의</div>' +
+              '<div class="gc-legend-item"><span class="gc-legend-swatch gc-legend-swatch--sev-good"></span>양호</div>' +
+            '</div>' +
+          '</div>'
+        );
+      } else {
+        roadCats.forEach(function (id) {
+          var b = paletteBlockHtml(id);
+          if (b) blocks.push(wrapBlockWithTitle(id, b));
+        });
+      }
+    }
+    otherCats.forEach(function (id) {
+      if (FEED_CROP_CATS[id]) {
+        // 2개 그룹: 탐지결과 + 사료작물 정보(그레이 단일)
+        var phaseLabel = id === 'feed_crop_growth' ? '사료작물(생육기) 탐지결과' : '사료작물(생산기) 탐지결과';
+        var resultBlock = paletteBlockHtml(id);
+        if (resultBlock) blocks.push(wrapBlockWithLabel(phaseLabel, resultBlock));
+        var infoBlock = '<div class="gc-legend-list">' +
+          '<div class="gc-legend-item"><span class="gc-legend-swatch gc-legend-swatch--feed-crop"></span>사료작물</div>' +
         '</div>';
+        blocks.push(wrapBlockWithLabel('사료작물 정보', infoBlock));
+        return;
+      }
+      var b = paletteBlockHtml(id);
+      if (b) blocks.push(wrapBlockWithTitle(id, b));
+    });
+
+    if (blocks.length === 0) {
+      container.innerHTML = '<div class="gc-legend-empty">선택된 과제의 클래스 범례가 등록되지 않았어요</div>';
     } else {
-      container.innerHTML =
-        '<div class="gc-legend-two-col">' +
-          '<div>' +
-            '<div class="gc-legend-col-title">정사영상</div>' +
-            '<div class="gc-legend-list">' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(230,57,70,0.40);border-color:#E63946;"></span>포트홀</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(244,162,97,0.38);border-color:#F4A261;"></span>크랙</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(42,157,143,0.38);border-color:#2A9D8F;"></span>보수흔적</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(155,93,229,0.38);border-color:#9B5DE5;"></span>공동의심</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch" style="background:rgba(255,183,3,0.36);border-color:#FFB703;"></span>쓰레기</div>' +
-            '</div>' +
-          '</div>' +
-          '<div>' +
-            '<div class="gc-legend-col-title">카메라</div>' +
-            '<div class="gc-legend-list">' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#E63946;"></span>포트홀</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#F4A261;"></span>중앙분리대</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#2A9D8F;"></span>시선유도봉</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#9B5DE5;"></span>보행시설</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#FFB703;"></span>교통표지판</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#00B4D8;"></span>차선불량</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#F15BB5;"></span>컬러맨홀</div>' +
-              '<div class="gc-legend-item"><span class="gc-legend-swatch pin" style="background:#8AC926;"></span>불법주정차</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
+      container.innerHTML = '<div class="gc-legend-groups-h">' + blocks.join('') + '</div>';
     }
   }
 
-  function getFilteredJobs() {
-    return jobsData.jobs.filter(function (j) {
-      if (activeTypeFilter !== 'all' && j.source_type !== activeTypeFilter) return false;
-      return true;
+  function wrapBlockWithTitle(id, blockHtml) {
+    return wrapBlockWithLabel(CATEGORY_LABEL[id], blockHtml);
+  }
+
+  function wrapBlockWithLabel(label, blockHtml) {
+    return '<div class="gc-legend-group">' +
+      '<div class="gc-legend-group-title">' + label + '</div>' +
+      blockHtml +
+    '</div>';
+  }
+
+  function paletteBlockHtml(id) {
+    var palette = CATEGORY_CLASS_PALETTE[id];
+    if (!palette) return '';
+    var html = '<div class="gc-legend-list">';
+    palette.items.forEach(function (it) {
+      if (palette.shape === 'pin') {
+        html += '<div class="gc-legend-item"><span class="gc-legend-swatch pin gc-legend-swatch--pin-data" style="--swatch-bg:' + it.color + '"></span>' + it.label + '</div>';
+      } else {
+        var rgb = hexToRgb(it.color);
+        var fill = 'rgba(' + rgb + ',0.38)';
+        html += '<div class="gc-legend-item"><span class="gc-legend-swatch gc-legend-swatch--data" style="--swatch-bg:' + fill + ';--swatch-border:' + it.color + '"></span>' + it.label + '</div>';
+      }
     });
+    html += '</div>';
+    return html;
+  }
+
+  function hexToRgb(hex) {
+    var h = hex.replace('#', '');
+    var n = parseInt(h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(',');
+  }
+
+  // 우측 통계 패널이 쓰는 클래스 규격 — 카테고리별로 다름
+  var FC_CLASSES_HARVEST = [
+    { key: 'IRG', label: 'IRG(생산기)', color: '#744700' },
+    { key: 'Rye', label: '호밀(생산기)', color: '#8fce00' },
+    { key: 'Corn', label: '옥수수(생산기)', color: '#16537e' },
+    { key: 'Sudan_Grass', label: '수단그라스(생산기)', color: '#c90076' }
+  ];
+  var FC_CLASSES_GROWTH = [
+    { key: 'IRG', label: 'IRG(생육기)', color: '#f44336' },
+    { key: 'Rye', label: '호밀(생육기)', color: '#ce7e00' },
+    { key: 'Corn', label: '옥수수(생육기)', color: '#2986cc' },
+    { key: 'Sudan_Grass', label: '수단그라스(생육기)', color: '#6a329f' }
+  ];
+  var FARMLAND_CLASSES = [
+    { key: 'Cultivated', label: '경작지', color: '#38761d' },
+    { key: 'Uncultivated', label: '비경작지', color: '#134f5c' }
+  ];
+  var SILAGE_BALE_CLASSES = [
+    { key: 'Silage_Bale', label: '곤포사일리지', color: '#bf9000' }
+  ];
+  function FC_CLASS_KEYS() {
+    var cat = activeCategoryOfDetail();
+    if (cat === 'feed_crop_growth') return FC_CLASSES_GROWTH;
+    if (cat === 'farmland') return FARMLAND_CLASSES;
+    if (cat === 'silage_bale') return SILAGE_BALE_CLASSES;
+    return FC_CLASSES_HARVEST;
+  }
+  // 체크된 클래스 (기본 전체 — key 기반으로 카테고리별 자동 전환)
+  var fcEnabledClasses = new Set(['IRG', 'Rye', 'Corn', 'Sudan_Grass', 'Cultivated', 'Uncultivated', 'Silage_Bale']);
+
+  function renderStatsPanel() {
+    buildFcCheckList();
+    renderFcOverview();
+    renderFcPie();
+    renderFcRegion();
+  }
+
+  // ====== 곤포사일리지 전용 패널 ======
+  // 2권역 레퍼런스 기준 지역별 개체 수 — 실제 분포 (데모용)
+  var SB_REGION_DIST = [
+    { region: '고죽동', count: 12 },
+    { region: '대산면', count: 112 },
+    { region: '신정동', count: 2 },
+    { region: '어현동', count: 6 },
+    { region: '화정동', count: 42 }
+  ];
+  // 곤포 1개당 평균 중량(kg) — 분석 개요 생산량 환산
+  var SB_WEIGHT_PER_BALE = 500;
+
+  function renderSilagePanel() {
+    // 분석 개요 — 선택된 silage_bale job들의 Silage_Bale 합계 기반
+    var totalBales = 0;
+    if (jobsData && jobsData.jobs) {
+      jobsData.jobs.forEach(function (j) {
+        if (!selectedJobIds.has(j.job_id)) return;
+        if (jobCategory(j) !== 'silage_bale') return;
+        var s = j.class_summary || {};
+        totalBales += s.Silage_Bale || 0;
+      });
+    }
+    var countEl = document.getElementById('sb-count');
+    var yieldEl = document.getElementById('sb-yield');
+    if (countEl) countEl.textContent = formatInt(totalBales);
+    if (yieldEl) yieldEl.textContent = formatInt(totalBales * SB_WEIGHT_PER_BALE);
+
+    renderSbPnuHist(totalBales);
+    renderSbRegion();
+  }
+
+  // PNU(필지)별 탐지 개수 분포 — 파이 차트 (0개가 대부분, 소수만 탐지)
+  var SB_PNU_BUCKETS = [
+    { label: '0개',     color: '#CED4DA', pct: 0.92 },
+    { label: '1~4개',   color: '#F5B7B1', pct: 0.04 },
+    { label: '5~9개',   color: '#F9E79F', pct: 0.02 },
+    { label: '10~14개', color: '#A9CCE3', pct: 0.015 },
+    { label: '15개 이상', color: '#D2B4DE', pct: 0.005 }
+  ];
+
+  function renderSbPnuHist(totalBales) {
+    var canvas = document.getElementById('sb-pnu-hist');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    var cssW = canvas.clientWidth || canvas.width;
+    var cssH = canvas.clientHeight || canvas.height;
+    canvas.width = cssW * dpr;
+    canvas.height = cssH * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssW, cssH);
+
+    if (totalBales === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '12px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('데이터 없음', cssW / 2, cssH / 2);
+      return;
+    }
+
+    // 파이: 좌측 정사각 영역, 우측은 범례
+    var cx = cssH / 2 + 4, cy = cssH / 2;
+    var r = Math.min(cx - 4, cy - 4);
+    var start = -Math.PI / 2;
+    SB_PNU_BUCKETS.forEach(function (b) {
+      if (b.pct <= 0) return;
+      var sweep = b.pct * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, start, start + sweep);
+      ctx.closePath();
+      ctx.fillStyle = b.color;
+      ctx.fill();
+      // 조각 경계 — 얇은 흰 테두리
+      ctx.lineWidth = 0.5;
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+      ctx.stroke();
+      start += sweep;
+    });
+
+    // 우측 범례
+    var labelX = cssH + 14;
+    var rowH = 20;
+    var startY = cssH / 2 - (SB_PNU_BUCKETS.length * rowH) / 2 + rowH / 2;
+    ctx.textBaseline = 'middle';
+    ctx.font = '12px Inter, sans-serif';
+    SB_PNU_BUCKETS.forEach(function (b, i) {
+      var y = startY + i * rowH;
+      ctx.fillStyle = b.color;
+      ctx.fillRect(labelX, y - 6, 14, 12);
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(labelX, y - 6, 14, 12);
+      ctx.fillStyle = 'rgba(255,255,255,0.82)';
+      ctx.textAlign = 'left';
+      ctx.fillText(b.label, labelX + 22, y);
+    });
+  }
+
+  function renderSbRegion() {
+    var tbody = document.querySelector('#sb-region-table tbody');
+    if (!tbody) return;
+    var total = SB_REGION_DIST.reduce(function (a, b) { return a + b.count; }, 0);
+    var rows = SB_REGION_DIST.map(function (r) {
+      var pct = total > 0 ? Math.round(r.count / total * 100) : 0;
+      return '<tr><td>' + r.region + '</td><td class="num">' + formatInt(r.count) + '</td><td class="bar-cell"><span class="fc-bar fc-bar--data" style="--bar-pct:' + pct + '%"></span></td></tr>';
+    });
+    tbody.innerHTML = rows.length > 0 ? rows.join('') : '<tr><td colspan="3" class="fc-table-empty">선택된 작업이 없어요</td></tr>';
+  }
+
+  function buildFcCheckList() {
+    var wrap = document.getElementById('fc-check-list');
+    if (!wrap) return;
+    var mode = activeCategoryOfDetail() || 'feed_crop_harvest';
+    var firstBuild = wrap.dataset.built !== '1';
+    // 이미 현재 모드로 구성되어 있으면 체크 상태만 갱신
+    if (!firstBuild && wrap.dataset.mode === mode) {
+      FC_CLASS_KEYS().forEach(function (c) {
+        var cb = wrap.querySelector('input[data-key="' + c.key + '"]');
+        if (cb) cb.checked = fcEnabledClasses.has(c.key);
+      });
+      document.getElementById('fc-check-all').checked = fcEnabledClasses.size === FC_CLASS_KEYS().length;
+      return;
+    }
+    wrap.innerHTML = FC_CLASS_KEYS().map(function (c) {
+      return '<label class="fc-check">' +
+        '<input type="checkbox" data-key="' + c.key + '"' + (fcEnabledClasses.has(c.key) ? ' checked' : '') + '>' +
+        '<span class="fc-dot fc-dot--data" style="--dot-bg:' + c.color + '"></span>' +
+        '<span class="fc-lbl">' + c.label + '</span>' +
+      '</label>';
+    }).join('');
+    wrap.dataset.built = '1';
+    wrap.dataset.mode = mode;
+    // 이벤트 바인딩은 최초 1회만 — 이후 innerHTML 교체는 이벤트 위임으로 처리
+    if (!firstBuild) return;
+
+    wrap.addEventListener('change', function (e) {
+      var cb = e.target.closest('input[type="checkbox"][data-key]');
+      if (!cb) return;
+      var k = cb.dataset.key;
+      if (cb.checked) fcEnabledClasses.add(k);
+      else fcEnabledClasses.delete(k);
+      document.getElementById('fc-check-all').checked = fcEnabledClasses.size === FC_CLASS_KEYS().length;
+      renderFcOverview(); renderFcPie(); renderFcRegion();
+    });
+    document.getElementById('fc-check-all').addEventListener('change', function () {
+      if (this.checked) FC_CLASS_KEYS().forEach(function (c) { fcEnabledClasses.add(c.key); });
+      else fcEnabledClasses.clear();
+      wrap.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+        cb.checked = fcEnabledClasses.has(cb.dataset.key);
+      });
+      renderFcOverview(); renderFcPie(); renderFcRegion();
+    });
+    document.getElementById('fc-search-btn').addEventListener('click', function () {
+      renderFcOverview(); renderFcPie(); renderFcRegion();
+    });
+  }
+
+  // 선택된 job들의 class별 면적 합계 (체크된 클래스만)
+  function fcTotals() {
+    var totals = {};
+    FC_CLASS_KEYS().forEach(function (c) { totals[c.key] = 0; });
+    jobsData.jobs.forEach(function (j) {
+      if (!selectedJobIds.has(j.job_id)) return;
+      if (!STATS_PANEL_CATS[jobCategory(j)]) return;
+      var s = j.class_summary || {};
+      FC_CLASS_KEYS().forEach(function (c) {
+        if (!fcEnabledClasses.has(c.key)) return;
+        totals[c.key] += s[c.key] || 0;
+      });
+    });
+    return totals;
+  }
+
+  function renderFcOverview() {
+    var totals = fcTotals();
+    var tbody = document.querySelector('#fc-overview-table tbody');
+    if (!tbody) return;
+    var rows = FC_CLASS_KEYS().map(function (c) {
+      var v = totals[c.key] || 0;
+      var disabled = !fcEnabledClasses.has(c.key);
+      return '<tr' + (disabled ? ' class="muted"' : '') + '>' +
+        '<td><span class="fc-dot fc-dot--data" style="--dot-bg:' + c.color + '"></span>' + c.label + '</td>' +
+        '<td class="num">' + (disabled ? '-' : formatInt(v)) + '</td>' +
+      '</tr>';
+    });
+    tbody.innerHTML = rows.join('');
+    var total = FC_CLASS_KEYS().reduce(function (a, c) { return a + (totals[c.key] || 0); }, 0);
+    document.getElementById('fc-overview-total').textContent = formatInt(total);
+  }
+
+  function renderFcPie() {
+    var canvas = document.getElementById('fc-pie');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    var cssW = canvas.clientWidth || canvas.width;
+    var cssH = canvas.clientHeight || canvas.height;
+    canvas.width = cssW * dpr;
+    canvas.height = cssH * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssW, cssH);
+
+    var totals = fcTotals();
+    var total = FC_CLASS_KEYS().reduce(function (a, c) { return a + (totals[c.key] || 0); }, 0);
+
+    if (total === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '12px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('데이터 없음', cssW / 2, cssH / 2);
+      return;
+    }
+
+    var cx = cssH / 2 + 4, cy = cssH / 2;
+    var r = Math.min(cx - 4, cy - 4);
+    var start = -Math.PI / 2;
+    FC_CLASS_KEYS().forEach(function (c) {
+      var v = totals[c.key] || 0;
+      if (v === 0) return;
+      var sweep = (v / total) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, start, start + sweep);
+      ctx.closePath();
+      ctx.fillStyle = c.color;
+      ctx.fill();
+      // 조각 사이 얇은 흰 테두리 — 채도 높은 색이 맞닿아 생기는 시각 피로 완화
+      ctx.lineWidth = 0.5;
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+      ctx.stroke();
+      start += sweep;
+    });
+
+    // 우측 범례
+    var labelX = cssH + 14;
+    var rowH = 22;
+    var visible = FC_CLASS_KEYS().filter(function (c) { return (totals[c.key] || 0) > 0; });
+    var startY = cssH / 2 - (visible.length * rowH) / 2 + rowH / 2;
+    ctx.textBaseline = 'middle';
+    ctx.font = '11px Inter, sans-serif';
+    visible.forEach(function (c, i) {
+      var y = startY + i * rowH;
+      ctx.fillStyle = c.color;
+      ctx.fillRect(labelX, y - 5, 14, 10);
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.textAlign = 'left';
+      var maxTextW = cssW - (labelX + 22) - 4;
+      var lbl = c.label;
+      if (ctx.measureText(lbl).width > maxTextW) {
+        while (ctx.measureText(lbl + '...').width > maxTextW && lbl.length > 2) {
+          lbl = lbl.slice(0, -1);
+        }
+        lbl += '...';
+      }
+      ctx.fillText(lbl, labelX + 20, y);
+    });
+  }
+
+  function renderFcRegion() {
+    var tbody = document.querySelector('#fc-region-table tbody');
+    if (!tbody) return;
+    var byRegion = {};
+    jobsData.jobs.forEach(function (j) {
+      if (!selectedJobIds.has(j.job_id)) return;
+      if (!STATS_PANEL_CATS[jobCategory(j)]) return;
+      var sum = 0;
+      var s = j.class_summary || {};
+      FC_CLASS_KEYS().forEach(function (c) {
+        if (!fcEnabledClasses.has(c.key)) return;
+        sum += s[c.key] || 0;
+      });
+      byRegion[j.region] = (byRegion[j.region] || 0) + sum;
+    });
+    var total = Object.keys(byRegion).reduce(function (a, k) { return a + byRegion[k]; }, 0);
+    var rows = Object.keys(byRegion).map(function (k) {
+      var v = byRegion[k];
+      var pct = total > 0 ? Math.round(v / total * 100) : 0;
+      return '<tr><td>' + k + '</td><td class="num">' + formatInt(v) + '</td><td class="bar-cell"><span class="fc-bar fc-bar--data" style="--bar-pct:' + pct + '%"></span></td></tr>';
+    });
+    tbody.innerHTML = rows.length > 0 ? rows.join('') : '<tr><td colspan="3" class="fc-table-empty">선택된 작업이 없어요</td></tr>';
+  }
+
+  function formatInt(n) {
+    return Number(n).toLocaleString('ko-KR');
+  }
+
+  // ====== 하단 행정정보 테이블 (사료작물 생산기) ======
+  var FC_ADMIN_ROWS = [
+    { no: 1,  corp: '농업회사법인 은한영농 주식회사', owner: '이*진', loc: '농업회사법인 은한영농', workYm: '아*진', farm: '감*옥', mgmtNo: '1000518227', applyArea: 2619, applyCrop: '호밀', irg: 0, rye: 0, sudan: 0, corn: 0, yield: 0 },
+    { no: 2,  corp: '농업회사법인 은한영농 주식회사', owner: '이*진', loc: '농업회사법인 은한영농', workYm: '아*진', farm: '감*옥', mgmtNo: '1000518227', applyArea: 3895, applyCrop: '호밀', irg: 0, rye: 0, sudan: 0, corn: 0, yield: 0 },
+    { no: 3,  corp: '농업회사법인 은한영농 주식회사', owner: '이*진', loc: '농업회사법인 은한영농', workYm: '아*진', farm: '감*옥', mgmtNo: '1000518227', applyArea: 1492, applyCrop: '호밀', irg: 0, rye: 0, sudan: 0, corn: 0, yield: 0 },
+    { no: 4,  corp: '농업회사법인 은한영농 주식회사', owner: '이*진', loc: '농업회사법인 은한영농', workYm: '아*진', farm: '감*옥', mgmtNo: '1000518227', applyArea: 604,  applyCrop: '호밀', irg: 0, rye: 0, sudan: 0, corn: 0, yield: 0 },
+    { no: 5,  corp: '농업회사법인 은한영농 주식회사', owner: '이*진', loc: '농업회사법인 은한영농', workYm: '아*진', farm: '감*옥', mgmtNo: '1000518227', applyArea: 85,   applyCrop: '호밀', irg: 0, rye: 0, sudan: 0, corn: 0, yield: 0 },
+    { no: 6,  corp: '농업회사법인 은한영농 주식회사', owner: '이*진', loc: '농업회사법인 은한영농', workYm: '아*진', farm: '감*옥', mgmtNo: '1000518227', applyArea: 22,   applyCrop: '호밀', irg: 0, rye: 0, sudan: 0, corn: 0, yield: 0 },
+    { no: 7,  corp: '농업회사법인 은한영농 주식회사', owner: '이*진', loc: '농업회사법인 은한영농', workYm: '아*진', farm: '감*옥', mgmtNo: '1000518227', applyArea: 2759, applyCrop: '호밀', irg: 0, rye: 0, sudan: 0, corn: 0, yield: 0 },
+    { no: 8,  corp: '농업회사법인 은한영농 주식회사', owner: '이*진', loc: '농업회사법인 은한영농', workYm: '아*진', farm: '감*옥', mgmtNo: '1000518227', applyArea: 2697, applyCrop: '호밀', irg: 0, rye: 0, sudan: 0, corn: 0, yield: 0 },
+    { no: 9,  corp: '농업회사법인 은한영농 주식회사', owner: '이*진', loc: '농업회사법인 은한영농', workYm: '아*진', farm: '감*옥', mgmtNo: '1000515705', applyArea: 1718, applyCrop: '호밀', irg: 0, rye: 0, sudan: 0, corn: 0, yield: 0 },
+    { no: 10, corp: '농업회사법인 은한영농 주식회사', owner: '이*진', loc: '농업회사법인 은한영농', workYm: '아*진', farm: '감*옥', mgmtNo: '1000515705', applyArea: 1402, applyCrop: '호밀', irg: 0, rye: 0, sudan: 0, corn: 0, yield: 0 }
+  ];
+
+  var FC_ADMIN_THEAD =
+    '<tr class="bp-group-row">' +
+      '<th colspan="9" class="group-head">행정정보</th>' +
+      '<th colspan="4" class="group-head">AI 분석 면적(㎡)</th>' +
+      '<th rowspan="2">AI 생산량(kg)</th>' +
+    '</tr>' +
+    '<tr>' +
+      '<th>연번</th><th>경영체명</th><th>경영주명</th><th>위치/작업지명</th>' +
+      '<th>작업년월</th><th>재배사명</th><th>농업경영체번호</th><th>신청면적(㎡)</th><th>신청재배작물</th>' +
+      '<th>IRG</th><th>호밀</th><th>수단그라스</th><th>옥수수</th>' +
+    '</tr>';
+
+  // ====== 하단 행정정보 테이블 (농지 활용 분석) ======
+  // 필지(지번) 단위 AI 경작/비경작 면적 결과
+  var FL_ADMIN_ROWS = [
+    { no: 1,  dong: '동충동', ri: '-', san: '-', bon: 222,  bu: 3, cult: 1820, uncult: 0,    note: '-' },
+    { no: 2,  dong: '동충동', ri: '-', san: '-', bon: 356,  bu: '-', cult: 2340, uncult: 120,  note: '-' },
+    { no: 3,  dong: '동충동', ri: '-', san: '-', bon: 387,  bu: 6, cult: 980,  uncult: 64,   note: '-' },
+    { no: 4,  dong: '동충동', ri: '-', san: '-', bon: 419,  bu: 5, cult: 0,    uncult: 1560, note: '휴경' },
+    { no: 5,  dong: '동충동', ri: '-', san: '-', bon: 426,  bu: 8, cult: 2110, uncult: 0,    note: '-' },
+    { no: 6,  dong: '죽항동', ri: '-', san: '-', bon: 526,  bu: '-', cult: 3450, uncult: 0,    note: '-' },
+    { no: 7,  dong: '죽항동', ri: '-', san: '-', bon: 521,  bu: 4, cult: 1270, uncult: 180,  note: '-' },
+    { no: 8,  dong: '죽항동', ri: '-', san: '-', bon: 311,  bu: '-', cult: 0,    uncult: 2080, note: '휴경' },
+    { no: 9,  dong: '금동',   ri: '-', san: '-', bon: 249,  bu: 3, cult: 4120, uncult: 0,    note: '-' },
+    { no: 10, dong: '금동',   ri: '-', san: '-', bon: 2831, bu: 9, cult: 2630, uncult: 280,  note: '-' }
+  ];
+
+  var FL_ADMIN_THEAD =
+    '<tr>' +
+      '<th>연번</th>' +
+      '<th>읍면동</th>' +
+      '<th>리</th>' +
+      '<th>산</th>' +
+      '<th>본번</th>' +
+      '<th>부번</th>' +
+      '<th>AI 경작 면적(㎡)</th>' +
+      '<th>AI 비경작 면적(㎡)</th>' +
+      '<th>비고</th>' +
+    '</tr>';
+
+  // ====== 하단 행정정보 테이블 (곤포사일리지) ======
+  // 경영체·위탁작업단 단위 필지별 AI 곤포사일리지 탐지 결과
+  var SB_ADMIN_ROWS = [
+    { no: 1,  corp: '완초영농조합법인', rep: '김*수', unit: '완초영농조합법인', unitRep: '김*수', farmer: '조*희', mgmtNo: '1002694720', applyArea: 1484, applyCrop: 'IRG', silage: '무', baleCnt: 0, aiYield: 0 },
+    { no: 2,  corp: '완초영농조합법인', rep: '김*수', unit: '완초영농조합법인', unitRep: '김*수', farmer: '조*희', mgmtNo: '1002694720', applyArea: 1107, applyCrop: 'IRG', silage: '무', baleCnt: 0, aiYield: 0 },
+    { no: 3,  corp: '완초영농조합법인', rep: '김*수', unit: '완초영농조합법인', unitRep: '김*수', farmer: '조*희', mgmtNo: '1002694720', applyArea: 1709, applyCrop: 'IRG', silage: '무', baleCnt: 0, aiYield: 0 },
+    { no: 4,  corp: '완초영농조합법인', rep: '김*수', unit: '완초영농조합법인', unitRep: '김*수', farmer: '조*희', mgmtNo: '1002694720', applyArea: 1570, applyCrop: 'IRG', silage: '무', baleCnt: 0, aiYield: 0 },
+    { no: 5,  corp: '완초영농조합법인', rep: '김*수', unit: '완초영농조합법인', unitRep: '김*수', farmer: '최*미', mgmtNo: '1001896885', applyArea: 2678, applyCrop: 'IRG', silage: '무', baleCnt: 0, aiYield: 0 },
+    { no: 6,  corp: '감성들영농조합법인', rep: '신*호', unit: '감성들영농조합법인', unitRep: '신*호', farmer: '황*연', mgmtNo: '1001140858', applyArea: 2303, applyCrop: 'IRG', silage: '무', baleCnt: 0, aiYield: 0 },
+    { no: 7,  corp: '감성들영농조합법인', rep: '신*호', unit: '감성들영농조합법인', unitRep: '신*호', farmer: '황*연', mgmtNo: '1001140858', applyArea: 2548, applyCrop: 'IRG', silage: '무', baleCnt: 0, aiYield: 0 },
+    { no: 8,  corp: '감성들영농조합법인', rep: '신*호', unit: '감성들영농조합법인', unitRep: '신*호', farmer: '황*연', mgmtNo: '1001140858', applyArea: 1152, applyCrop: 'IRG', silage: '무', baleCnt: 0, aiYield: 0 },
+    { no: 9,  corp: '감성들영농조합법인', rep: '신*호', unit: '감성들영농조합법인', unitRep: '신*호', farmer: '황*연', mgmtNo: '1001140858', applyArea: 942,  applyCrop: 'IRG', silage: '무', baleCnt: 0, aiYield: 0 },
+    { no: 10, corp: '감성들영농조합법인', rep: '신*호', unit: '감성들영농조합법인', unitRep: '신*호', farmer: '황*연', mgmtNo: '1001140858', applyArea: 3193, applyCrop: 'IRG', silage: '무', baleCnt: 0, aiYield: 0 }
+  ];
+
+  var SB_ADMIN_THEAD =
+    '<tr>' +
+      '<th>연번</th>' +
+      '<th>경영체명</th>' +
+      '<th>경영대표</th>' +
+      '<th>위탁작업단명</th>' +
+      '<th>작업단대표</th>' +
+      '<th>재배자명</th>' +
+      '<th>농업경영체번호</th>' +
+      '<th>신청면적(㎡)</th>' +
+      '<th>신청재배작물</th>' +
+      '<th>곤포사일리지 유무</th>' +
+      '<th>개수</th>' +
+      '<th>AI 생산량(kg)</th>' +
+    '</tr>';
+
+  // 카테고리별 하단 테이블 검색 필드 옵션
+  var BP_SEARCH_FIELDS = {
+    feed_crop_harvest: ['전체', '경영체명', '경영주명', '농업경영체번호', '작업지명'],
+    feed_crop_growth:  ['전체', '경영체명', '경영주명', '농업경영체번호', '작업지명'],
+    farmland:          ['전체', '읍면동', '리', '산', '본번', '부번'],
+    silage_bale: [
+      '전체', '연번', '구분', '경영체명', '경영대표', '위탁작업단명', '작업단대표',
+      '재배자명', '주소', '농업경영체번호', '생년월일', '연락처',
+      '읍면동', '리', '산', '본번', '부번', '신청면적(㎡)', '신청재배작물'
+    ]
+  };
+
+  function renderBottomPanel() {
+    var panel = document.getElementById('bottom-panel');
+    if (!panel) return;
+    var wrapper = document.querySelector('.map-wrapper');
+    var cat = activeCategoryOfDetail();
+    var show = !!ADMIN_TABLE_CATS[cat];
+    panel.hidden = !show;
+    if (wrapper) wrapper.classList.toggle('bottom-open', show);
+    if (!show) return;
+
+    // 검색 필드 드롭다운 — 카테고리별 옵션 주입
+    var searchSelect = document.getElementById('bp-search-field');
+    if (searchSelect) {
+      var opts = BP_SEARCH_FIELDS[cat] || ['전체'];
+      if (searchSelect.dataset.cat !== cat) {
+        searchSelect.innerHTML = opts.map(function (o) {
+          return '<option>' + o + '</option>';
+        }).join('');
+        searchSelect.dataset.cat = cat;
+      }
+    }
+
+    var detailJob = jobsData.jobs.find(function (j) { return j.job_id === detailJobId; });
+    var titleEl = document.getElementById('bp-title');
+    if (titleEl && detailJob) {
+      var crumbs;
+      if (cat === 'farmland') {
+        crumbs = { catLabel: '농지 활용 분석', modelLabel: 'YOLO V11-농지 활용 분석' };
+      } else if (cat === 'silage_bale') {
+        crumbs = { catLabel: '곤포사일리지 탐지', modelLabel: 'YOLOv11-곤포사일리지' };
+      } else if (cat === 'feed_crop_growth') {
+        crumbs = { catLabel: '사료작물(생육기) 탐지', modelLabel: 'YOLOv11-4종-생육' };
+      } else {
+        crumbs = { catLabel: '사료작물(생산기) 탐지', modelLabel: 'YOLOv11-4종-생산' };
+      }
+      titleEl.innerHTML =
+        '<span class="bp-crumb">' + crumbs.catLabel + '</span>' +
+        '<span class="bp-sep">›</span>' +
+        '<span class="bp-crumb">' + crumbs.modelLabel + '</span>' +
+        '<span class="bp-sep">›</span>' +
+        '<span class="bp-crumb current">' + (detailJob.source_label || detailJob.source_name) + '</span>';
+    }
+
+    var thead = document.querySelector('#bp-table thead');
+    var tbody = document.querySelector('#bp-table tbody');
+    var countEl = document.getElementById('bp-count');
+
+    if (cat === 'farmland') {
+      thead.innerHTML = FL_ADMIN_THEAD;
+      tbody.innerHTML = FL_ADMIN_ROWS.map(function (r) {
+        return '<tr>' +
+          '<td class="num">' + r.no + '</td>' +
+          '<td>' + r.dong + '</td>' +
+          '<td>' + r.ri + '</td>' +
+          '<td>' + r.san + '</td>' +
+          '<td class="num">' + r.bon + '</td>' +
+          '<td class="num">' + r.bu + '</td>' +
+          '<td class="num">' + formatInt(r.cult) + '</td>' +
+          '<td class="num">' + formatInt(r.uncult) + '</td>' +
+          '<td>' + r.note + '</td>' +
+        '</tr>';
+      }).join('');
+      if (countEl) countEl.textContent = '총 ' + FL_ADMIN_ROWS.length + '건 중 1~' + FL_ADMIN_ROWS.length + '행';
+    } else if (cat === 'silage_bale') {
+      thead.innerHTML = SB_ADMIN_THEAD;
+      tbody.innerHTML = SB_ADMIN_ROWS.map(function (r) {
+        return '<tr>' +
+          '<td class="num">' + r.no + '</td>' +
+          '<td>' + r.corp + '</td>' +
+          '<td>' + r.rep + '</td>' +
+          '<td>' + r.unit + '</td>' +
+          '<td>' + r.unitRep + '</td>' +
+          '<td>' + r.farmer + '</td>' +
+          '<td>' + r.mgmtNo + '</td>' +
+          '<td class="num">' + formatInt(r.applyArea) + '</td>' +
+          '<td>' + r.applyCrop + '</td>' +
+          '<td>' + r.silage + '</td>' +
+          '<td class="num">' + formatInt(r.baleCnt) + '</td>' +
+          '<td class="num">' + formatInt(r.aiYield) + '</td>' +
+        '</tr>';
+      }).join('');
+      if (countEl) countEl.textContent = '총 ' + SB_ADMIN_ROWS.length + '건 중 1~' + SB_ADMIN_ROWS.length + '행';
+    } else {
+      // 사료작물 (생육기/생산기 공용 행정정보)
+      thead.innerHTML = FC_ADMIN_THEAD;
+      // sticky 2차 헤더 top 보정
+      requestAnimationFrame(function () {
+        var firstRow = document.querySelector('#bp-table .bp-group-row');
+        if (!firstRow) return;
+        var h = firstRow.getBoundingClientRect().height;
+        document.querySelectorAll('#bp-table thead tr:nth-child(2) th').forEach(function (th) {
+          th.style.top = h + 'px';
+        });
+      });
+      tbody.innerHTML = FC_ADMIN_ROWS.map(function (r) {
+        return '<tr>' +
+          '<td class="num">' + r.no + '</td>' +
+          '<td>' + r.corp + '</td>' +
+          '<td>' + r.owner + '</td>' +
+          '<td>' + r.loc + '</td>' +
+          '<td>' + r.workYm + '</td>' +
+          '<td>' + r.farm + '</td>' +
+          '<td>' + r.mgmtNo + '</td>' +
+          '<td class="num">' + formatInt(r.applyArea) + '</td>' +
+          '<td>' + r.applyCrop + '</td>' +
+          '<td class="num">' + formatInt(r.irg) + '</td>' +
+          '<td class="num">' + formatInt(r.rye) + '</td>' +
+          '<td class="num">' + formatInt(r.sudan) + '</td>' +
+          '<td class="num">' + formatInt(r.corn) + '</td>' +
+          '<td class="num">' + formatInt(r.yield) + '</td>' +
+        '</tr>';
+      }).join('');
+      if (countEl) countEl.textContent = '총 166건 중 1~' + FC_ADMIN_ROWS.length + '행';
+    }
+  }
+
+  function initBottomPanel() {
+    var toggle = document.getElementById('bp-search-toggle');
+    var row = document.getElementById('bp-search-row');
+    var closeBtn = document.getElementById('bp-close');
+    if (toggle && row) {
+      var label = toggle.querySelector('.bp-search-label');
+      toggle.addEventListener('click', function () {
+        var open = row.hidden;
+        row.hidden = !open;
+        if (label) label.textContent = open ? '검색 닫기' : '검색';
+      });
+    }
+    var collapseBtn = document.getElementById('bp-collapse-toggle');
+    if (collapseBtn) {
+      var collapseLabel = collapseBtn.querySelector('.bp-collapse-label');
+      collapseBtn.addEventListener('click', function () {
+        var panel = document.getElementById('bottom-panel');
+        var collapsed = panel.classList.toggle('collapsed');
+        if (collapseLabel) collapseLabel.textContent = collapsed ? '행정정보 펼치기' : '행정정보 접기';
+      });
+    }
+  }
+
+  function initPanelToggles() {
+    var wrapper = document.querySelector('.map-wrapper');
+    if (!wrapper) return;
+
+    var leftBtn = document.getElementById('panel-toggle-left');
+    var rightBtn = document.getElementById('panel-toggle-right');
+
+    function updateLabels() {
+      if (leftBtn) {
+        leftBtn.querySelector('.panel-toggle-label').textContent =
+          wrapper.classList.contains('left-hidden') ? '설정 패널 펼치기' : '설정 패널 접기';
+      }
+      if (rightBtn) {
+        rightBtn.querySelector('.panel-toggle-label').textContent =
+          wrapper.classList.contains('right-hidden') ? '분석 결과 펼치기' : '분석 결과 접기';
+      }
+    }
+
+    if (leftBtn) leftBtn.addEventListener('click', function () {
+      wrapper.classList.toggle('left-hidden');
+      updateLabels();
+    });
+    if (rightBtn) rightBtn.addEventListener('click', function () {
+      wrapper.classList.toggle('right-hidden');
+      updateLabels();
+    });
+    updateLabels();
+  }
+
+  // 선택된 잡들만 반환 (아코디언 구조에서 필터는 '선택' 기준)
+  function getFilteredJobs() {
+    return jobsData.jobs.filter(function (j) { return selectedJobIds.has(j.job_id); });
   }
 
   function getActiveDetections() {
     if (!detectionsData) return [];
-    // job_id → source_type 매핑
     var idToJobType = {};
     jobsData.jobs.forEach(function (j) {
       if (!selectedJobIds.has(j.job_id)) return;
-      if (activeTypeFilter !== 'all' && j.source_type !== activeTypeFilter) return;
+      // 도로안전 카테고리 작업만 지도 클러스터링/포인트 대상으로 사용
+      // (사료작물·농지활용·곤포사일리지 등은 포인트 시각화 없음)
+      if (!ROAD_CATS[jobCategory(j)]) return;
       j.detection_ids.forEach(function (id) { idToJobType[id] = j.source_type; });
     });
 
@@ -1117,68 +2076,149 @@
 
   function renderJobList() {
     var container = document.getElementById('job-list-container');
+    // 재렌더링 시 스크롤 위치 보존 — 체크하던 위치가 튀지 않도록
+    var prevScroll = container.scrollTop;
     container.innerHTML = '';
 
-    var jobs = getFilteredJobs();
-    jobs.forEach(function (job) {
-      var el = document.createElement('div');
-      el.className = 'job-list-item' + (selectedJobIds.has(job.job_id) ? ' active' : '');
-      var typeBadge = job.source_type === 'orthophoto' ? 'ortho' : 'cam';
-      var typeLabel = job.source_type === 'orthophoto' ? '정사' : '카메라';
-
-      el.innerHTML =
-        '<input type="checkbox" ' + (selectedJobIds.has(job.job_id) ? 'checked' : '') + '>' +
-        '<div class="job-list-info">' +
-          '<div class="job-list-name">' + (job.source_label || job.source_name) + '</div>' +
-          '<div class="job-list-meta">' + job.job_id + ' · 탐지 ' + job.detection_count + '건' + (job.high_count > 0 ? ' · 고위험 ' + job.high_count : '') + '</div>' +
-        '</div>' +
-        '<span class="job-list-badge ' + typeBadge + '">' + typeLabel + '</span>';
-
-      var checkbox = el.querySelector('input');
-      var toggle = function () {
-        var nowSelected = false;
-        if (selectedJobIds.has(job.job_id)) {
-          selectedJobIds.delete(job.job_id);
-          checkbox.checked = false;
-          el.classList.remove('active');
-        } else {
-          selectedJobIds.add(job.job_id);
-          checkbox.checked = true;
-          el.classList.add('active');
-          nowSelected = true;
-        }
-        updateMapLayers();
-        updateKPI();
-        // 새로 선택한 경우 해당 작업의 탐지 위치로 자동 이동
-        if (nowSelected) flyToJob(job);
-      };
-
-      el.addEventListener('click', function (e) {
-        if (e.target.tagName === 'INPUT') return;
-        toggle();
-      });
-      checkbox.addEventListener('change', toggle);
-
-      container.appendChild(el);
+    // 카테고리별 job 그룹화 (필터 반영)
+    var grouped = {};
+    CATEGORY_ORDER.forEach(function (c) { grouped[c.id] = []; });
+    jobsData.jobs.forEach(function (j) {
+      if (!passesJobFilter(j)) return;
+      var cat = jobCategory(j);
+      if (grouped[cat]) grouped[cat].push(j);
     });
 
-    var activeCount = jobs.filter(function (j) { return selectedJobIds.has(j.job_id); }).length;
-    document.getElementById('jobs-count-label').textContent = activeCount + ' / ' + jobs.length;
+    CATEGORY_ORDER.forEach(function (cat) {
+      var jobs = grouped[cat.id];
+      var expanded = expandedCategories.has(cat.id);
+      var selectedInCat = jobs.filter(function (j) { return selectedJobIds.has(j.job_id); }).length;
 
-    // 정사영상 다중 선택 시 경고 표시
-    var orthoSelected = jobsData.jobs
-      .filter(function (j) { return j.source_type === 'orthophoto' && selectedJobIds.has(j.job_id); })
-      .length;
-    var warn = document.getElementById('load-warning');
-    if (warn) {
-      if (orthoSelected >= 2) {
-        warn.style.display = 'flex';
-        document.getElementById('load-warning-text').textContent =
-          '정사영상 ' + orthoSelected + '개 선택 — 각 50GB+ 파일 로드로 시간이 오래 걸립니다';
-      } else {
-        warn.style.display = 'none';
+      var section = document.createElement('div');
+      section.className = 'cat-section' + (expanded ? ' expanded' : '');
+
+      var head = document.createElement('button');
+      head.type = 'button';
+      head.className = 'cat-head';
+      head.innerHTML =
+        '<svg class="cat-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+        '<span class="cat-name">' + cat.label + '</span>' +
+        '<span class="cat-count">' + (selectedInCat > 0 ? selectedInCat + '/' : '') + jobs.length + '</span>';
+      head.addEventListener('click', function () {
+        if (expandedCategories.has(cat.id)) expandedCategories.delete(cat.id);
+        else expandedCategories.add(cat.id);
+        renderJobList();
+      });
+      section.appendChild(head);
+
+      var body = document.createElement('div');
+      body.className = 'cat-body';
+
+      if (jobs.length === 0) {
+        var empty = document.createElement('div');
+        empty.className = 'job-list-empty';
+        empty.textContent = '분석된 작업이 없어요';
+        body.appendChild(empty);
+      }
+
+      jobs.forEach(function (job) {
+        var isChecked = selectedJobIds.has(job.job_id);
+        var isDetail = detailJobId === job.job_id;
+        var isExpanded = expandedJobs.has(job.job_id);
+        var el = document.createElement('div');
+        el.className = 'job-list-item' + (isChecked ? ' checked' : '') + (isDetail ? ' active' : '') + (isExpanded ? ' expanded' : '');
+
+        el.innerHTML =
+          '<input type="checkbox" ' + (isChecked ? 'checked' : '') + '>' +
+          '<button type="button" class="job-expand-btn" aria-label="레이어 펼치기">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+          '</button>' +
+          '<div class="job-list-info">' +
+            '<div class="job-list-name">' + (job.source_label || job.source_name) + '</div>' +
+          '</div>' +
+          (job.shared_from
+            ? '<span class="job-share-indicator" data-tooltip="공유받은 결과">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
+              '</span>'
+            : '') +
+          '<button type="button" class="detail-btn">자세히</button>';
+
+        var detailBtn = el.querySelector('.detail-btn');
+        detailBtn.addEventListener('click', function (e) { e.stopPropagation(); activateDetail(job); });
+
+        var expandBtn = el.querySelector('.job-expand-btn');
+        expandBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (expandedJobs.has(job.job_id)) expandedJobs.delete(job.job_id);
+          else expandedJobs.add(job.job_id);
+          renderJobList();
+        });
+
+        var checkbox = el.querySelector('input');
+        checkbox.addEventListener('change', function () { toggleJobCheck(job); });
+        el.addEventListener('click', function (e) {
+          if (e.target.tagName === 'INPUT') return;
+          if (e.target.closest('.detail-btn')) return;
+          if (e.target.closest('.job-expand-btn')) return;
+          if (e.target.closest('.job-share-btn')) return;
+          toggleJobCheck(job);
+        });
+
+        body.appendChild(el);
+
+        // 하위 레이어 (펼쳐진 경우)
+        if (isExpanded) {
+          var layers = getJobLayers(job);
+          var layerWrap = document.createElement('div');
+          layerWrap.className = 'job-layers';
+          layers.forEach(function (layer) {
+            var isVisible = !hiddenLayerIds.has(layer.id);
+            var row = document.createElement('div');
+            row.className = 'job-layer';
+            row.innerHTML =
+              '<input type="checkbox"' + (isVisible ? ' checked' : '') + '>' +
+              '<span class="layer-date">[' + layer.date + ']</span>' +
+              '<span class="layer-name">' + layer.label + '</span>';
+            var cb = row.querySelector('input');
+            cb.addEventListener('change', function () {
+              if (cb.checked) hiddenLayerIds.delete(layer.id);
+              else hiddenLayerIds.add(layer.id);
+              updateMapLayers();
+            });
+            layerWrap.appendChild(row);
+          });
+          body.appendChild(layerWrap);
+        }
+      });
+
+      section.appendChild(body);
+      container.appendChild(section);
+    });
+
+    // 카드 헤더의 선택 개수 (헤더 요소가 제거된 경우 스킵)
+    var totalSelected = selectedJobIds.size;
+    var totalJobs = jobsData.jobs.length;
+    var cntEl = document.getElementById('jobs-count-label');
+    if (cntEl) cntEl.textContent = totalSelected + ' / ' + totalJobs;
+
+    // 스크롤 위치 복원 — 체크 시 튀는 현상 방지
+    container.scrollTop = prevScroll;
+
+    // 자세히로 활성화된 항목은 항상 컨테이너 중앙으로 스크롤 — 포커스 유지
+    if (detailJobId) {
+      var activeEl = container.querySelector('.job-list-item.active');
+      if (activeEl) {
+        activeEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
       }
     }
+  }
+
+  // 아코디언 재렌더링 없이 개별 카테고리 개수 갱신
+  function updateCatCount(catId) {
+    var totalSelected = selectedJobIds.size;
+    var totalJobs = jobsData.jobs.length;
+    var cntEl = document.getElementById('jobs-count-label');
+    if (cntEl) cntEl.textContent = totalSelected + ' / ' + totalJobs;
   }
 
   function flyToJob(job) {
@@ -1275,14 +2315,14 @@
       var thumbSrc = (isCamera ? 'assets/images/camera_0' : 'assets/images/drone_0') + imgIdx + '.png';
 
       document.getElementById('popup-body').innerHTML =
-        '<div style="padding:12px 14px;">' +
-          '<img src="' + thumbSrc + '" style="display:block;width:100%;border-radius:6px;margin-bottom:10px;object-fit:cover;max-height:170px;" alt="썸네일">' +
+        '<div class="popup-body-inner">' +
+          '<img src="' + thumbSrc + '" class="popup-thumb" alt="썸네일">' +
           '<div class="popup-row"><span class="label">탐지 ID</span><span class="value">' + det.id + '</span></div>' +
           '<div class="popup-row"><span class="label">모델</span><span class="value">' + modelLabel + '</span></div>' +
           '<div class="popup-row"><span class="label">클래스</span><span class="value">' + det.class_ko + '</span></div>' +
           '<div class="popup-row"><span class="label">심각도</span><span class="value">' + NamwonMap.SEVERITY_KO[det.severity] + '</span></div>' +
-          '<div class="popup-row"><span class="label">주소</span><span class="value" style="text-align:right;max-width:160px;font-size:12px;">' + det.address + '</span></div>' +
-          '<div class="popup-row"><span class="label">탐지일시</span><span class="value" style="font-size:12px;">' + det.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.') + '</span></div>' +
+          '<div class="popup-row"><span class="label">주소</span><span class="value value--addr">' + det.address + '</span></div>' +
+          '<div class="popup-row"><span class="label">탐지일시</span><span class="value value--date">' + det.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.') + '</span></div>' +
           '<div class="popup-row"><span class="label">상태</span><span class="value">' + det.status + '</span></div>' +
         '</div>';
     });
@@ -1290,6 +2330,11 @@
 
   function updateMapLayers() {
     if (!map) return;
+    // 선택/자세히가 바뀌면 이전에 떠있던 탐지 팝업은 더 이상 유효하지 않으므로 닫기
+    var popupEl = document.getElementById('map-popup');
+    if (popupEl) popupEl.hidden = true;
+    if (overlay) overlay.setPosition(undefined);
+
     var dets = getActiveDetections();
     if (orthoLayer) map.removeLayer(orthoLayer);
     if (cameraLayer) map.removeLayer(cameraLayer);
@@ -1317,6 +2362,50 @@
   }
 
   function updateKPI() {
+    // 상세 패널은 detailJobId가 있을 때만 열림. 체크박스 다중 선택은 별개로 지도 레이어에 반영.
+    var hasDetail = detailJobId !== null;
+    var activeCat = activeCategoryOfDetail();
+    var rightStack = document.querySelector('.db-right-stack');
+    if (rightStack) rightStack.hidden = !hasDetail;
+    // 색상 기준 — 체크된 작업 중 도로안전 계열이 하나라도 있으면 표시 (자세히와 무관)
+    var colorCard = document.getElementById('color-mode-card');
+    if (colorCard) {
+      var hasCheckedRoad = false;
+      if (jobsData && jobsData.jobs) {
+        for (var i = 0; i < jobsData.jobs.length; i++) {
+          var jj = jobsData.jobs[i];
+          if (selectedJobIds.has(jj.job_id) && ROAD_CATS[jobCategory(jj)]) {
+            hasCheckedRoad = true;
+            break;
+          }
+        }
+      }
+      colorCard.hidden = !hasCheckedRoad;
+    }
+    var wrapper = document.querySelector('.map-wrapper');
+    if (wrapper) wrapper.classList.toggle('no-result-panel', !hasDetail);
+
+    var panelKey = ROAD_CATS[activeCat] ? 'road'
+      : STATS_PANEL_CATS[activeCat] ? 'stats'
+      : activeCat === 'silage_bale' ? 'silage'
+      : hasDetail ? 'generic' : null;
+    document.querySelectorAll('.db-right-stack [data-panel]').forEach(function (el) {
+      el.hidden = (el.dataset.panel !== panelKey);
+    });
+
+    renderBottomPanel();
+
+    if (panelKey === 'stats') {
+      renderStatsPanel();
+      return;
+    }
+    if (panelKey === 'silage') {
+      renderSilagePanel();
+      return;
+    }
+    if (panelKey !== 'road') return;
+
+
     var dets = getActiveDetections();
     var high = dets.filter(function (d) { return d.severity === 'high'; }).length;
     var unproc = dets.filter(function (d) { return d.status === '미처리'; }).length;
@@ -1328,17 +2417,15 @@
     document.getElementById('kpi-high').textContent = high;
     document.getElementById('kpi-unprocessed').textContent = unproc;
     document.getElementById('kpi-jobs').textContent = selectedJobs;
-    document.getElementById('kpi-scope').textContent =
-      activeTypeFilter === 'all' ? '전체' : activeTypeFilter === 'orthophoto' ? '정사영상' : '카메라';
 
     // 처리 상태
     document.getElementById('stat-unproc').textContent = unproc + '건';
     document.getElementById('stat-proc').textContent = proc + '건';
     document.getElementById('stat-done').textContent = done + '건';
     var total = dets.length || 1;
-    document.getElementById('stat-seg-unproc').style.width = (unproc / total * 100) + '%';
-    document.getElementById('stat-seg-proc').style.width = (proc / total * 100) + '%';
-    document.getElementById('stat-seg-done').style.width = (done / total * 100) + '%';
+    document.getElementById('stat-seg-unproc').style.setProperty('--seg-pct', (unproc / total * 100) + '%');
+    document.getElementById('stat-seg-proc').style.setProperty('--seg-pct', (proc / total * 100) + '%');
+    document.getElementById('stat-seg-done').style.setProperty('--seg-pct', (done / total * 100) + '%');
 
     // 클래스 분포 Top 5 — 데이터의 class_ko 원본 라벨 사용
     var classAgg = {};
@@ -1358,7 +2445,7 @@
     var distribEl = document.getElementById('class-distrib-list');
     distribEl.innerHTML = '';
     if (sorted.length === 0) {
-      distribEl.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.4);font-size:12px;padding:14px 0;">선택된 작업이 없습니다</div>';
+      distribEl.innerHTML = '<div class="class-distrib-empty">선택된 작업이 없습니다</div>';
     } else {
       sorted.forEach(function (entry) {
         var name = entry[1].ko;
@@ -1368,7 +2455,7 @@
         item.className = 'class-distrib-item';
         item.innerHTML =
           '<span title="' + name + '">' + name + '</span>' +
-          '<div class="class-distrib-bar"><span style="width:' + pct + '%;background:' + col + ';"></span></div>' +
+          '<div class="class-distrib-bar"><span class="class-distrib-fill" style="--fill-pct:' + pct + '%;--fill-bg:' + col + '"></span></div>' +
           '<span class="cnt">' + entry[1].count + '</span>';
         distribEl.appendChild(item);
       });
