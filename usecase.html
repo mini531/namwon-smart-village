@@ -23,9 +23,9 @@
       <div class="page-title-wrap">
         <h1>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          활용 사례
+          <span id="page-title-text">활용 사례</span>
         </h1>
-        <p>Namwon GeoVision 플랫폼이 실제 행정·영농 현장에서 활용된 사례를 확인하세요</p>
+        <p id="page-title-sub">Namwon GeoVision 플랫폼이 실제 행정·영농 현장에서 활용된 사례를 확인하세요</p>
       </div>
     </div>
 
@@ -344,6 +344,10 @@
 
     document.getElementById('list-view').classList.add('hidden');
     document.getElementById('detail-view').classList.add('active');
+    // 뷰 전환에 따른 페이지 타이틀 갱신 — 메뉴명(단일 '활용 사례') 금지.
+    document.getElementById('page-title-text').textContent = '활용 사례 열람';
+    document.getElementById('page-title-sub').textContent = '활용 사례 상세 내용을 확인합니다';
+    document.title = '활용 사례 열람 - Namwon GeoVision';
     document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
 
     if (pushHistory !== false && window.history && window.history.pushState) {
@@ -370,6 +374,10 @@
   function closeDetail(fromPopState) {
     document.getElementById('list-view').classList.remove('hidden');
     document.getElementById('detail-view').classList.remove('active');
+    document.getElementById('page-title-text').textContent = '활용 사례';
+    document.getElementById('page-title-sub').textContent =
+      'Namwon GeoVision 플랫폼이 실제 행정·영농 현장에서 활용된 사례를 확인하세요';
+    document.title = '활용 사례 - Namwon GeoVision';
     if (!fromPopState && window.history && window.history.pushState) {
       window.history.pushState({}, '', window.location.pathname);
     }
