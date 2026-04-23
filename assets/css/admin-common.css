@@ -526,6 +526,18 @@ html, body { overflow: hidden; }
   word-break: break-all;
 }
 .info-row .form-control { padding: 6px 10px; font-size: 13px; }
+/* 한 행에 2개 서브 필드(라벨+값 쌍) 를 나란히 배치 — 처리자/처리일시 등 */
+.info-row--split {
+  flex-direction: row;
+  gap: 16px;
+}
+.info-row--split .info-sub {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
 
 /* 반응형 */
 @media (max-width: 480px) {
