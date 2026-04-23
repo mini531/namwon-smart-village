@@ -23,9 +23,9 @@
       <div class="page-title-wrap">
         <h1>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-          공지사항
+          <span id="page-title-text">공지사항</span>
         </h1>
-        <p>Namwon GeoVision 플랫폼 운영 공지 및 업데이트 소식을 확인하세요</p>
+        <p id="page-title-sub">Namwon GeoVision 플랫폼 운영 공지 및 업데이트 소식을 확인하세요</p>
       </div>
     </div>
 
@@ -420,6 +420,10 @@
 
     document.getElementById('list-view').classList.add('hidden');
     document.getElementById('detail-view').classList.add('active');
+    // 뷰 전환에 따른 페이지 타이틀 갱신 — 메뉴명이 아닌 행동 기반.
+    document.getElementById('page-title-text').textContent = '공지사항 열람';
+    document.getElementById('page-title-sub').textContent = '공지사항 상세 내용을 확인합니다';
+    document.title = '공지사항 열람 - Namwon GeoVision';
     document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
 
     if (pushHistory !== false && window.history && window.history.pushState) {
@@ -448,6 +452,9 @@
   function closeDetail(fromPopState) {
     document.getElementById('list-view').classList.remove('hidden');
     document.getElementById('detail-view').classList.remove('active');
+    document.getElementById('page-title-text').textContent = '공지사항';
+    document.getElementById('page-title-sub').textContent = 'Namwon GeoVision 플랫폼 운영 공지 및 업데이트 소식을 확인하세요';
+    document.title = '공지사항 - Namwon GeoVision';
     if (!fromPopState && window.history && window.history.pushState) {
       window.history.pushState({}, '', window.location.pathname);
     }

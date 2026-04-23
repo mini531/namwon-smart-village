@@ -83,27 +83,7 @@ html, body { overflow: hidden; }
 .board-period-row { gap: 4px; }
 .board-date-input:focus { border-color: var(--color-primary); }
 .board-period-sep { color: var(--color-text-muted); font-size: 13px; }
-.board-quick-btn {
-  height: 38px;
-  padding: 0 10px;
-  border: 1.5px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  border-radius: var(--border-radius);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.15s;
-  box-sizing: border-box;
-  white-space: nowrap;
-}
-.board-quick-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
-.board-quick-btn.active {
-  background: var(--color-text);
-  border-color: var(--color-text);
-  color: #fff;
-}
+/* .board-quick-btn 은 style.css 로 이관 (공용 — 게시판 전반에서 공유) */
 
 /* 목록 카드 */
 .admin-list-card {

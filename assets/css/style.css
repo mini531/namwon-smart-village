@@ -892,6 +892,71 @@ select {
   border-color: var(--color-text);
 }
 .board-btn-primary:hover { background: #2a3a55; border-color: #2a3a55; color: #fff; }
+.board-btn-danger {
+  background: #dc3545;
+  color: #fff;
+  border-color: #dc3545;
+}
+.board-btn-danger:hover { background: #c0303c; border-color: #c0303c; color: #fff; }
+
+/* 퀵 필터 버튼 (게시 기간 1개월/3개월, 팝업 기간 1주/2주 등 공용) */
+.board-quick-btn {
+  height: 38px;
+  padding: 0 10px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border-radius: var(--border-radius);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+.board-quick-btn:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+.board-quick-btn.active {
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: #fff;
+}
+.board-quick-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* 공용 커스텀 체크박스 — 목록 일괄 선택·폼 인라인 체크 등 */
+.form-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.form-check:hover { border-color: var(--color-primary); }
+.form-check:checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.form-check:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.form-check:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.form-check:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* 페이지네이션 (풀 형태 — 처음·이전·숫자·다음·마지막 + 페이지 크기 + 건수 표시) */
 .board-paginator {

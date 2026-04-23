@@ -23,9 +23,9 @@
       <div class="page-title-wrap">
         <h1>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-          공지사항 관리
+          <span id="page-title-text">공지사항 관리</span>
         </h1>
-        <p>공지사항을 등록·수정·삭제하고 게시 기간·팝업 노출을 설정할 수 있습니다</p>
+        <p id="page-title-sub">공지사항을 등록·수정·삭제하고 게시 기간·팝업 노출을 설정할 수 있습니다</p>
       </div>
     </div>
 
@@ -87,11 +87,11 @@
         <div class="admin-list-head">
           <div class="admin-list-title">공지사항 목록</div>
           <div class="admin-list-actions">
-            <button type="button" class="btn btn-ghost btn-sm" id="an-del-selected">
+            <button type="button" class="board-btn board-btn-danger" id="an-del-selected">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
               선택 삭제
             </button>
-            <button type="button" class="btn btn-primary btn-sm" id="an-new">
+            <button type="button" class="board-btn board-btn-primary" id="an-new">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               등록
             </button>
@@ -100,7 +100,7 @@
         <table class="admin-table">
           <thead>
             <tr>
-              <th class="col-check"><input type="checkbox" id="an-check-all"></th>
+              <th class="col-check"><input type="checkbox" class="form-check" id="an-check-all"></th>
               <th class="col-cat">구분</th>
               <th>제목</th>
               <th class="col-date">게시 시작</th>
@@ -161,7 +161,7 @@
               <input type="date" id="f-to-date" placeholder="YYYY-MM-DD">
               <input type="time" id="f-to-time" value="23:59">
               <label class="check-inline">
-                <input type="checkbox" id="f-unlimited">무한 게시
+                <input type="checkbox" class="form-check" id="f-unlimited">무한 게시
               </label>
             </div>
           </div>
@@ -172,7 +172,7 @@
             <label class="form-label">팝업 설정<span class="req">*</span></label>
             <div class="datetime-range">
               <label class="check-inline" style="margin-left:0;">
-                <input type="checkbox" id="f-popup">메인화면 팝업 표시
+                <input type="checkbox" class="form-check" id="f-popup">메인화면 팝업 표시
               </label>
               <input type="date" id="f-popup-from-date" placeholder="YYYY-MM-DD" disabled>
               <input type="time" id="f-popup-from-time" value="00:00" disabled>
@@ -217,7 +217,7 @@
             <label class="form-label">첨부 파일</label>
             <div class="attach-upload">
               <input type="file" id="f-file-input" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.xlsx,.xls,.doc,.docx,.ppt,.pptx,.hwp" multiple hidden>
-              <button type="button" class="btn btn-ghost btn-sm" id="f-file-btn">
+              <button type="button" class="board-btn" id="f-file-btn">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 파일 추가
               </button>
@@ -229,11 +229,11 @@
         </div>
 
         <div class="form-actions">
-          <button type="button" class="btn btn-ghost btn-sm" id="f-cancel">
+          <button type="button" class="board-btn" id="f-cancel">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             취소
           </button>
-          <button type="button" class="btn btn-primary btn-sm" id="f-save">
+          <button type="button" class="board-btn board-btn-primary" id="f-save">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             저장
           </button>
@@ -276,16 +276,16 @@
         </div>
       </div>
       <div class="form-actions form-actions--split">
-        <button type="button" class="btn btn-ghost btn-sm" id="v-list">
+        <button type="button" class="board-btn" id="v-list">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           목록
         </button>
         <div class="form-actions-group">
-          <button type="button" class="btn btn-danger btn-sm" id="v-delete">
+          <button type="button" class="board-btn board-btn-danger" id="v-delete">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
             삭제
           </button>
-          <button type="button" class="btn btn-primary btn-sm" id="v-edit">
+          <button type="button" class="board-btn board-btn-primary" id="v-edit">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             수정
           </button>
@@ -447,7 +447,7 @@
       tr.dataset.id = n.id;
       var endDisplay = (n.endAt === INFINITE_DATE) ? '9999-12-31 23:59' : fmtDateTime(n.endAt).substring(0, 16);
       tr.innerHTML =
-        '<td class="col-check"><input type="checkbox" class="an-row-check" data-id="' + n.id + '"></td>' +
+        '<td class="col-check"><input type="checkbox" class="form-check an-row-check" data-id="' + n.id + '"></td>' +
         '<td class="col-cat"><span class="admin-cat ' + n.category + '">' + CAT_LABEL[n.category] + '</span></td>' +
         '<td><button type="button" class="title-link" data-id="' + n.id + '">' + escapeHtml(n.title) + '</button></td>' +
         '<td class="col-date">' + fmtDateTime(n.startAt).substring(0, 16) + '</td>' +
@@ -485,10 +485,29 @@
   }
 
   // ── 뷰 전환 ──
+  // 페이지 타이틀/서브텍스트는 뷰에 따라 바뀐다. 메뉴명(단일 라벨) 금지,
+  // 각 뷰의 행동을 드러내는 이름으로.
+  var VIEW_TITLES = {
+    list: { title: '공지사항 관리',  sub: '공지사항을 등록·수정·삭제하고 게시 기간·팝업 노출을 설정할 수 있습니다' },
+    form: { title: '공지사항 등록',  sub: '새 공지사항을 작성합니다. 필수 항목을 채운 뒤 저장하세요' },
+    formEdit: { title: '공지사항 수정', sub: '선택한 공지사항을 수정합니다. 변경 후 저장하세요' },
+    view: { title: '공지사항 열람',  sub: '공지사항 상세 내용을 확인합니다' }
+  };
+  function updatePageTitle(key) {
+    var t = VIEW_TITLES[key] || VIEW_TITLES.list;
+    document.getElementById('page-title-text').textContent = t.title;
+    document.getElementById('page-title-sub').textContent = t.sub;
+    document.title = t.title + ' - Namwon GeoVision';
+  }
   function showView(which) {
     document.getElementById('list-view').classList.toggle('hidden', which !== 'list');
     document.getElementById('form-view').classList.toggle('hidden', which !== 'form');
     document.getElementById('view-view').classList.toggle('hidden', which !== 'view');
+    if (which === 'form') {
+      updatePageTitle(state.editingId ? 'formEdit' : 'form');
+    } else {
+      updatePageTitle(which);
+    }
     document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
   }
 
