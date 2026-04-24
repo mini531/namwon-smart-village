@@ -1,6 +1,6 @@
 /* =========================================================
    Namwon GeoVision — 보고서 렌더링 공통 모듈
-   report.html / report-history.html에서 공유
+   report-road-ortho-issue.html / report-road-camera-issue.html 에서 공유
    ========================================================= */
 (function () {
   'use strict';

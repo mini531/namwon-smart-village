@@ -168,19 +168,26 @@
     var fileMenuMap = {
       'index.html': 'dashboard',
       'map-home.html': 'map',
-      'report.html': 'report',
-      'report-history.html': 'report',
-      'analysis-orthophoto.html': 'analysis',
-      'analysis-camera.html': 'analysis',
-      'history.html': 'analysis',
-      'stats-road-ortho.html': 'stats',
-      'stats-road-camera.html': 'stats',
-      'stats-silage.html': 'stats',
-      'stats-farmland.html': 'stats',
-      'stats-greenhouse.html': 'stats'
+      'history.html': 'analysis'
     };
 
+    // 접두어 기반 자동 매핑 — 새 하위 페이지(ex. report-silage-issue.html) 추가 시 수정 불필요
+    var prefixMap = [
+      { prefix: 'report-',   menu: 'report' },
+      { prefix: 'report.',    menu: 'report' },
+      { prefix: 'stats-',    menu: 'stats' },
+      { prefix: 'analysis-', menu: 'analysis' }
+    ];
+
     var activeMenu = fileMenuMap[currentFile];
+    if (!activeMenu) {
+      for (var i = 0; i < prefixMap.length; i++) {
+        if (currentFile.indexOf(prefixMap[i].prefix) === 0) {
+          activeMenu = prefixMap[i].menu;
+          break;
+        }
+      }
+    }
 
     // 메뉴 아이템 active 처리
     document.querySelectorAll('.menu-item[data-menu]').forEach(function (item) {
@@ -190,9 +197,18 @@
     });
 
     // 드롭다운 링크 current-page 처리
+    // 정확 매칭 + 접두어 매칭 (예: report-silage.html 링크는 report-silage-issue.html 페이지에서도 active)
     document.querySelectorAll('.dropdown-link').forEach(function (link) {
       var href = link.getAttribute('href');
-      if (href && href.split('/').pop() === currentFile) {
+      if (!href || href === '#') return;
+      var linkFile = href.split('/').pop();
+      if (linkFile === currentFile) {
+        link.classList.add('current-page');
+        return;
+      }
+      var linkBase = linkFile.replace(/\.html$/, '');
+      // currentFile 이 linkBase + '-' 로 시작하면 같은 그룹 (예: report-silage- vs report-silage-issue)
+      if (linkBase && currentFile.indexOf(linkBase + '-') === 0) {
         link.classList.add('current-page');
       }
     });
@@ -446,6 +462,22 @@
     setTimeout(dismiss, duration);
     el.addEventListener('click', dismiss);
   }
+
+  /* -------------------------------------------------------
+     data-table 행 클릭 → 라디오 선택 (전역 이벤트 위임)
+     tr 안에 <input type="radio"> 가 있으면 tr 아무 셀을 클릭해도 해당 라디오가 체크됨.
+     (라디오·버튼·링크 직접 클릭은 기본 동작 유지)
+  ------------------------------------------------------- */
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('input, button, a, label')) return;
+    var tr = e.target.closest('table.data-table tbody tr');
+    if (!tr) return;
+    var radio = tr.querySelector('input[type="radio"]');
+    if (radio && !radio.checked) {
+      radio.checked = true;
+      radio.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
 
   window.NotifyUI = {
     info: function (message, title) { showNotify({ type: 'info', title: title || '알림', message: message }); },

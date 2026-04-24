@@ -673,6 +673,20 @@ html, body { overflow: hidden; }
 .btn-lg { height: 44px; padding: 0 20px; font-size: 14px; }
 .btn-block { width: 100%; }
 
+/* CTA — 좌측 설정 패널·폼 하단 등에서 쓰는 전폭·강조형 액션 버튼
+   색 계열은 .btn-primary / .btn-accent / .btn-secondary 와 조합해 사용 */
+.btn-cta {
+  width: 100%;
+  height: auto;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: var(--border-radius-lg);
+  justify-content: center;
+  gap: 8px;
+}
+.btn-cta svg { width: 16px; height: 16px; }
+
 /* =========================================================
    폼 요소
    ========================================================= */
@@ -887,6 +901,8 @@ select {
 
 .data-table tbody tr:hover { background: #FAFBFC; }
 .data-table tbody tr:last-child td { border-bottom: none; }
+/* 라디오 버튼이 든 행은 어디를 클릭해도 선택되도록 cursor 포인터 */
+.data-table tbody tr:has(input[type="radio"]) { cursor: pointer; }
 
 /* =========================================================
    공용 게시판 UI — 검색 툴바 · 페이지네이션 (notice · usecase 공유)
@@ -1391,6 +1407,41 @@ img.modal-thumb,
   gap: 8px;
 }
 .modal-foot .mf-spacer { flex: 1; }
+
+/* 큰 사이즈 모달 — 검색/목록 다이얼로그 공용 변형 */
+.modal-card--xl {
+  width: min(1440px, calc(100vw - 40px));
+  max-width: none;
+  max-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+}
+.modal-card--xl .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--color-page-bg);
+}
+.modal-card--xl .modal-head .title { font-size: 18px; }
+.modal-card--xl .modal-foot { background: var(--color-surface); }
+
+/* 모달 안 data-table — 한 줄 유지 (긴 분석명은 줄이지 않고 ellipsis).
+   고정 크기 컬럼은 명시적으로 폭 지정해 유동 컬럼(분석명·데이터 명)이 남은 공간 차지. */
+.modal-card--xl .data-table th,
+.modal-card--xl .data-table td {
+  white-space: nowrap;
+}
+.modal-card--xl .data-table .col-wide {
+  white-space: normal;
+  min-width: 240px;
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /* =========================================================
    정책 모달 — 개인정보처리방침/이용약관/이메일무단수집거부
@@ -4299,6 +4350,14 @@ body.mobile-nav-open .gnb-backdrop {
 .page-title-wrap p {
   font-size: 13px;
   color: var(--color-text-muted);
+}
+
+/* .page-actions — .page-header 우측 액션 영역 (버튼 가로 배치) */
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 /* 관리자 목록 테이블 — 공용 .data-table 위에 컬럼 폭만 추가.

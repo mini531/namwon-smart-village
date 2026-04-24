@@ -1,40 +1,31 @@
-/* report.html 전용 스타일 (inline에서 추출) */
-
-html, body { overflow: hidden; }
-
-.page-body {
-  padding-top: var(--header-height);
-  height: 100vh;
-  background: var(--color-page-bg);
-  display: block;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
+/* 발급 화면 전용 — page-body 스크롤 없음. report-layout 고정 높이, 각 컬럼(사이드바·미리보기) 독립 스크롤.
+   → 이중 스크롤 없음, 사이드바는 자기 컬럼 전체를 채워 하단 여백 없음. */
+.page-body { overflow: hidden; }
 
 .report-layout {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 0;
-  align-items: start;
+  flex: 1 1 0;
   min-height: 0;
-  height: auto;
-  overflow: visible;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 0;
+  align-items: stretch;
+  overflow: hidden;
 }
-.report-layout > .report-preview-area { min-width: 0; }
+.report-layout > .report-preview-area {
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+}
 
-/* ── 좌측 설정 패널 (sticky, 자체 스크롤 없이 viewport 안에 고정) ── */
+/* 좌측 설정 패널 — grid cell 전체 채움, 내부만 스크롤 */
 .report-config {
   background: var(--color-surface);
   border-right: 1px solid var(--color-border);
-  padding: 18px 22px 22px;
+  padding: 20px 22px 22px;
   display: flex;
   flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-  position: sticky;
-  top: 0;
   height: 100%;
-  max-height: calc(100vh - var(--header-height));
+  min-height: 0;
   overflow-y: auto;
 }
 
@@ -317,14 +308,53 @@ html, body { overflow: hidden; }
   line-height: 1.5;
 }
 
-/* 보고서 생성 이력 링크 — download-btn variant */
-.download-btn--history {
-  background: var(--color-surface-2);
-  color: var(--color-text);
-  border-color: var(--color-border);
-  text-decoration: none;
+
+/* [전체에서 찾아보기] 버튼 — 리스트 하단 CTA */
+.config-more-btn {
+  width: 100%;
+  justify-content: center;
   margin-top: 8px;
+  font-size: 12px;
+  gap: 6px;
 }
+.job-more-count {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: 11px;
+}
+
+/* 하단 액션 (보고서 발급 / 목록) — 설정 패널 하단 일반 영역 */
+.config-actions-sticky {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+.config-actions-sticky > .btn { margin: 0 0 8px; }
+.config-actions-sticky > .btn:last-child { margin-bottom: 0; }
+
+/* 발급 후 PDF 인쇄 툴바 — 미리보기 영역 상단에 표시 (스티키 아님, 컨텐츠와 함께 스크롤) */
+.preview-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* 분석 결과 선택 모달 — 선택 카운트 + 테이블 컬럼 */
+.js-selected-inline {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+#js-tbody .col-check { text-align: center; width: 50px; }
+#js-tbody .col-jobid { width: 120px; font-size: 12px; color: var(--color-text-muted); }
+#js-tbody .col-date { width: 100px; font-variant-numeric: tabular-nums; }
+#js-tbody .col-region { width: 160px; }
+#js-tbody .col-cnt { width: 80px; text-align: center; font-weight: 700; color: var(--color-primary); }
+#js-tbody tr.selected { background: #FBEEF0; }
+#js-tbody .col-empty { text-align: center; padding: 32px 0; color: var(--color-text-muted); font-size: 13px; }
 
 /* report-table 컬럼 폭 */
 .rs-job-table-head th.col-job { width: 110px; }
@@ -338,58 +368,10 @@ html, body { overflow: hidden; }
 .rs-det-table-head th.col-date { width: 100px; }
 .rs-det-table-head th.col-status { width: 80px; text-align: center; }
 
-.generate-btn {
-  width: 100%;
-  padding: 13px;
-  background: var(--color-primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--border-radius-lg);
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  margin-top: 4px;
-  transition: all 0.2s ease;
-}
-
-.generate-btn:hover {
-  background: var(--color-primary-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(200,16,46,0.25);
-}
-
-.download-btn {
-  width: 100%;
-  padding: 11px;
-  background: var(--color-surface);
-  color: var(--color-primary);
-  border: 1.5px solid var(--color-primary);
-  border-radius: var(--border-radius-lg);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 8px;
-  transition: all 0.2s ease;
-}
-
-.download-btn:hover:not(:disabled) {
-  background: var(--color-primary);
-  color: #fff;
-}
-
-.download-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 
 @media (max-width: 1100px) {
-  .report-layout { grid-template-columns: 280px 1fr; }
+  .report-layout { grid-template-columns: 340px 1fr; }
   .report-preview-area { padding: 24px 20px 40px; }
   .report-sheet { padding: 40px 36px; }
 }
@@ -401,14 +383,12 @@ html, body { overflow: hidden; }
 @media (max-width: 900px) {
   .report-layout {
     grid-template-columns: 1fr;
-    min-height: 0;
     display: block;
+    min-height: 0;
   }
   .report-config {
     position: static;
     height: auto;
-    max-height: none;
-    overflow: visible;
     padding: 16px 18px 24px;
     border-right: 0;
     border-bottom: 1px solid var(--color-border);
@@ -505,20 +485,62 @@ html, body { overflow: hidden; }
 }
 
 @media print {
-  .page-body { padding-top: 0; }
-  .gnb-header, .report-config, .preview-toolbar { display: none; }
-  .report-layout { grid-template-columns: 1fr; }
-  .report-preview-area { padding: 0; background: #fff; overflow: visible; }
-  .report-sheet { box-shadow: none; padding: 24mm; width: 210mm; }
+  @page { size: A4; margin: 12mm; }
+
+  /* 뷰포트 고정 해제 — html/body 가 전체 컨텐츠 길이로 확장되어야 모든 페이지 인쇄 */
+  html, body {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* 보고서 영역만 보이도록 visibility 로 잘라냄 — position 유지 */
+  body * { visibility: hidden !important; }
+  #report-sheet, #report-sheet * { visibility: visible !important; }
+
+  /* 보고서를 페이지 원점에 배치, 스크롤 컨텍스트·플렉스 해제 */
+  .page-body {
+    display: block !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .report-layout {
+    display: block !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  .report-preview-area {
+    display: block !important;
+    padding: 0 !important;
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  #report-sheet {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .report-section { page-break-inside: avoid; }
+  .report-table thead { display: table-header-group; }
+  .report-table tr { page-break-inside: avoid; }
+  textarea.opinion-textarea {
+    border: 1px solid #ddd !important;
+    resize: none !important;
+    overflow: visible !important;
+  }
 }
 
-/* 임베드 모드 — iframe 안에서 좌측 설정 패널/헤더/풋터 숨김 */
-body.embed-mode .gnb-header,
-body.embed-mode .report-config,
-body.embed-mode .preview-toolbar,
-body.embed-mode #footer-include,
-body.embed-mode .gvt-footer { display: none !important; }
-
-body.embed-mode .page-body { padding-top: 0; }
-body.embed-mode .report-layout { grid-template-columns: 1fr; }
-body.embed-mode .report-preview-area { padding: 24px 20px; }

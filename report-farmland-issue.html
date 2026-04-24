@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>농지 활용 분석 보고서 발급 요청 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/page-report-list.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="admin-container">
+
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>농지 활용 분석 보고서 발급 요청</span>
+        </h1>
+        <p>행정정보 기준 상반기와 하반기의 분석 결과를 선택하여 농지 활용 보고서를 발급받을 수 있습니다.</p>
+      </div>
+    </div>
+
+    <!-- 1. 행정정보 -->
+    <div class="card report-form-section">
+      <img src="assets/images/report-step/step_01.png" alt="" class="report-step-img">
+      <div class="report-form-section-body">
+        <div class="report-form-section-head">
+          <div class="report-form-section-text">
+            <h3 class="section-title"><span class="step-num">1</span>행정정보 선택</h3>
+            <p class="section-desc">기준이 되는 행정정보를 선택해 주세요. 같은 행정정보를 사용한 분석 결과 보고서를 생성할 수 있습니다.</p>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm pick-more-btn" data-section="info">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            더 보기
+          </button>
+        </div>
+        <div class="pick-card-list" id="pick-info"></div>
+      </div>
+    </div>
+
+    <!-- 2. 상반기 분석 -->
+    <div class="card report-form-section">
+      <img src="assets/images/report-step/step_05.png" alt="" class="report-step-img">
+      <div class="report-form-section-body">
+        <div class="report-form-section-head">
+          <div class="report-form-section-text">
+            <h3 class="section-title"><span class="step-num">2</span>상반기 분석 결과 선택</h3>
+            <p class="section-desc">선택한 행정정보를 기준으로 상반기에 탐지된 농지 활용 분석 결과를 선택해 주세요.</p>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm pick-more-btn" data-section="half1">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            더 보기
+          </button>
+        </div>
+        <div class="pick-card-list" id="pick-half1"></div>
+      </div>
+    </div>
+
+    <!-- 3. 하반기 분석 -->
+    <div class="card report-form-section">
+      <img src="assets/images/report-step/step_06.png" alt="" class="report-step-img">
+      <div class="report-form-section-body">
+        <div class="report-form-section-head">
+          <div class="report-form-section-text">
+            <h3 class="section-title"><span class="step-num">3</span>하반기 분석 결과 선택</h3>
+            <p class="section-desc">선택한 행정정보를 기준으로 하반기에 탐지된 농지 활용 분석 결과를 선택해 주세요.</p>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm pick-more-btn" data-section="half2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            더 보기
+          </button>
+        </div>
+        <div class="pick-card-list" id="pick-half2"></div>
+      </div>
+    </div>
+
+    <div class="report-form-actions">
+      <a href="report-farmland.html" class="btn btn-secondary">취소</a>
+      <button type="button" class="btn btn-primary" id="f-submit">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        발급 요청
+      </button>
+    </div>
+
+    <!-- 분석 결과 찾기 모달 — 상반기·하반기 공용 -->
+    <div class="modal-backdrop" id="analysis-search-modal" aria-hidden="true">
+      <div class="modal-card modal-card--xl">
+        <div class="modal-head">
+          <div class="title" id="as-title">분석 결과 찾기</div>
+          <button type="button" class="close-btn" id="as-close" aria-label="닫기">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="board-toolbar">
+            <div class="board-field board-field--search">
+              <label for="searchType">검색어</label>
+              <div class="board-field-row">
+                <select class="board-search-select form-select" id="searchType" name="searchType" style="width:140px">
+                  <option value="" selected>전체</option>
+                  <option value="01">분석 과제명</option>
+                  <option value="02">분석명</option>
+                  <option value="03">실행자</option>
+                </select>
+                <input type="text" class="board-search-input" id="as-search-input" placeholder="검색어를 입력하세요.">
+              </div>
+            </div>
+            <div class="board-field">
+              <label for="alogTypeCd">알고리즘</label>
+              <select class="board-search-select form-select" id="alogTypeCd" name="alogTypeCd">
+                <option value="">전체</option>
+                <option value="YOLOV11">YOLO v11</option>
+                <option value="YOLOV11seg">YOLO v11-seg</option>
+                <option value="UNETV1">UNET v1</option>
+              </select>
+            </div>
+            <div class="board-field">
+              <label for="runnerType">실행자</label>
+              <select class="board-search-select form-select" id="runnerType" name="runnerType">
+                <option value="" selected>전체</option>
+                <option value="01">내 분석 결과</option>
+                <option value="02">공유 받은 분석 결과</option>
+              </select>
+            </div>
+            <div class="board-field board-field--period">
+              <label>기준일</label>
+              <div class="board-period-row">
+                <div class="board-period-dates">
+                  <input type="date" class="board-date-input" id="as-from" placeholder="YYYY-MM-DD">
+                  <span class="board-period-sep">~</span>
+                  <input type="date" class="board-date-input" id="as-to" placeholder="YYYY-MM-DD">
+                </div>
+                <div class="board-period-quicks">
+                  <button type="button" class="board-quick-btn active" data-months="0">전체</button>
+                  <button type="button" class="board-quick-btn" data-months="1">1개월</button>
+                  <button type="button" class="board-quick-btn" data-months="3">3개월</button>
+                  <button type="button" class="board-quick-btn" data-months="6">6개월</button>
+                  <button type="button" class="board-quick-btn" data-months="12">12개월</button>
+                </div>
+              </div>
+            </div>
+            <div class="board-toolbar-actions board-toolbar-actions--end">
+              <button type="button" class="btn btn-secondary" id="as-reset">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+                초기화
+              </button>
+              <button type="button" class="btn btn-accent" id="as-search">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                검색
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">AI 분석 내역</div></div>
+            <div class="card-body card-body--flush">
+              <div class="stats-table-wrap" style="overflow-x:auto;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th style="width:60px; text-align:center;">선택</th>
+                      <th class="col-date" style="width:110px;">기준 일자</th>
+                      <th>정사 영상 명</th>
+                      <th style="width:130px;">분석 범위 유형</th>
+                      <th class="col-wide">분석 범위 명</th>
+                      <th class="col-wide">분석명</th>
+                      <th style="width:170px;">분석 과제명</th>
+                    </tr>
+                  </thead>
+                  <tbody id="as-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="board-paginator board-paginator--embedded">
+              <button type="button" class="board-page-btn">처음</button>
+              <button type="button" class="board-page-btn">이전</button>
+              <div class="board-page-pages"><button type="button" class="board-page-btn active">1</button></div>
+              <button type="button" class="board-page-btn">다음</button>
+              <button type="button" class="board-page-btn">마지막</button>
+              <div class="board-page-size-wrap">
+                <select class="board-page-size"><option value="5" selected>5</option><option value="10">10</option><option value="20">20</option></select>
+                <span>페이지 크기</span>
+              </div>
+              <div class="board-count" id="as-count">총 <strong>0</strong>건 중 0~0행</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-secondary" id="as-cancel">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            취소
+          </button>
+          <button type="button" class="btn btn-primary" id="as-confirm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 행정정보 찾기 모달 -->
+    <div class="modal-backdrop" id="info-search-modal" aria-hidden="true">
+      <div class="modal-card modal-card--xl">
+        <div class="modal-head">
+          <div class="title">행정정보 찾기</div>
+          <button type="button" class="close-btn" id="info-modal-close" aria-label="닫기">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="board-toolbar">
+            <div class="board-field board-field--search">
+              <label for="im-search-input">검색어</label>
+              <div class="board-field-row">
+                <select class="board-search-select form-select" id="im-search-field" name="searchType" style="width:140px">
+                  <option value="" selected>전체</option>
+                  <option value="01">분류</option>
+                  <option value="02">데이터 명</option>
+                  <option value="03">출처</option>
+                  <option value="04">등록자</option>
+                </select>
+                <input type="text" class="board-search-input" id="im-search-input" placeholder="검색어를 입력하세요.">
+              </div>
+            </div>
+            <div class="board-field board-field--period">
+              <label>기준일</label>
+              <div class="board-period-row">
+                <div class="board-period-dates">
+                  <input type="date" class="board-date-input" id="im-from" placeholder="YYYY-MM-DD">
+                  <span class="board-period-sep">~</span>
+                  <input type="date" class="board-date-input" id="im-to" placeholder="YYYY-MM-DD">
+                </div>
+                <div class="board-period-quicks">
+                  <button type="button" class="board-quick-btn active" data-months="0">전체</button>
+                  <button type="button" class="board-quick-btn" data-months="1">1개월</button>
+                  <button type="button" class="board-quick-btn" data-months="3">3개월</button>
+                  <button type="button" class="board-quick-btn" data-months="6">6개월</button>
+                  <button type="button" class="board-quick-btn" data-months="12">12개월</button>
+                </div>
+              </div>
+            </div>
+            <div class="board-toolbar-actions board-toolbar-actions--end">
+              <button type="button" class="btn btn-secondary" id="im-reset">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+                초기화
+              </button>
+              <button type="button" class="btn btn-accent" id="im-search">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                검색
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">데이터셋 목록</div></div>
+            <div class="card-body card-body--flush">
+              <div class="stats-table-wrap" style="overflow-x:auto;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th style="width:60px; text-align:center;">선택</th>
+                      <th style="width:130px;">분류</th>
+                      <th class="col-date" style="width:110px;">기준일자</th>
+                      <th class="col-wide">데이터 명</th>
+                      <th style="width:160px;">출처</th>
+                      <th class="num" style="width:100px;">파일 크기</th>
+                      <th style="width:170px;">수정 일시</th>
+                      <th class="col-author" style="width:90px;">등록자</th>
+                    </tr>
+                  </thead>
+                  <tbody id="im-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="board-paginator board-paginator--embedded">
+              <button type="button" class="board-page-btn">처음</button>
+              <button type="button" class="board-page-btn">이전</button>
+              <div class="board-page-pages"><button type="button" class="board-page-btn active">1</button></div>
+              <button type="button" class="board-page-btn">다음</button>
+              <button type="button" class="board-page-btn">마지막</button>
+              <div class="board-page-size-wrap">
+                <select class="board-page-size"><option value="5" selected>5</option><option value="10">10</option><option value="20">20</option></select>
+                <span>페이지 크기</span>
+              </div>
+              <div class="board-count" id="im-count">총 <strong>0</strong>건 중 0~0행</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-secondary" id="im-cancel">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            취소
+          </button>
+          <button type="button" class="btn btn-primary" id="im-confirm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script src="assets/js/confirm-modal.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  var SECTION_LABEL = { info: '행정정보', half1: '상반기 분석 결과', half2: '하반기 분석 결과' };
+
+  // 섹션별 최근 3개 (화면에 카드로 표시)
+  var PICK_DATA = {
+    info: [
+      { id: 'I1', title: '농지이용(경작,비경작)_5권역', meta: '2025.06.29 · 농지이용 정보' },
+      { id: 'I2', title: '농지이용(경작,비경작)_4권역', meta: '2025.06.29 · 농지이용 정보' },
+      { id: 'I3', title: '농지이용(경작,비경작)_3권역', meta: '2025.06.29 · 농지이용 정보' }
+    ],
+    half1: [
+      { id: 'F1', analysis: '남원시_5권역_농지활용 분석 상반기', date: '2025.06.29', orthoName: '남원시 5권역 6월', scopeName: '농지이용(경작,비경작)_5권역' },
+      { id: 'F2', analysis: '남원시_4권역_농지활용 분석 상반기', date: '2025.06.29', orthoName: '남원시 4권역 6월', scopeName: '농지이용(경작,비경작)_4권역' },
+      { id: 'F3', analysis: '남원시_3권역_농지활용 분석 상반기', date: '2025.06.29', orthoName: '남원시 3권역 6월', scopeName: '농지이용(경작,비경작)_3권역' }
+    ],
+    half2: [
+      { id: 'F4', analysis: '남원시_5권역_농지활용 분석 하반기', date: '2025.11.05', orthoName: '남원시 5권역 11월', scopeName: '농지이용(경작,비경작)_5권역' },
+      { id: 'F5', analysis: '남원시_4권역_농지활용 분석 하반기', date: '2025.11.05', orthoName: '남원시 4권역 11월', scopeName: '농지이용(경작,비경작)_4권역' },
+      { id: 'F6', analysis: '남원시_3권역_농지활용 분석 하반기', date: '2025.11.05', orthoName: '남원시 3권역 11월', scopeName: '농지이용(경작,비경작)_3권역' }
+    ]
+  };
+
+  function analysisCardHtml(section, item) {
+    return '<div class="pick-card-body">' +
+      '<div class="pick-card-title">' + esc(item.analysis) + '</div>' +
+      '<div class="pick-card-lines">' +
+        '<div class="pick-card-line pick-card-date"><span class="k">기준 일자</span><span class="v">' + esc(item.date) + '</span></div>' +
+        '<div class="pick-card-line"><span class="k">정사영상</span><span class="v">' + esc(item.orthoName) + '</span></div>' +
+        '<div class="pick-card-line"><span class="k">분석범위</span><span class="v">' + esc(item.scopeName) + '</span></div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderPickList(section) {
+    var items = PICK_DATA[section] || [];
+    var listEl = document.getElementById('pick-' + section);
+    listEl.innerHTML = items.map(function (it, i) {
+      var checked = i === 0 ? ' checked' : '';
+      var body;
+      if (section === 'info') {
+        body = '<div class="pick-card-body">' +
+          '<div class="pick-card-title">' + esc(it.title) + '</div>' +
+          '<div class="pick-card-meta">' + esc(it.meta) + '</div>' +
+        '</div>';
+      } else {
+        body = analysisCardHtml(section, it);
+      }
+      return '<label class="pick-card">' +
+        '<input type="radio" name="pick-' + section + '" value="' + it.id + '"' + checked + '>' +
+        body +
+      '</label>';
+    }).join('');
+  }
+
+  ['info', 'half1', 'half2'].forEach(renderPickList);
+
+  // 기존 3개 중 하나를 클릭하면 wide 카드 제거
+  ['info', 'half1', 'half2'].forEach(function (sec) {
+    var listEl = document.getElementById('pick-' + sec);
+    if (!listEl) return;
+    listEl.addEventListener('change', function (e) {
+      var radio = e.target;
+      if (!radio || radio.type !== 'radio') return;
+      var card = radio.closest('.pick-card');
+      if (!card || card.classList.contains('pick-card--wide')) return;
+      var wide = listEl.querySelector('.pick-card--wide');
+      if (wide) wide.remove();
+    });
+  });
+
+  // ── 행정정보 찾기 모달 ─────────────────────────────────
+  var INFO_DATASETS = [
+    { id: 'I1', cat: '농지이용 정보', baseDate: '2025.06.29', name: '농지이용(경작,비경작)_5권역', source: '남원시 농업기술센터', fileKb: 72.6,  modifiedAt: '2025.12.26 04:31:23', registrant: '이주원' },
+    { id: 'I2', cat: '농지이용 정보', baseDate: '2025.06.29', name: '농지이용(경작,비경작)_4권역', source: '남원시 농업기술센터', fileKb: 38.32, modifiedAt: '2025.12.26 04:31:16', registrant: '김관리' },
+    { id: 'I3', cat: '농지이용 정보', baseDate: '2025.06.29', name: '농지이용(경작,비경작)_3권역', source: '남원시 농업기술센터', fileKb: 41.73, modifiedAt: '2025.12.26 04:31:09', registrant: '현미경' },
+    { id: 'I4', cat: '농지이용 정보', baseDate: '2025.06.29', name: '농지이용(경작,비경작)_2권역', source: '남원시 농업기술센터', fileKb: 41.25, modifiedAt: '2025.12.26 04:31:03', registrant: '홍길동' },
+    { id: 'I5', cat: '농지이용 정보', baseDate: '2025.06.29', name: '농지활용행정정보_금지면',       source: '남원시 농업기술센터', fileKb: 17.92, modifiedAt: '2026.01.13 15:13:50', registrant: '노명석' }
+  ];
+
+  function renderInfoModalTable() {
+    var tbody = document.getElementById('im-tbody');
+    if (!tbody) return;
+    var currentId = (document.querySelector('input[name="pick-info"]:checked') || {}).value;
+    tbody.innerHTML = INFO_DATASETS.map(function (r) {
+      var checked = r.id === currentId ? ' checked' : '';
+      return '<tr>' +
+        '<td class="num"><input type="radio" name="info-modal" value="' + r.id + '" class="form-radio"' + checked + '></td>' +
+        '<td>' + esc(r.cat) + '</td>' +
+        '<td class="col-date">' + esc(r.baseDate) + '</td>' +
+        '<td>' + esc(r.name) + '</td>' +
+        '<td>' + esc(r.source) + '</td>' +
+        '<td class="num">' + esc(r.fileKb.toFixed(2)) + ' KB</td>' +
+        '<td class="col-date">' + esc(r.modifiedAt) + '</td>' +
+        '<td class="col-author">' + esc(r.registrant) + '</td>' +
+      '</tr>';
+    }).join('');
+    document.getElementById('im-count').innerHTML = '총 <strong>' + INFO_DATASETS.length + '</strong>건 중 1~' + INFO_DATASETS.length + '행';
+  }
+
+  function openInfoModal() { renderInfoModalTable(); document.getElementById('info-search-modal').classList.add('show'); }
+  function closeInfoModal() { document.getElementById('info-search-modal').classList.remove('show'); }
+
+  document.getElementById('info-modal-close').addEventListener('click', closeInfoModal);
+  document.getElementById('im-cancel').addEventListener('click', closeInfoModal);
+  document.getElementById('info-search-modal').addEventListener('click', function (e) { if (e.target === this) closeInfoModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.getElementById('info-search-modal').classList.contains('show')) closeInfoModal();
+  });
+  document.getElementById('im-confirm').addEventListener('click', function () {
+    var sel = document.querySelector('input[name="info-modal"]:checked');
+    if (!sel) { closeInfoModal(); return; }
+    var listEl = document.getElementById('pick-info');
+    var existing = listEl.querySelector('input[name="pick-info"][value="' + sel.value + '"]');
+    var prevWide = listEl.querySelector('.pick-card--wide');
+    if (prevWide) prevWide.remove();
+    if (existing) {
+      existing.checked = true;
+    } else {
+      var item = INFO_DATASETS.find(function (x) { return x.id === sel.value; });
+      if (item) {
+        listEl.querySelectorAll('input[name="pick-info"]').forEach(function (r) { r.checked = false; });
+        var newCard = document.createElement('label');
+        newCard.className = 'pick-card pick-card--wide';
+        newCard.innerHTML =
+          '<input type="radio" name="pick-info" value="' + item.id + '" checked>' +
+          '<div class="pick-card-body">' +
+            '<div class="pick-card-title">' + esc(item.name) + '</div>' +
+            '<div class="pick-card-meta">' + esc(item.baseDate) + ' · ' + esc(item.cat) + '</div>' +
+          '</div>';
+        listEl.insertBefore(newCard, listEl.firstChild);
+      }
+    }
+    closeInfoModal();
+  });
+
+  // ── 분석 결과 찾기 모달 (상반기·하반기 공용) ──
+  var ANALYSIS_DATASETS = {
+    half1: [
+      { id: 'F1', baseDate: '2025.06.29', orthoName: '남원시 5권역 6월', scopeType: '농지이용 정보', scopeName: '농지이용(경작,비경작)_5권역', analysis: '남원시_5권역_농지활용 분석 상반기', task: '농지 활용 분석' },
+      { id: 'F2', baseDate: '2025.06.29', orthoName: '남원시 4권역 6월', scopeType: '농지이용 정보', scopeName: '농지이용(경작,비경작)_4권역', analysis: '남원시_4권역_농지활용 분석 상반기', task: '농지 활용 분석' },
+      { id: 'F3', baseDate: '2025.06.29', orthoName: '남원시 3권역 6월', scopeType: '농지이용 정보', scopeName: '농지이용(경작,비경작)_3권역', analysis: '남원시_3권역_농지활용 분석 상반기', task: '농지 활용 분석' },
+      { id: 'F7', baseDate: '2025.06.29', orthoName: '남원시 2권역 6월', scopeType: '농지이용 정보', scopeName: '농지이용(경작,비경작)_2권역', analysis: '남원시_2권역_농지활용 분석 상반기', task: '농지 활용 분석' },
+      { id: 'F8', baseDate: '2025.06.29', orthoName: '남원시 1권역 6월', scopeType: '농지이용 정보', scopeName: '농지이용(경작,비경작)_1권역', analysis: '남원시_1권역_농지활용 분석 상반기', task: '농지 활용 분석' }
+    ],
+    half2: [
+      { id: 'F4',  baseDate: '2025.11.05', orthoName: '남원시 5권역 11월', scopeType: '농지이용 정보', scopeName: '농지이용(경작,비경작)_5권역', analysis: '남원시_5권역_농지활용 분석 하반기', task: '농지 활용 분석' },
+      { id: 'F5',  baseDate: '2025.11.05', orthoName: '남원시 4권역 11월', scopeType: '농지이용 정보', scopeName: '농지이용(경작,비경작)_4권역', analysis: '남원시_4권역_농지활용 분석 하반기', task: '농지 활용 분석' },
+      { id: 'F6',  baseDate: '2025.11.05', orthoName: '남원시 3권역 11월', scopeType: '농지이용 정보', scopeName: '농지이용(경작,비경작)_3권역', analysis: '남원시_3권역_농지활용 분석 하반기', task: '농지 활용 분석' },
+      { id: 'F9',  baseDate: '2025.11.05', orthoName: '남원시 2권역 11월', scopeType: '농지이용 정보', scopeName: '농지이용(경작,비경작)_2권역', analysis: '남원시_2권역_농지활용 분석 하반기', task: '농지 활용 분석' },
+      { id: 'F10', baseDate: '2025.11.05', orthoName: '남원시 1권역 11월', scopeType: '농지이용 정보', scopeName: '농지이용(경작,비경작)_1권역', analysis: '남원시_1권역_농지활용 분석 하반기', task: '농지 활용 분석' }
+    ]
+  };
+
+  var currentAnalysisSection = null;
+
+  function renderAnalysisModalTable() {
+    var tbody = document.getElementById('as-tbody');
+    if (!tbody || !currentAnalysisSection) return;
+    var items = ANALYSIS_DATASETS[currentAnalysisSection] || [];
+    var currentId = (document.querySelector('input[name="pick-' + currentAnalysisSection + '"]:checked') || {}).value;
+    tbody.innerHTML = items.map(function (r) {
+      var checked = r.id === currentId ? ' checked' : '';
+      return '<tr>' +
+        '<td class="num"><input type="radio" name="as-modal" value="' + r.id + '" class="form-radio"' + checked + '></td>' +
+        '<td class="col-date">' + esc(r.baseDate) + '</td>' +
+        '<td>' + esc(r.orthoName) + '</td>' +
+        '<td>' + esc(r.scopeType) + '</td>' +
+        '<td>' + esc(r.scopeName) + '</td>' +
+        '<td>' + esc(r.analysis) + '</td>' +
+        '<td>' + esc(r.task) + '</td>' +
+      '</tr>';
+    }).join('');
+    document.getElementById('as-count').innerHTML = '총 <strong>' + items.length + '</strong>건 중 1~' + items.length + '행';
+  }
+
+  function openAnalysisModal(section) {
+    currentAnalysisSection = section;
+    document.getElementById('as-title').textContent = SECTION_LABEL[section] + ' 찾기';
+    renderAnalysisModalTable();
+    document.getElementById('analysis-search-modal').classList.add('show');
+  }
+  function closeAnalysisModal() {
+    document.getElementById('analysis-search-modal').classList.remove('show');
+  }
+
+  document.getElementById('as-close').addEventListener('click', closeAnalysisModal);
+  document.getElementById('as-cancel').addEventListener('click', closeAnalysisModal);
+  document.getElementById('analysis-search-modal').addEventListener('click', function (e) { if (e.target === this) closeAnalysisModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.getElementById('analysis-search-modal').classList.contains('show')) closeAnalysisModal();
+  });
+  document.getElementById('as-confirm').addEventListener('click', function () {
+    var sel = document.querySelector('input[name="as-modal"]:checked');
+    if (!sel || !currentAnalysisSection) { closeAnalysisModal(); return; }
+    var sec = currentAnalysisSection;
+    var listEl = document.getElementById('pick-' + sec);
+    var existing = listEl.querySelector('input[name="pick-' + sec + '"][value="' + sel.value + '"]');
+    var prevWide = listEl.querySelector('.pick-card--wide');
+    if (prevWide) prevWide.remove();
+    if (existing) {
+      existing.checked = true;
+    } else {
+      var items = ANALYSIS_DATASETS[sec] || [];
+      var item = items.find(function (x) { return x.id === sel.value; });
+      if (item) {
+        listEl.querySelectorAll('input[name="pick-' + sec + '"]').forEach(function (r) { r.checked = false; });
+        var newCard = document.createElement('label');
+        newCard.className = 'pick-card pick-card--wide';
+        newCard.innerHTML =
+          '<input type="radio" name="pick-' + sec + '" value="' + item.id + '" checked>' +
+          '<div class="pick-card-body">' +
+            '<div class="pick-card-title">' + esc(item.analysis) + '</div>' +
+            '<div class="pick-card-lines">' +
+              '<div class="pick-card-line pick-card-date"><span class="k">기준 일자</span><span class="v">' + esc(item.baseDate) + '</span></div>' +
+              '<div class="pick-card-line"><span class="k">정사영상</span><span class="v">' + esc(item.orthoName) + '</span></div>' +
+              '<div class="pick-card-line"><span class="k">분석범위</span><span class="v">' + esc(item.scopeName) + '</span></div>' +
+            '</div>' +
+          '</div>';
+        listEl.insertBefore(newCard, listEl.firstChild);
+      }
+    }
+    closeAnalysisModal();
+  });
+
+  document.querySelectorAll('.pick-more-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var section = btn.dataset.section;
+      if (section === 'info') openInfoModal();
+      else openAnalysisModal(section);
+    });
+  });
+
+  // 발급 요청 — 3개 모두 선택되어야 진행
+  document.getElementById('f-submit').addEventListener('click', function () {
+    var missing = [];
+    ['info', 'half1', 'half2'].forEach(function (s) {
+      if (!document.querySelector('input[name="pick-' + s + '"]:checked')) missing.push(SECTION_LABEL[s]);
+    });
+    if (missing.length) {
+      if (window.NotifyUI) NotifyUI.warn(missing.join(', ') + ' 항목을 선택해 주세요.', '필수 선택 누락');
+      return;
+    }
+    if (window.NotifyUI) NotifyUI.success('발급 요청이 접수됐어요. 목록에서 진행 상태를 확인할 수 있어요.', '발급 요청 접수');
+    setTimeout(function () { window.location.href = 'report-farmland.html'; }, 900);
+  });
+
+  // 스티키 액션 바
+  var actionsEl = document.querySelector('.report-form-actions');
+  if (actionsEl && 'IntersectionObserver' in window) {
+    var stickObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        actionsEl.classList.toggle('is-stuck', e.intersectionRatio < 1);
+      });
+    }, { threshold: [1] });
+    stickObs.observe(actionsEl);
+  }
+})();
+</script>
+</body>
+</html>
