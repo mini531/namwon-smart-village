@@ -530,11 +530,10 @@
     var grand = totals.reduce(function (a, t) { return a + t.total; }, 0);
     var thead = document.querySelector('#stats-severity-table thead');
     var tbody = document.querySelector('#stats-severity-table tbody');
-    thead.innerHTML = '<tr><th>심각도</th><th>포함 클래스</th><th class="num">건수(건)</th><th class="num">비율(%)</th></tr>';
+    thead.innerHTML = '<tr><th>심각도</th><th class="num">건수(건)</th><th class="num">비율(%)</th></tr>';
     tbody.innerHTML = totals.map(function (t) {
       var pct = grand > 0 ? (t.total / grand * 100) : 0;
-      var inClasses = CLASSES.filter(function (c) { return c.severity === t.key; }).map(function (c) { return c.label; }).join(', ') || '-';
-      return '<tr><td>' + t.label + '</td><td>' + inClasses + '</td><td class="num">' + formatInt(t.total) + '</td><td class="num">' + pct.toFixed(1) + '</td></tr>';
+      return '<tr><td>' + t.label + '</td><td class="num">' + formatInt(t.total) + '</td><td class="num">' + pct.toFixed(1) + '</td></tr>';
     }).join('');
   }
 
