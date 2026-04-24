@@ -251,8 +251,8 @@
 
       <!-- 사료작물(생산기) 탐지 전용 결과 패널 -->
 
-      <!-- 통계 기준 설정 -->
-      <div class="glass-card" data-panel="stats">
+      <!-- 통계 기준 설정 — 기본 접힘 -->
+      <div class="glass-card collapsed" data-panel="stats">
         <div class="glass-card-header">
           <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
           <span class="gc-title">통계 기준 설정</span>
@@ -298,15 +298,15 @@
         </div>
       </div>
 
-      <!-- 지역 별 면적 -->
-      <div class="glass-card" data-panel="stats">
+      <!-- 지역 별 면적 — 스택 마지막 카드: 남은 공간 채우고 body 내부 스크롤 -->
+      <div class="glass-card glass-card--grow" data-panel="stats">
         <div class="glass-card-header">
           <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           <span class="gc-title">지역 별 면적</span>
           <svg class="gc-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="glass-card-body gc-body--sm">
-          <table class="fc-table" id="fc-region-table">
+          <table class="fc-table fc-table--sticky-head" id="fc-region-table">
             <thead><tr><th>지역</th><th class="num">면적(m²)</th><th>비율</th></tr></thead>
             <tbody></tbody>
           </table>
@@ -344,15 +344,15 @@
         </div>
       </div>
 
-      <!-- 지역 별 개체 수 -->
-      <div class="glass-card" data-panel="silage">
+      <!-- 지역 별 개체 수 — 곤포사일리지 스택 마지막 카드: 남은 공간 채우고 body 내부 스크롤 -->
+      <div class="glass-card glass-card--grow" data-panel="silage">
         <div class="glass-card-header">
           <svg class="gc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           <span class="gc-title">지역 별 개체 수</span>
           <svg class="gc-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="glass-card-body gc-body--sm">
-          <table class="fc-table" id="sb-region-table">
+          <table class="fc-table fc-table--sticky-head" id="sb-region-table">
             <thead><tr><th>지역</th><th class="num">개체 수</th><th>비율</th></tr></thead>
             <tbody></tbody>
           </table>
@@ -612,9 +612,9 @@
   // 사료작물(생육기/생산기) — 우측·하단 패널을 공용으로 사용
   var FEED_CROP_CATS = { feed_crop_growth: true, feed_crop_harvest: true };
   // 우측 통계 패널(통계기준/분석개요/파이/지역별)을 공유하는 카테고리 — 클래스만 다르게
-  var STATS_PANEL_CATS = { feed_crop_growth: true, feed_crop_harvest: true, farmland: true };
+  var STATS_PANEL_CATS = { feed_crop_growth: true, feed_crop_harvest: true, farmland: true, greenhouse: true };
   // 하단 행정정보 테이블 — 카테고리별 컬럼·데이터가 다르므로 스키마 분기
-  var ADMIN_TABLE_CATS = { feed_crop_growth: true, feed_crop_harvest: true, farmland: true, silage_bale: true };
+  var ADMIN_TABLE_CATS = { feed_crop_growth: true, feed_crop_harvest: true, farmland: true, silage_bale: true, greenhouse: true };
 
   // detail job → 현재 활성 카테고리 (우측 패널 스위치 기준)
   function activeCategoryOfDetail() {
@@ -1349,6 +1349,13 @@
       items: [
         { label: '곤포사일리지', color: '#bf9000' }
       ]
+    },
+    greenhouse: {
+      shape: 'poly',
+      items: [
+        { label: '비닐하우스(단동)', color: '#e6a42b' },
+        { label: '비닐하우스(다동)', color: '#c88c5c' }
+      ]
     }
   };
 
@@ -1478,15 +1485,20 @@
   var SILAGE_BALE_CLASSES = [
     { key: 'Silage_Bale', label: '곤포사일리지', color: '#bf9000' }
   ];
+  var GREENHOUSE_CLASSES = [
+    { key: 'Greenhouse_Single', label: '비닐하우스(단동)', color: '#e6a42b' },
+    { key: 'Greenhouse_Multi',  label: '비닐하우스(다동)', color: '#c88c5c' }
+  ];
   function FC_CLASS_KEYS() {
     var cat = activeCategoryOfDetail();
     if (cat === 'feed_crop_growth') return FC_CLASSES_GROWTH;
     if (cat === 'farmland') return FARMLAND_CLASSES;
     if (cat === 'silage_bale') return SILAGE_BALE_CLASSES;
+    if (cat === 'greenhouse') return GREENHOUSE_CLASSES;
     return FC_CLASSES_HARVEST;
   }
   // 체크된 클래스 (기본 전체 — key 기반으로 카테고리별 자동 전환)
-  var fcEnabledClasses = new Set(['IRG', 'Rye', 'Corn', 'Sudan_Grass', 'Cultivated', 'Uncultivated', 'Silage_Bale']);
+  var fcEnabledClasses = new Set(['IRG', 'Rye', 'Corn', 'Sudan_Grass', 'Cultivated', 'Uncultivated', 'Silage_Bale', 'Greenhouse_Single', 'Greenhouse_Multi']);
 
   function renderStatsPanel() {
     buildFcCheckList();
@@ -1880,6 +1892,38 @@
       '<th>AI 생산량(kg)</th>' +
     '</tr>';
 
+  // ====== 하단 행정정보 테이블 (비닐하우스 탐지) ======
+  // 영농시설 등록부(필지별) × AI 단동/다동 탐지 결과 매칭
+  var GH_ADMIN_ROWS = [
+    { no: 218,  year: 2015, name: '-', pnuArea: '-', ghArea: 9855.2, biz: '-', ghType: '단동', unitCnt: 15, cropL: '과수', cropM: '샤인머스켓', aiSingle: '-', aiMulti: '유', note: '-' },
+    { no: 220,  year: 1995, name: '-', pnuArea: '-', ghArea: 1806.2, biz: '-', ghType: '연동', unitCnt: 3,  cropL: '채소', cropM: '기타채소',   aiSingle: '유', aiMulti: '-', note: '-' },
+    { no: 277,  year: 2014, name: '-', pnuArea: '-', ghArea: 3359.2, biz: '-', ghType: '단동', unitCnt: 6,  cropL: '과수', cropM: '샤인머스켓', aiSingle: '-', aiMulti: '-', note: '-' },
+    { no: 362,  year: '-',  name: '-', pnuArea: '-', ghArea: 929,    biz: '-', ghType: '단동', unitCnt: 2,  cropL: '채소', cropM: '고추',       aiSingle: '-', aiMulti: '-', note: '-' },
+    { no: 912,  year: 2016, name: '-', pnuArea: '-', ghArea: 3000.7, biz: '-', ghType: '단동', unitCnt: 5,  cropL: '기타', cropM: '기타',       aiSingle: '-', aiMulti: '-', note: '-' },
+    { no: 946,  year: 2005, name: '-', pnuArea: '-', ghArea: 439.7,  biz: '-', ghType: '단동', unitCnt: 1,  cropL: '기타', cropM: '기타',       aiSingle: '유', aiMulti: '-', note: '-' },
+    { no: 947,  year: 2005, name: '-', pnuArea: '-', ghArea: 2714,   biz: '-', ghType: '단동', unitCnt: 5,  cropL: '채소', cropM: '고추',       aiSingle: '-', aiMulti: '-', note: '-' },
+    { no: 948,  year: 2005, name: '-', pnuArea: '-', ghArea: 2058,   biz: '-', ghType: '단동', unitCnt: 4,  cropL: '채소', cropM: '고추',       aiSingle: '-', aiMulti: '-', note: '-' },
+    { no: 1013, year: 2005, name: '-', pnuArea: '-', ghArea: 895.9,  biz: '-', ghType: '단동', unitCnt: 2,  cropL: '-',    cropM: '-',          aiSingle: '-', aiMulti: '-', note: '-' },
+    { no: 1086, year: 2019, name: '-', pnuArea: '-', ghArea: 3623.4, biz: '-', ghType: '단동', unitCnt: 6,  cropL: '과수', cropM: '기타과수',   aiSingle: '-', aiMulti: '유', note: '-' }
+  ];
+
+  var GH_ADMIN_THEAD =
+    '<tr>' +
+      '<th>연번</th>' +
+      '<th>연도</th>' +
+      '<th>이름</th>' +
+      '<th>지적(㎡)</th>' +
+      '<th>하우스면적(㎡)</th>' +
+      '<th>사업명</th>' +
+      '<th>하우스형태</th>' +
+      '<th>동수</th>' +
+      '<th>재배작목 대분류</th>' +
+      '<th>재배작목 중분류</th>' +
+      '<th>AI 단동 유무</th>' +
+      '<th>AI 다동 유무</th>' +
+      '<th>비고</th>' +
+    '</tr>';
+
   // 카테고리별 하단 테이블 검색 필드 옵션
   var BP_SEARCH_FIELDS = {
     feed_crop_harvest: ['전체', '경영체명', '경영주명', '농업경영체번호', '작업지명'],
@@ -1889,7 +1933,8 @@
       '전체', '연번', '구분', '경영체명', '경영대표', '위탁작업단명', '작업단대표',
       '재배자명', '주소', '농업경영체번호', '생년월일', '연락처',
       '읍면동', '리', '산', '본번', '부번', '신청면적(㎡)', '신청재배작물'
-    ]
+    ],
+    greenhouse: ['전체', '연번', '연도', '이름', '하우스형태', '재배작목 대분류', '재배작목 중분류', '사업명']
   };
 
   function renderBottomPanel() {
@@ -1922,6 +1967,8 @@
         crumbs = { catLabel: '농지 활용 분석', modelLabel: 'YOLO V11-농지 활용 분석' };
       } else if (cat === 'silage_bale') {
         crumbs = { catLabel: '곤포사일리지 탐지', modelLabel: 'YOLOv11-곤포사일리지' };
+      } else if (cat === 'greenhouse') {
+        crumbs = { catLabel: '비닐하우스 탐지', modelLabel: 'YOLO v11-비닐하우스-단동·다동' };
       } else if (cat === 'feed_crop_growth') {
         crumbs = { catLabel: '사료작물(생육기) 탐지', modelLabel: 'YOLOv11-4종-생육' };
       } else {
@@ -1974,6 +2021,31 @@
         '</tr>';
       }).join('');
       if (countEl) countEl.textContent = '총 ' + SB_ADMIN_ROWS.length + '건 중 1~' + SB_ADMIN_ROWS.length + '행';
+    } else if (cat === 'greenhouse') {
+      thead.innerHTML = GH_ADMIN_THEAD;
+      tbody.innerHTML = GH_ADMIN_ROWS.map(function (r) {
+        var areaCell = (typeof r.ghArea === 'number')
+          ? r.ghArea.toLocaleString('ko-KR', { maximumFractionDigits: 1 })
+          : r.ghArea;
+        return '<tr>' +
+          '<td class="num">' + r.no + '</td>' +
+          '<td class="num">' + r.year + '</td>' +
+          '<td>' + r.name + '</td>' +
+          '<td>' + r.pnuArea + '</td>' +
+          '<td class="num">' + areaCell + '</td>' +
+          '<td>' + r.biz + '</td>' +
+          '<td>' + r.ghType + '</td>' +
+          '<td class="num">' + r.unitCnt + '</td>' +
+          '<td>' + r.cropL + '</td>' +
+          '<td>' + r.cropM + '</td>' +
+          '<td>' + r.aiSingle + '</td>' +
+          '<td>' + r.aiMulti + '</td>' +
+          '<td>' + r.note + '</td>' +
+        '</tr>';
+      }).join('');
+      // 2권역은 총 195건, 4권역은 152건, 5권역은 118건 — detail job 의 detection_count 반영
+      var total = detailJob && detailJob.detection_count ? detailJob.detection_count : GH_ADMIN_ROWS.length;
+      if (countEl) countEl.textContent = '총 ' + formatInt(total) + '건 중 1~' + GH_ADMIN_ROWS.length + '행';
     } else {
       // 사료작물 (생육기/생산기 공용 행정정보)
       thead.innerHTML = FC_ADMIN_THEAD;

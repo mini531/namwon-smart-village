@@ -967,6 +967,52 @@
   color: rgba(255, 255, 255, 0.65);
   background: rgba(255, 255, 255, 0.04);
 }
+/* 스크롤 컨테이너 내부에서 헤더 고정 — 지역별 면적/개체수 카드처럼 body 가 내부 스크롤일 때 사용.
+   sticky 기반은 브라우저 간 편차로 값이 헤더 위로 비치는 문제가 있어,
+   table 자체를 flex column 으로 만들고 tbody 만 내부 스크롤하는 구조로 해결.
+   - 부모 glass-card-body 는 overflow:hidden + flex column
+   - thead 는 flex-shrink:0 로 상단 고정 (sticky 불필요)
+   - tbody 가 overflow-y:auto 로 실제 스크롤 담당
+   - tr 은 display:table + table-layout:fixed 로 컬럼 정렬 유지 */
+.glass-card--grow .glass-card-body:has(.fc-table--sticky-head) {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.fc-table--sticky-head {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.fc-table--sticky-head thead {
+  display: block;
+  flex-shrink: 0;
+  background: var(--bg-glass);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.fc-table--sticky-head tbody {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.fc-table--sticky-head thead tr,
+.fc-table--sticky-head tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+.fc-table--sticky-head thead th {
+  background: var(--bg-glass);
+}
+/* tbody 자체 스크롤바 스타일 — 카드 전체 스크롤과 동일한 얇은 흰 톤 */
+.fc-table--sticky-head tbody::-webkit-scrollbar { width: 4px; }
+.fc-table--sticky-head tbody::-webkit-scrollbar-track { background: transparent; }
+.fc-table--sticky-head tbody::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 3px; }
 .fc-table td.num, .fc-table th.num { text-align: right; }
 .fc-table tr.muted td { color: rgba(255, 255, 255, 0.4); }
 .fc-table tfoot td {

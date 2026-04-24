@@ -2105,7 +2105,9 @@ img.modal-thumb,
 .db-left-stack::-webkit-scrollbar { width: 3px; }
 .db-left-stack::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 3px; }
 
-/* 우측 상단 스택 — 결과 패널은 도구 바보다 바깥(최우측)에 고정 */
+/* 우측 상단 스택 — 결과 패널은 도구 바보다 바깥(최우측)에 고정.
+   스택 자체는 스크롤하지 않고(지도 휠 조작과 충돌) 뷰포트 높이만 제한.
+   카드가 넘치면 .glass-card--grow 를 쓴 마지막 카드의 body 가 내부 스크롤. */
 .db-right-stack {
   position: absolute;
   right: 14px;
@@ -2116,6 +2118,8 @@ img.modal-thumb,
   flex-direction: column;
   gap: 10px;
   pointer-events: none;
+  max-height: calc(100vh - var(--header-height) - 76px);
+  overflow: hidden;
 }
 
 .db-right-stack > * { pointer-events: all; }
