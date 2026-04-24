@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>도로안전(정사영상) 통계 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/page-stats.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="stats-layout">
+
+    <!-- 좌측 설정 패널 -->
+    <aside class="stats-config">
+      <div class="stats-config-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19l4-14h8l4 14"/><path d="M12 5v14"/><path d="M9 11h6"/></svg>
+        도로안전(정사영상) 통계
+      </div>
+      <div class="stats-config-sub">드론 정사영상 AI 추론 결과의 도로 결함 탐지 건수를 집계해요</div>
+
+      <!-- 클래스 -->
+      <div class="stats-section">
+        <div class="stats-section-title">클래스</div>
+        <div class="stats-class-list" id="stats-class-list">
+          <label class="stats-class-item is-all">
+            <input type="checkbox" class="form-check" id="stats-class-all" checked>
+            <span>전체</span>
+          </label>
+          <label class="stats-class-item">
+            <input type="checkbox" class="form-check stats-class-cb" value="Pothole" checked>
+            <span>포트홀</span>
+          </label>
+          <label class="stats-class-item">
+            <input type="checkbox" class="form-check stats-class-cb" value="Crack" checked>
+            <span>크랙</span>
+          </label>
+          <label class="stats-class-item">
+            <input type="checkbox" class="form-check stats-class-cb" value="Void_Suspected" checked>
+            <span>공동의심</span>
+          </label>
+          <label class="stats-class-item">
+            <input type="checkbox" class="form-check stats-class-cb" value="Patch" checked>
+            <span>보수흔적</span>
+          </label>
+          <label class="stats-class-item">
+            <input type="checkbox" class="form-check stats-class-cb" value="Litter" checked>
+            <span>쓰레기</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 기준 -->
+      <div class="stats-section">
+        <div class="stats-section-title">
+          <span>기준 (최근 분석 결과)</span>
+          <button type="button" class="btn btn-secondary btn-sm" id="stats-more">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            더 보기
+          </button>
+        </div>
+        <div class="stats-job-list" id="stats-job-list">
+          <label class="stats-job-card">
+            <input type="radio" name="stats-job" value="J012" checked>
+            <div class="stats-job-card-info">
+              <div class="stats-job-card-title">도통동 · 도로망 4월</div>
+              <div class="stats-job-card-meta">2026.04.15 · YOLOv8-Road-Ortho v2.1</div>
+            </div>
+          </label>
+          <label class="stats-job-card">
+            <input type="radio" name="stats-job" value="J010">
+            <div class="stats-job-card-info">
+              <div class="stats-job-card-title">향교동 · 도로망 4월</div>
+              <div class="stats-job-card-meta">2026.04.13 · YOLOv8-Road-Ortho v2.1</div>
+            </div>
+          </label>
+          <label class="stats-job-card">
+            <input type="radio" name="stats-job" value="J008">
+            <div class="stats-job-card-info">
+              <div class="stats-job-card-title">중앙동 · 도로망 4월</div>
+              <div class="stats-job-card-meta">2026.04.11 · YOLOv8-Road-Ortho v2.1</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- 액션 -->
+      <div class="stats-actions">
+        <button type="button" class="btn btn-secondary" id="stats-reset">초기화</button>
+        <button type="button" class="btn btn-primary" id="stats-run">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          통계 보기
+        </button>
+      </div>
+    </aside>
+
+    <!-- 우측 결과 영역 -->
+    <main class="stats-main">
+      <div class="stats-empty" id="stats-empty">
+        <svg width="88" height="88" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <line x1="9" y1="21" x2="9" y2="9"/>
+          <line x1="15" y1="21" x2="15" y2="13"/>
+          <line x1="3" y1="9" x2="21" y2="9"/>
+        </svg>
+        <p>AI 분석이 완료된 후 이용할 수 있어요</p>
+        <div class="stats-empty-sub">좌측에서 클래스·기준 분석을 선택하고 <strong>통계 보기</strong>를 눌러 주세요</div>
+      </div>
+
+      <div class="stats-result" id="stats-result" hidden>
+        <div class="card">
+          <div class="history-tabs" role="tablist">
+            <button type="button" class="history-tab active" data-tab="region" role="tab">지역별 통계</button>
+            <button type="button" class="history-tab" data-tab="class" role="tab">클래스별 통계</button>
+            <button type="button" class="history-tab" data-tab="severity" role="tab">심각도별 통계</button>
+          </div>
+          <div class="history-panel" id="panel-region">
+            <div class="stats-chart-body">
+              <div class="stats-chart-wrap" id="stats-chart"></div>
+            </div>
+            <div class="stats-table-head">
+              <div class="stats-table-title">지역별 집계</div>
+              <button type="button" class="btn btn-secondary btn-sm" id="stats-excel">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                엑셀 다운로드
+              </button>
+            </div>
+            <div class="stats-table-wrap">
+              <table class="data-table" id="stats-table"><thead></thead><tbody></tbody></table>
+            </div>
+          </div>
+          <div class="history-panel hidden" id="panel-class">
+            <div class="stats-chart-body">
+              <div class="stats-chart-wrap" id="stats-chart-class"></div>
+            </div>
+            <div class="stats-table-head">
+              <div class="stats-table-title">클래스별 집계</div>
+            </div>
+            <div class="stats-table-wrap">
+              <table class="data-table" id="stats-class-table"><thead></thead><tbody></tbody></table>
+            </div>
+          </div>
+          <div class="history-panel hidden" id="panel-severity">
+            <div class="stats-chart-body">
+              <div class="stats-chart-wrap" id="stats-chart-severity"></div>
+            </div>
+            <div class="stats-table-head">
+              <div class="stats-table-title">심각도별 집계</div>
+            </div>
+            <div class="stats-table-wrap">
+              <table class="data-table" id="stats-severity-table"><thead></thead><tbody></tbody></table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 더 보기 모달 -->
+    <div class="modal-backdrop" id="stats-search-modal" aria-hidden="true">
+      <div class="modal-card modal-card--xl">
+        <div class="modal-head">
+          <div class="title">분석 결과 찾기</div>
+          <button type="button" class="close-btn" id="stats-search-close" aria-label="닫기">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="board-toolbar">
+            <div class="board-field board-field--search">
+              <label for="sm-search-input">검색어</label>
+              <div class="board-field-row">
+                <select class="board-search-select" id="sm-search-field">
+                  <option value="all">전체</option>
+                  <option value="ortho">정사 영상 명</option>
+                  <option value="analysis">분석명</option>
+                  <option value="task">분석 과제명</option>
+                </select>
+                <input type="text" class="board-search-input" id="sm-search-input" placeholder="검색어를 입력하세요.">
+              </div>
+            </div>
+            <div class="board-field">
+              <label for="sm-cat">분류</label>
+              <select class="board-search-select" id="sm-cat">
+                <option value="all">전체</option>
+                <option value="road_ortho">도로안전(정사영상)</option>
+              </select>
+            </div>
+            <div class="board-field">
+              <label for="runnerType">실행자</label>
+              <select class="board-search-select form-select" id="runnerType" name="runnerType">
+                <option value="" selected>전체</option>
+                <option value="01">내 분석 결과</option>
+                <option value="02">공유 받은 분석 결과</option>
+              </select>
+            </div>
+            <div class="board-field board-field--period">
+              <label>기준일</label>
+              <div class="board-period-row">
+                <div class="board-period-dates">
+                  <input type="date" class="board-date-input" id="sm-from" placeholder="YYYY-MM-DD">
+                  <span class="board-period-sep">~</span>
+                  <input type="date" class="board-date-input" id="sm-to" placeholder="YYYY-MM-DD">
+                </div>
+                <div class="board-period-quicks">
+                  <button type="button" class="board-quick-btn active" data-months="0">전체</button>
+                  <button type="button" class="board-quick-btn" data-months="1">1개월</button>
+                  <button type="button" class="board-quick-btn" data-months="3">3개월</button>
+                  <button type="button" class="board-quick-btn" data-months="6">6개월</button>
+                  <button type="button" class="board-quick-btn" data-months="12">12개월</button>
+                </div>
+              </div>
+            </div>
+            <div class="board-toolbar-actions board-toolbar-actions--end">
+              <button type="button" class="btn btn-secondary" id="sm-reset">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+                초기화
+              </button>
+              <button type="button" class="btn btn-accent" id="sm-search">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                검색
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">AI 분석 내역</div></div>
+            <div class="card-body card-body--flush">
+              <div class="stats-table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th style="width:60px; text-align:center;">선택</th>
+                      <th>기준 일자</th>
+                      <th>정사 영상 명</th>
+                      <th>분석 범위 유형</th>
+                      <th>분석 범위 명</th>
+                      <th>분석명</th>
+                      <th>분석 과제명</th>
+                    </tr>
+                  </thead>
+                  <tbody id="stats-search-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="board-paginator board-paginator--embedded">
+              <button type="button" class="board-page-btn">처음</button>
+              <button type="button" class="board-page-btn">이전</button>
+              <div class="board-page-pages"><button type="button" class="board-page-btn active">1</button></div>
+              <button type="button" class="board-page-btn">다음</button>
+              <button type="button" class="board-page-btn">마지막</button>
+              <div class="board-page-size-wrap">
+                <select class="board-page-size"><option value="5">5</option><option value="10">10</option><option value="20">20</option></select>
+                <span>페이지 크기</span>
+              </div>
+              <div class="board-count" id="stats-search-count">총 <strong>0</strong>건 중 0~0행</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-secondary" id="stats-search-cancel">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            취소
+          </button>
+          <button type="button" class="btn btn-primary" id="stats-search-confirm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var REGIONS = [
+    '금동', '갈치동', '고죽동', '광치동', '금지면', '내척동', '노암동', '대강면', '대산면', '덕과면',
+    '도통동', '동충동', '보절면', '사매면', '산곡동', '산내면', '산동면', '송동면', '수지면', '식정동',
+    '신정동', '신촌동', '쌍교동', '아영면', '어현동', '왕정동', '용정동', '운봉읍', '월락동', '이백면',
+    '인월면', '조산동', '주생면', '주천면', '죽항동', '천거동', '하정동', '향교동', '화정동'
+  ];
+
+  var CLASSES = [
+    { key: 'Pothole',        label: '포트홀',   color: '#E63946', severity: 'high' },
+    { key: 'Crack',          label: '크랙',     color: '#F4A261', severity: 'medium' },
+    { key: 'Void_Suspected', label: '공동의심', color: '#9B5DE5', severity: 'high' },
+    { key: 'Patch',          label: '보수흔적', color: '#6C757D', severity: 'low' },
+    { key: 'Litter',         label: '쓰레기',   color: '#FFB703', severity: 'medium' }
+  ];
+
+  var SEVERITY_LEVELS = [
+    { key: 'high',   label: '고위험', color: '#C8102E' },
+    { key: 'medium', label: '주의',   color: '#F4A261' },
+    { key: 'low',    label: '양호',   color: '#2A9D8F' }
+  ];
+
+  // 기준 작업별 지역 × 클래스 탐지 건수 (건)
+  // J012 = 도통동_도로망_4월 — 도통동에 결함 집중
+  // J010 = 향교동_도로망_4월 — 향교동 중심, 인접 동충동·노암동 일부
+  // J008 = 중앙동_도로망_4월 — 중앙동·죽항동 중심
+  var JOB_DATA = {
+    J012: {
+      '도통동': { Pothole: 6, Crack: 11, Void_Suspected: 3, Patch: 4, Litter: 2 },
+      '노암동': { Pothole: 2, Crack:  4, Void_Suspected: 1, Patch: 1, Litter: 1 }
+    },
+    J010: {
+      '향교동': { Pothole: 4, Crack:  9, Void_Suspected: 2, Patch: 3, Litter: 3 },
+      '동충동': { Pothole: 1, Crack:  2, Void_Suspected: 0, Patch: 1, Litter: 0 }
+    },
+    J008: {
+      '중앙동': { Pothole: 5, Crack:  7, Void_Suspected: 2, Patch: 2, Litter: 4 },
+      '죽항동': { Pothole: 2, Crack:  3, Void_Suspected: 1, Patch: 0, Litter: 1 }
+    }
+  };
+
+  function getSelectedJobId() {
+    var el = document.querySelector('input[name="stats-job"]:checked');
+    return el ? el.value : 'J012';
+  }
+  function getEnabledClassKeys() {
+    return Array.prototype.map.call(document.querySelectorAll('.stats-class-cb:checked'), function (cb) { return cb.value; });
+  }
+
+  function buildMatrix() {
+    var jobId = getSelectedJobId();
+    var enabled = getEnabledClassKeys();
+    var jobByRegion = JOB_DATA[jobId] || {};
+    return REGIONS.map(function (r) {
+      var row = { region: r, values: {}, total: 0 };
+      var jr = jobByRegion[r] || {};
+      CLASSES.forEach(function (c) {
+        if (enabled.indexOf(c.key) === -1) { row.values[c.key] = 0; return; }
+        var v = jr[c.key] || 0;
+        row.values[c.key] = v;
+        row.total += v;
+      });
+      return row;
+    });
+  }
+
+  function formatInt(n) {
+    return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  var chart = null;
+  function renderChart(matrix) {
+    var el = document.getElementById('stats-chart');
+    var enabled = getEnabledClassKeys();
+    var visible = CLASSES.filter(function (c) { return enabled.indexOf(c.key) !== -1; });
+    if (!chart) { chart = echarts.init(el); }
+    chart.setOption({
+      color: visible.map(function (c) { return c.color; }),
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+        textStyle: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 12 },
+        valueFormatter: function (v) { return formatInt(v) + ' 건'; } },
+      legend: { data: visible.map(function (c) { return c.label; }), bottom: 4,
+        textStyle: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 11 } },
+      grid: { left: 56, right: 24, top: 48, bottom: 72 },
+      xAxis: { type: 'category', data: REGIONS,
+        axisLabel: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 10, interval: 0, rotate: 50 },
+        axisTick: { alignWithLabel: true } },
+      yAxis: { type: 'value', name: '건수(건)', nameGap: 16,
+        nameTextStyle: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 11, color: '#6C757D', align: 'left' },
+        axisLabel: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 10, formatter: function (v) { return formatInt(v); } },
+        splitLine: { lineStyle: { color: 'rgba(0,0,0,0.06)' } },
+        minInterval: 1 },
+      series: visible.map(function (c) {
+        return { name: c.label, type: 'bar', stack: 'total', emphasis: { focus: 'series' },
+          data: matrix.map(function (r) { return r.values[c.key] || 0; }) };
+      })
+    }, true);
+    chart.resize();
+  }
+
+  function renderTable(matrix) {
+    var enabled = getEnabledClassKeys();
+    var visible = CLASSES.filter(function (c) { return enabled.indexOf(c.key) !== -1; });
+    var thead = document.querySelector('#stats-table thead');
+    var tbody = document.querySelector('#stats-table tbody');
+    thead.innerHTML = '<tr><th>지역</th><th class="num">전체 건수(건)</th>' +
+      visible.map(function (c) { return '<th class="num">' + c.label + '(건)</th>'; }).join('') + '</tr>';
+    tbody.innerHTML = matrix.map(function (r) {
+      return '<tr><td>' + r.region + '</td><td class="num">' + formatInt(r.total) + '</td>' +
+        visible.map(function (c) { return '<td class="num">' + formatInt(r.values[c.key] || 0) + '</td>'; }).join('') + '</tr>';
+    }).join('');
+  }
+
+  var classChart = null;
+  function classTotals(matrix) {
+    return CLASSES.map(function (c) {
+      var sum = 0;
+      matrix.forEach(function (r) { sum += r.values[c.key] || 0; });
+      return { key: c.key, label: c.label, color: c.color, total: sum };
+    });
+  }
+  function renderClassChart(matrix) {
+    var el = document.getElementById('stats-chart-class');
+    var totals = classTotals(matrix);
+    if (!classChart) { classChart = echarts.init(el); }
+    classChart.setOption({
+      color: totals.map(function (t) { return t.color; }),
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+        textStyle: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 12 },
+        valueFormatter: function (v) { return formatInt(v) + ' 건'; } },
+      grid: { left: 56, right: 24, top: 48, bottom: 56 },
+      xAxis: { type: 'category', data: totals.map(function (t) { return t.label; }),
+        axisLabel: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 11, interval: 0 },
+        axisTick: { alignWithLabel: true } },
+      yAxis: { type: 'value', name: '건수(건)', nameGap: 16,
+        nameTextStyle: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 11, color: '#6C757D', align: 'left' },
+        axisLabel: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 10, formatter: function (v) { return formatInt(v); } },
+        splitLine: { lineStyle: { color: 'rgba(0,0,0,0.06)' } },
+        minInterval: 1 },
+      series: [{ type: 'bar', barMaxWidth: 48, barCategoryGap: '40%',
+        itemStyle: { color: function (p) { return totals[p.dataIndex].color; } },
+        data: totals.map(function (t) { return t.total; }) }]
+    }, true);
+    classChart.resize();
+  }
+  function renderClassTable(matrix) {
+    var totals = classTotals(matrix);
+    var grand = totals.reduce(function (a, t) { return a + t.total; }, 0);
+    var thead = document.querySelector('#stats-class-table thead');
+    var tbody = document.querySelector('#stats-class-table tbody');
+    thead.innerHTML = '<tr><th>클래스</th><th class="num">건수(건)</th><th class="num">비율(%)</th></tr>';
+    tbody.innerHTML = totals.map(function (t) {
+      var pct = grand > 0 ? (t.total / grand * 100) : 0;
+      return '<tr><td>' + t.label + '</td><td class="num">' + formatInt(t.total) + '</td><td class="num">' + pct.toFixed(1) + '</td></tr>';
+    }).join('');
+  }
+
+  function downloadCsv(matrix) {
+    var enabled = getEnabledClassKeys();
+    var visible = CLASSES.filter(function (c) { return enabled.indexOf(c.key) !== -1; });
+    var header = ['지역', '전체 건수(건)'].concat(visible.map(function (c) { return c.label + '(건)'; }));
+    var rows = matrix.map(function (r) { return [r.region, r.total].concat(visible.map(function (c) { return r.values[c.key] || 0; })); });
+    var csv = [header].concat(rows).map(function (row) {
+      return row.map(function (v) { var s = String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',');
+    }).join('\n');
+    var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = '도로안전_정사영상_통계_' + getSelectedJobId() + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
+
+  // 이벤트
+  document.getElementById('stats-class-all').addEventListener('change', function () {
+    var on = this.checked;
+    document.querySelectorAll('.stats-class-cb').forEach(function (cb) { cb.checked = on; });
+  });
+  document.querySelectorAll('.stats-class-cb').forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      var all = Array.prototype.every.call(document.querySelectorAll('.stats-class-cb'), function (c) { return c.checked; });
+      document.getElementById('stats-class-all').checked = all;
+    });
+  });
+
+  document.getElementById('stats-reset').addEventListener('click', function () {
+    document.getElementById('stats-class-all').checked = true;
+    document.querySelectorAll('.stats-class-cb').forEach(function (cb) { cb.checked = true; });
+    var firstJob = document.querySelector('input[name="stats-job"]');
+    if (firstJob) firstJob.checked = true;
+    document.getElementById('stats-empty').hidden = false;
+    document.getElementById('stats-result').hidden = true;
+    if (chart) { chart.dispose(); chart = null; }
+    if (classChart) { classChart.dispose(); classChart = null; }
+    if (severityChart) { severityChart.dispose(); severityChart = null; }
+  });
+
+  document.getElementById('stats-run').addEventListener('click', function () {
+    document.getElementById('stats-empty').hidden = true;
+    document.getElementById('stats-result').hidden = false;
+    var matrix = buildMatrix();
+    renderChart(matrix);
+    renderTable(matrix);
+  });
+
+  // ── 심각도 ──
+  var severityChart = null;
+  function severityTotals(matrix) {
+    var enabled = getEnabledClassKeys();
+    return SEVERITY_LEVELS.map(function (sev) {
+      var sum = 0;
+      CLASSES.forEach(function (c) {
+        if (c.severity !== sev.key) return;
+        if (enabled.indexOf(c.key) === -1) return;
+        matrix.forEach(function (r) { sum += r.values[c.key] || 0; });
+      });
+      return { key: sev.key, label: sev.label, color: sev.color, total: sum };
+    });
+  }
+  function renderSeverityChart(matrix) {
+    var el = document.getElementById('stats-chart-severity');
+    var totals = severityTotals(matrix);
+    if (!severityChart) { severityChart = echarts.init(el); }
+    severityChart.setOption({
+      color: totals.map(function (t) { return t.color; }),
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+        textStyle: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 12 },
+        valueFormatter: function (v) { return formatInt(v) + ' 건'; } },
+      grid: { left: 56, right: 24, top: 48, bottom: 56 },
+      xAxis: { type: 'category', data: totals.map(function (t) { return t.label; }),
+        axisLabel: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 11, interval: 0 },
+        axisTick: { alignWithLabel: true } },
+      yAxis: { type: 'value', name: '건수(건)', nameGap: 16,
+        nameTextStyle: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 11, color: '#6C757D', align: 'left' },
+        axisLabel: { fontFamily: 'Noto Sans KR, Inter, sans-serif', fontSize: 10, formatter: function (v) { return formatInt(v); } },
+        splitLine: { lineStyle: { color: 'rgba(0,0,0,0.06)' } },
+        minInterval: 1 },
+      series: [{ type: 'bar', barMaxWidth: 72, barCategoryGap: '40%',
+        itemStyle: { color: function (p) { return totals[p.dataIndex].color; } },
+        data: totals.map(function (t) { return t.total; }) }]
+    }, true);
+    severityChart.resize();
+  }
+  function renderSeverityTable(matrix) {
+    var totals = severityTotals(matrix);
+    var grand = totals.reduce(function (a, t) { return a + t.total; }, 0);
+    var thead = document.querySelector('#stats-severity-table thead');
+    var tbody = document.querySelector('#stats-severity-table tbody');
+    thead.innerHTML = '<tr><th>심각도</th><th>포함 클래스</th><th class="num">건수(건)</th><th class="num">비율(%)</th></tr>';
+    tbody.innerHTML = totals.map(function (t) {
+      var pct = grand > 0 ? (t.total / grand * 100) : 0;
+      var inClasses = CLASSES.filter(function (c) { return c.severity === t.key; }).map(function (c) { return c.label; }).join(', ') || '-';
+      return '<tr><td>' + t.label + '</td><td>' + inClasses + '</td><td class="num">' + formatInt(t.total) + '</td><td class="num">' + pct.toFixed(1) + '</td></tr>';
+    }).join('');
+  }
+
+  document.querySelectorAll('.history-tab').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var tab = btn.dataset.tab;
+      document.querySelectorAll('.history-tab').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('panel-region').classList.toggle('hidden', tab !== 'region');
+      document.getElementById('panel-class').classList.toggle('hidden', tab !== 'class');
+      document.getElementById('panel-severity').classList.toggle('hidden', tab !== 'severity');
+      var matrix = buildMatrix();
+      if (tab === 'class') { renderClassChart(matrix); renderClassTable(matrix); }
+      if (tab === 'severity') { renderSeverityChart(matrix); renderSeverityTable(matrix); }
+    });
+  });
+
+  document.getElementById('stats-excel').addEventListener('click', function () { downloadCsv(buildMatrix()); });
+
+  window.addEventListener('resize', function () {
+    if (chart) chart.resize();
+    if (classChart) classChart.resize();
+    if (severityChart) severityChart.resize();
+  });
+
+  // 더 보기 모달
+  var MODAL_ITEMS = [
+    { id: 'J012', date: '2026.04.15', orthoName: '도통동_도로망_4월', scopeType: '도로망',   scopeName: '도통동', analysis: '도로안전(정사영상) 분석', task: '도로안전(정사영상) 탐지' },
+    { id: 'J010', date: '2026.04.13', orthoName: '향교동_도로망_4월', scopeType: '도로망',   scopeName: '향교동', analysis: '도로안전(정사영상) 분석', task: '도로안전(정사영상) 탐지' },
+    { id: 'J008', date: '2026.04.11', orthoName: '중앙동_도로망_4월', scopeType: '도로망',   scopeName: '중앙동', analysis: '도로안전(정사영상) 분석', task: '도로안전(정사영상) 탐지' }
+  ];
+  function openSearchModal() { document.getElementById('stats-search-modal').classList.add('show'); renderModalTable(); }
+  function closeSearchModal() { document.getElementById('stats-search-modal').classList.remove('show'); }
+  function renderModalTable() {
+    var tbody = document.querySelector('#stats-search-tbody');
+    if (!tbody) return;
+    var currentId = getSelectedJobId();
+    tbody.innerHTML = MODAL_ITEMS.map(function (r) {
+      var checked = r.id === currentId ? ' checked' : '';
+      return '<tr>' +
+        '<td class="num"><input type="radio" name="modal-job" value="' + r.id + '" class="form-radio"' + checked + '></td>' +
+        '<td class="num">' + r.date + '</td><td>' + r.orthoName + '</td><td>' + r.scopeType + '</td>' +
+        '<td>' + r.scopeName + '</td><td>' + r.analysis + '</td><td>' + r.task + '</td></tr>';
+    }).join('');
+    document.getElementById('stats-search-count').innerHTML = '총 <strong>' + MODAL_ITEMS.length + '</strong>건 중 1~' + MODAL_ITEMS.length + '행';
+  }
+  document.getElementById('stats-more').addEventListener('click', openSearchModal);
+  document.getElementById('stats-search-close').addEventListener('click', closeSearchModal);
+  document.getElementById('stats-search-cancel').addEventListener('click', closeSearchModal);
+  document.getElementById('stats-search-confirm').addEventListener('click', function () {
+    var sel = document.querySelector('input[name="modal-job"]:checked');
+    if (!sel) { closeSearchModal(); return; }
+    var target = document.querySelector('input[name="stats-job"][value="' + sel.value + '"]');
+    if (target) target.checked = true;
+    closeSearchModal();
+  });
+  document.getElementById('stats-search-modal').addEventListener('click', function (e) { if (e.target === this) closeSearchModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.getElementById('stats-search-modal').classList.contains('show')) closeSearchModal();
+  });
+})();
+</script>
+</body>
+</html>

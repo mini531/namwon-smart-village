@@ -172,7 +172,12 @@
       'report-history.html': 'report',
       'analysis-orthophoto.html': 'analysis',
       'analysis-camera.html': 'analysis',
-      'history.html': 'analysis'
+      'history.html': 'analysis',
+      'stats-road-ortho.html': 'stats',
+      'stats-road-camera.html': 'stats',
+      'stats-silage.html': 'stats',
+      'stats-farmland.html': 'stats',
+      'stats-greenhouse.html': 'stats'
     };
 
     var activeMenu = fileMenuMap[currentFile];

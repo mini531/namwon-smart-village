@@ -1044,6 +1044,34 @@ select {
 .form-check:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 .form-check:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* 공용 커스텀 라디오 — .form-check 의 원형 버전 */
+.form-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.form-radio:hover { border-color: var(--color-primary); }
+.form-radio:checked { border-color: var(--color-primary); }
+.form-radio:checked::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+.form-radio:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.form-radio:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* 페이지네이션 (풀 형태 — 처음·이전·숫자·다음·마지막 + 페이지 크기 + 건수 표시) */
 .board-paginator {
   display: flex;
@@ -4744,6 +4772,35 @@ body.mobile-nav-open .gnb-backdrop {
 
 /* 카드 본문 내 embed 된 페이지네이터 (이력 탭 등) */
 .board-paginator--embedded { padding: 12px 20px; }
+
+/* 카드 내부 탭 (관리자 이력 탭 · 통계 결과 탭 등 공용)
+   구조: .card > .history-tabs > .history-tab + .history-panel */
+.history-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 24px;
+  background: var(--color-surface-2);
+}
+.history-tab {
+  background: transparent;
+  border: none;
+  padding: 14px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.12s;
+}
+.history-tab:hover { color: var(--color-text); }
+.history-tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+.history-panel { padding: 0; }
+.history-panel.hidden { display: none; }
 
 /* 빈 상태 */
 .empty-state { padding: 50px 20px; text-align: center; color: var(--color-text-muted); font-size: 14px; }
