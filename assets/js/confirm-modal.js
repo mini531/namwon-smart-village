@@ -104,3 +104,112 @@
 
   window.ConfirmModal = { open: open, close: close };
 })();
+
+/* =============================================================
+   PromptModal — 공용 입력 다이얼로그 (네이티브 prompt 대체)
+   사용 예:
+     PromptModal.open({
+       title: '링크 주소',
+       message: '링크 주소를 입력하세요',
+       defaultValue: 'https://',
+       placeholder: 'https://example.com',
+       confirmText: '확인',
+       cancelText: '닫기',
+       onConfirm: function (value) { ... }
+     });
+   ============================================================= */
+(function () {
+  'use strict';
+
+  var rootEl = null;
+  var titleEl = null;
+  var messageEl = null;
+  var inputEl = null;
+  var confirmBtn = null;
+  var cancelBtn = null;
+  var closeBtn = null;
+  var currentOnConfirm = null;
+  var lastFocused = null;
+
+  function build() {
+    rootEl = document.createElement('div');
+    rootEl.className = 'confirm-backdrop';
+    rootEl.setAttribute('role', 'dialog');
+    rootEl.setAttribute('aria-modal', 'true');
+    rootEl.setAttribute('aria-hidden', 'true');
+    rootEl.innerHTML =
+      '<div class="confirm-dialog" role="document">' +
+        '<div class="confirm-head">' +
+          '<div class="confirm-title" id="prompt-modal-title">입력</div>' +
+          '<button type="button" class="confirm-close" aria-label="닫기">×</button>' +
+        '</div>' +
+        '<div class="confirm-body">' +
+          '<div class="prompt-message" id="prompt-modal-message"></div>' +
+          '<input type="text" class="prompt-input" id="prompt-modal-input">' +
+        '</div>' +
+        '<div class="confirm-foot">' +
+          '<button type="button" class="btn btn-secondary" data-role="cancel">닫기</button>' +
+          '<button type="button" class="btn btn-primary" data-role="confirm">확인</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(rootEl);
+
+    titleEl = rootEl.querySelector('#prompt-modal-title');
+    messageEl = rootEl.querySelector('#prompt-modal-message');
+    inputEl = rootEl.querySelector('#prompt-modal-input');
+    confirmBtn = rootEl.querySelector('[data-role="confirm"]');
+    cancelBtn = rootEl.querySelector('[data-role="cancel"]');
+    closeBtn = rootEl.querySelector('.confirm-close');
+
+    cancelBtn.addEventListener('click', close);
+    closeBtn.addEventListener('click', close);
+    rootEl.addEventListener('click', function (e) {
+      if (e.target === rootEl) close();
+    });
+    confirmBtn.addEventListener('click', function () {
+      var cb = currentOnConfirm;
+      var val = inputEl.value;
+      close();
+      if (typeof cb === 'function') cb(val);
+    });
+    inputEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); confirmBtn.click(); }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!rootEl.classList.contains('open')) return;
+      if (e.key === 'Escape') close();
+    });
+  }
+
+  function close() {
+    if (!rootEl) return;
+    rootEl.classList.remove('open');
+    rootEl.setAttribute('aria-hidden', 'true');
+    currentOnConfirm = null;
+    if (lastFocused && typeof lastFocused.focus === 'function') {
+      try { lastFocused.focus(); } catch (_) {}
+    }
+  }
+
+  function open(opts) {
+    opts = opts || {};
+    if (!rootEl) build();
+    titleEl.textContent = opts.title || '입력';
+    messageEl.textContent = opts.message || '';
+    messageEl.style.display = opts.message ? '' : 'none';
+    inputEl.value = opts.defaultValue != null ? opts.defaultValue : '';
+    inputEl.placeholder = opts.placeholder || '';
+    confirmBtn.textContent = opts.confirmText || '확인';
+    cancelBtn.textContent = opts.cancelText || '닫기';
+
+    currentOnConfirm = typeof opts.onConfirm === 'function' ? opts.onConfirm : null;
+    lastFocused = document.activeElement;
+    rootEl.classList.add('open');
+    rootEl.setAttribute('aria-hidden', 'false');
+    setTimeout(function () {
+      try { inputEl.focus(); inputEl.select(); } catch (_) {}
+    }, 0);
+  }
+
+  window.PromptModal = { open: open, close: close };
+})();

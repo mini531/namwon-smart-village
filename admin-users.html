@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
-  <link rel="stylesheet" href="assets/css/admin-common.css">
   <link rel="stylesheet" href="assets/css/page-admin-users.css">
 </head>
 <body>
@@ -98,7 +97,7 @@
         <div class="card-header">
           <div class="card-title">사용자 목록</div>
         </div>
-        <table class="admin-table users-table is-clickable">
+        <table class="data-table users-table is-clickable">
           <thead>
             <tr>
               <th>아이디(이메일)</th>
@@ -175,10 +174,6 @@
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
                   탈퇴
                 </button>
-                <button type="button" class="btn btn-danger btn-sm" id="d-inline-delete" hidden>
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
-                  삭제
-                </button>
               </span>
             </div>
             <div class="info-row"><span class="info-label">가입일시</span>
@@ -244,7 +239,7 @@
           <button type="button" class="history-tab" data-tab="pwd" role="tab">비밀번호 변경 이력</button>
         </div>
         <div class="history-panel" id="history-login">
-          <table class="admin-table">
+          <table class="data-table">
             <thead>
               <tr>
                 <th>로그인 ID</th>
@@ -273,7 +268,7 @@
           </div>
         </div>
         <div class="history-panel hidden" id="history-pwd">
-          <table class="admin-table">
+          <table class="data-table">
             <thead>
               <tr>
                 <th>로그인 ID</th>
@@ -663,10 +658,9 @@
 
     // 상태별 인라인 액션 전환 (계정 상태 pill 우측)
     // · 정상 (active)    → 탈퇴 버튼
-    // · 탈퇴 (withdrawn) → 삭제 버튼 (계정+이력 영구 제거, 탈퇴와 다른 기능)
+    // · 탈퇴 (withdrawn) → 인라인 액션 없음 (삭제는 푸터 d-delete-footer 로만)
     var isWithdrawn = u.status === 'withdrawn';
     document.getElementById('d-inline-withdraw').hidden = isWithdrawn;
-    document.getElementById('d-inline-delete').hidden = !isWithdrawn;
     // 처리 상태 "대기" 일 때만 승인 / 거부
     document.getElementById('d-inline-approve').hidden = action !== 'pending';
     document.getElementById('d-inline-reject').hidden = action !== 'pending';
@@ -865,7 +859,6 @@
   document.getElementById('d-delete-footer').addEventListener('click', deleteUser);
   // 인라인 액션: 상태 값 우측 버튼들
   document.getElementById('d-inline-withdraw').addEventListener('click', withdrawUser);
-  document.getElementById('d-inline-delete').addEventListener('click', deleteUser);
   document.getElementById('d-inline-approve').addEventListener('click', approveUser);
   document.getElementById('d-inline-reject').addEventListener('click', rejectUser);
 

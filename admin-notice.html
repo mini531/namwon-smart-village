@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
-  <link rel="stylesheet" href="assets/css/admin-common.css">
   <link rel="stylesheet" href="assets/css/page-admin-notice.css">
 </head>
 <body>
@@ -98,7 +97,7 @@
             </button>
           </div>
         </div>
-        <table class="admin-table is-clickable">
+        <table class="data-table is-clickable">
           <thead>
             <tr>
               <th class="col-check"><input type="checkbox" class="form-check" id="an-check-all"></th>
@@ -311,6 +310,7 @@
 
 <script src="assets/js/layout.js"></script>
 <script src="assets/js/policy-modal.js"></script>
+<script src="assets/js/confirm-modal.js"></script>
 <script>
 (function () {
   'use strict';
@@ -700,11 +700,11 @@
     var popupOn = document.getElementById('f-popup').checked;
     var content = document.getElementById('f-content').innerHTML.trim();
 
-    if (!cat) { alert('구분을 선택해 주세요.'); return; }
-    if (!title) { alert('제목을 입력해 주세요.'); return; }
-    if (!fromDate) { alert('게시 시작 날짜를 입력해 주세요.'); return; }
-    if (!unlimited && !toDate) { alert('게시 종료 날짜를 입력하거나 "무한 게시"를 선택해 주세요.'); return; }
-    if (!content || content === '<br>') { alert('내용을 입력해 주세요.'); return; }
+    if (!cat) { NotifyUI.warn('구분을 선택해 주세요.'); return; }
+    if (!title) { NotifyUI.warn('제목을 입력해 주세요.'); return; }
+    if (!fromDate) { NotifyUI.warn('게시 시작 날짜를 입력해 주세요.'); return; }
+    if (!unlimited && !toDate) { NotifyUI.warn('게시 종료 날짜를 입력하거나 "무한 게시"를 선택해 주세요.'); return; }
+    if (!content || content === '<br>') { NotifyUI.warn('내용을 입력해 주세요.'); return; }
 
     var startAt = fromDate + 'T' + fromTime + ':00';
     var endAt = unlimited ? INFINITE_DATE : (toDate + 'T' + toTime + ':00');
@@ -714,7 +714,7 @@
       var pft = document.getElementById('f-popup-from-time').value || '00:00';
       var ptd = document.getElementById('f-popup-to-date').value;
       var ptt = document.getElementById('f-popup-to-time').value || '23:59';
-      if (!pfd || !ptd) { alert('팝업 기간을 입력해 주세요.'); return; }
+      if (!pfd || !ptd) { NotifyUI.warn('팝업 기간을 입력해 주세요.'); return; }
       popupFrom = pfd + 'T' + pft + ':00';
       popupTo = ptd + 'T' + ptt + ':00';
     }
@@ -769,11 +769,18 @@
   function deleteSelected() {
     var ids = Array.prototype.slice.call(document.querySelectorAll('.an-row-check:checked'))
       .map(function (cb) { return parseInt(cb.dataset.id, 10); });
-    if (ids.length === 0) { alert('삭제할 항목을 선택해 주세요.'); return; }
-    if (!confirm(ids.length + '개 항목을 삭제하시겠습니까?')) return;
-    state.list = state.list.filter(function (n) { return ids.indexOf(n.id) === -1; });
-    save();
-    renderList();
+    if (ids.length === 0) { NotifyUI.warn('삭제할 항목을 선택해 주세요.'); return; }
+    ConfirmModal.open({
+      title: '선택 삭제',
+      message: ids.length + '개 항목을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+      confirmText: '삭제',
+      danger: true,
+      onConfirm: function () {
+        state.list = state.list.filter(function (n) { return ids.indexOf(n.id) === -1; });
+        save();
+        renderList();
+      }
+    });
   }
 
   // ── 퀵 필터 (게시 기간) ──
@@ -886,13 +893,42 @@
   });
   document.getElementById('rte-link').addEventListener('mousedown', function (e) {
     e.preventDefault();
-    var url = prompt('링크 주소를 입력하세요:', 'https://');
-    if (url) document.execCommand('createLink', false, url);
+    // execCommand 는 focus 가 에디터에 있어야 동작 — selection 을 저장해두고 복원
+    var sel = window.getSelection();
+    var range = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    PromptModal.open({
+      title: '링크 삽입',
+      message: '링크 주소를 입력하세요',
+      defaultValue: 'https://',
+      placeholder: 'https://example.com',
+      onConfirm: function (url) {
+        if (!url) return;
+        if (range) {
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+        document.execCommand('createLink', false, url);
+      }
+    });
   });
   document.getElementById('rte-image').addEventListener('mousedown', function (e) {
     e.preventDefault();
-    var url = prompt('이미지 URL을 입력하세요:', '');
-    if (url) document.execCommand('insertImage', false, url);
+    var sel = window.getSelection();
+    var range = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    PromptModal.open({
+      title: '이미지 삽입',
+      message: '이미지 URL을 입력하세요',
+      defaultValue: '',
+      placeholder: 'https://example.com/image.jpg',
+      onConfirm: function (url) {
+        if (!url) return;
+        if (range) {
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+        document.execCommand('insertImage', false, url);
+      }
+    });
   });
 
   // 파일 첨부
@@ -903,12 +939,12 @@
     var files = Array.prototype.slice.call(e.target.files || []);
     for (var i = 0; i < files.length; i++) {
       if (state.pendingFiles.length >= MAX_FILES) {
-        alert('첨부 파일은 최대 ' + MAX_FILES + '개까지 가능합니다.');
+        NotifyUI.warn('첨부 파일은 최대 ' + MAX_FILES + '개까지 가능합니다.');
         break;
       }
       var f = files[i];
       if (f.size > MAX_SIZE_MB * 1024 * 1024) {
-        alert('"' + f.name + '"은(는) 최대 ' + MAX_SIZE_MB + 'MB 제한을 초과합니다.');
+        NotifyUI.warn('"' + f.name + '"은(는) 최대 ' + MAX_SIZE_MB + 'MB 제한을 초과합니다.');
         continue;
       }
       state.pendingFiles.push({ name: f.name, size: f.size });
@@ -940,11 +976,18 @@
     openForm(state.viewingId);
   });
   document.getElementById('v-delete').addEventListener('click', function () {
-    if (!confirm('이 공지사항을 삭제하시겠습니까?')) return;
-    deleteById(state.viewingId);
-    state.viewingId = null;
-    showView('list');
-    renderList();
+    ConfirmModal.open({
+      title: '공지사항 삭제',
+      message: '이 공지사항을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+      confirmText: '삭제',
+      danger: true,
+      onConfirm: function () {
+        deleteById(state.viewingId);
+        state.viewingId = null;
+        showView('list');
+        renderList();
+      }
+    });
   });
 
   // 최초 렌더

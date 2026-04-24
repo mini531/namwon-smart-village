@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
-  <link rel="stylesheet" href="assets/css/admin-common.css">
 </head>
 <body>
 
@@ -84,7 +83,7 @@
         <div class="card-header">
           <div class="card-title">문의 목록</div>
         </div>
-        <table class="admin-table is-clickable">
+        <table class="data-table is-clickable">
           <thead>
             <tr>
               <th>제목</th>
@@ -481,7 +480,7 @@
 
   function saveReply() {
     var answer = document.getElementById('v-answer-input').innerHTML.trim();
-    if (!answer || answer === '<br>') { alert('답변 내용을 입력해 주세요.'); return; }
+    if (!answer || answer === '<br>') { NotifyUI.warn('답변 내용을 입력해 주세요.'); return; }
     var idx = state.list.findIndex(function (x) { return x.id === state.viewingId; });
     if (idx < 0) return;
     state.list[idx].answer = answer;
@@ -566,8 +565,22 @@
   });
   document.getElementById('reply-rte-link').addEventListener('mousedown', function (e) {
     e.preventDefault();
-    var url = prompt('링크 주소를 입력하세요:', 'https://');
-    if (url) document.execCommand('createLink', false, url);
+    var sel = window.getSelection();
+    var range = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    PromptModal.open({
+      title: '링크 삽입',
+      message: '링크 주소를 입력하세요',
+      defaultValue: 'https://',
+      placeholder: 'https://example.com',
+      onConfirm: function (url) {
+        if (!url) return;
+        if (range) {
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+        document.execCommand('createLink', false, url);
+      }
+    });
   });
 
   // 답변 첨부 파일
@@ -578,12 +591,12 @@
     var files = Array.prototype.slice.call(e.target.files || []);
     for (var i = 0; i < files.length; i++) {
       if (state.replyFiles.length >= MAX_FILES) {
-        alert('첨부 파일은 최대 ' + MAX_FILES + '개까지 가능합니다.');
+        NotifyUI.warn('첨부 파일은 최대 ' + MAX_FILES + '개까지 가능합니다.');
         break;
       }
       var f = files[i];
       if (f.size > MAX_SIZE_MB * 1024 * 1024) {
-        alert('"' + f.name + '"은(는) 최대 ' + MAX_SIZE_MB + 'MB 제한을 초과합니다.');
+        NotifyUI.warn('"' + f.name + '"은(는) 최대 ' + MAX_SIZE_MB + 'MB 제한을 초과합니다.');
         continue;
       }
       state.replyFiles.push({ name: f.name, size: f.size });

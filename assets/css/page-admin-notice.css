@@ -1,5 +1,5 @@
 /* admin-notice.html 전용 — 카테고리 배지 variant.
-   레이아웃/테이블/폼/상세 등 공용 규칙은 admin-common.css. */
+   레이아웃/테이블/폼/상세 등 공용 규칙은 style.css. */
 
 .admin-cat.urgent {
   border-color: var(--color-primary);

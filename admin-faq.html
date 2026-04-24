@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/menu.css">
-  <link rel="stylesheet" href="assets/css/admin-common.css">
   <link rel="stylesheet" href="assets/css/page-admin-faq.css">
 </head>
 <body>
@@ -44,7 +43,7 @@
           </div>
         </div>
         <div class="board-field">
-          <label for="fq-cat">카테고리</label>
+          <label for="fq-cat">구분</label>
           <select class="board-search-select" id="fq-cat">
             <option value="all">전체</option>
             <option value="01">서비스 이용</option>
@@ -81,7 +80,7 @@
             </button>
           </div>
         </div>
-        <table class="admin-table is-clickable">
+        <table class="data-table is-clickable">
           <thead>
             <tr>
               <th class="col-check"><input type="checkbox" class="form-check" id="fq-check-all"></th>
@@ -495,9 +494,9 @@
     var question = document.getElementById('f-question').value.trim();
     var answer = document.getElementById('f-answer').innerHTML.trim();
 
-    if (!cat) { alert('구분을 선택해 주세요.'); return; }
-    if (!question) { alert('제목을 입력해 주세요.'); return; }
-    if (!answer || answer === '<br>') { alert('내용을 입력해 주세요.'); return; }
+    if (!cat) { NotifyUI.warn('구분을 선택해 주세요.'); return; }
+    if (!question) { NotifyUI.warn('제목을 입력해 주세요.'); return; }
+    if (!answer || answer === '<br>') { NotifyUI.warn('내용을 입력해 주세요.'); return; }
 
     var now = nowIso();
     if (state.editingId) {
@@ -532,7 +531,7 @@
   function deleteSelected() {
     var ids = Array.prototype.slice.call(document.querySelectorAll('.fq-row-check:checked'))
       .map(function (cb) { return parseInt(cb.dataset.id, 10); });
-    if (ids.length === 0) { alert('삭제할 항목을 선택해 주세요.'); return; }
+    if (ids.length === 0) { NotifyUI.warn('삭제할 항목을 선택해 주세요.'); return; }
     ConfirmModal.open({
       title: '확인',
       message: ids.length + '개 항목을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
@@ -601,8 +600,22 @@
   });
   document.getElementById('rte-link').addEventListener('mousedown', function (e) {
     e.preventDefault();
-    var url = prompt('링크 주소를 입력하세요:', 'https://');
-    if (url) document.execCommand('createLink', false, url);
+    var sel = window.getSelection();
+    var range = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    PromptModal.open({
+      title: '링크 삽입',
+      message: '링크 주소를 입력하세요',
+      defaultValue: 'https://',
+      placeholder: 'https://example.com',
+      onConfirm: function (url) {
+        if (!url) return;
+        if (range) {
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+        document.execCommand('createLink', false, url);
+      }
+    });
   });
 
   // 파일 첨부
@@ -613,12 +626,12 @@
     var files = Array.prototype.slice.call(e.target.files || []);
     for (var i = 0; i < files.length; i++) {
       if (state.pendingFiles.length >= MAX_FILES) {
-        alert('첨부 파일은 최대 ' + MAX_FILES + '개까지 가능합니다.');
+        NotifyUI.warn('첨부 파일은 최대 ' + MAX_FILES + '개까지 가능합니다.');
         break;
       }
       var f = files[i];
       if (f.size > MAX_SIZE_MB * 1024 * 1024) {
-        alert('"' + f.name + '"은(는) 최대 ' + MAX_SIZE_MB + 'MB 제한을 초과합니다.');
+        NotifyUI.warn('"' + f.name + '"은(는) 최대 ' + MAX_SIZE_MB + 'MB 제한을 초과합니다.');
         continue;
       }
       state.pendingFiles.push({ name: f.name, size: f.size });
