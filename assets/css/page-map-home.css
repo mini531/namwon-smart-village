@@ -1041,21 +1041,58 @@
 }
 
 /* ============================================================
-   지도 위 플로팅 범례 스택 — 사이드바와 분리
+   지도 위 플로팅 범례 스택 — 사이드바와 분리.
+   좌측 사이드바와 동일한 top/bottom 패턴으로 세로 범위 고정.
+   색상 기준 카드는 자연 높이, 범례 카드가 남은 공간 전부 차지 + 내부 스크롤.
    ============================================================ */
 .db-map-floating-stack {
   position: absolute;
   left: 348px; /* .db-left-stack width 320px + left 14px + gap 14px */
   top: 58px;
+  bottom: 14px;
   width: 200px;
   z-index: 400;
   pointer-events: none;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .db-map-floating-stack > * { pointer-events: all; }
+
+/* 하단 패널 열려 있으면 스택 하단도 위로 양보 — 좌측 사이드바와 동일 규칙 */
+.map-wrapper.bottom-open .db-map-floating-stack {
+  bottom: calc(14px + 34vh + 10px);
+}
+.map-wrapper.bottom-open:has(.db-bottom-panel.collapsed) .db-map-floating-stack {
+  bottom: calc(14px + 48px + 10px);
+}
+
+/* 색상 기준 카드 — 자연 높이 유지 */
+#color-mode-card { flex-shrink: 0; }
+
+/* 범례 카드 — 컨텐츠 적으면 자연 높이, 넘치면 스택 안쪽까지만 차지하고 내부 스크롤.
+   flex:0 1 auto = 확장 없음, 필요 시 축소, 기본은 컨텐츠 크기. */
+#legend-card {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#legend-card .glass-card-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+#legend-card .glass-card-body::-webkit-scrollbar { width: 4px; }
+#legend-card .glass-card-body::-webkit-scrollbar-track { background: transparent; }
+#legend-card .glass-card-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 3px; }
 
 /* 설정(좌측) 패널 접히면 범례도 왼쪽 끝으로 이동 */
 .map-wrapper.left-hidden .db-map-floating-stack { left: 14px; }
