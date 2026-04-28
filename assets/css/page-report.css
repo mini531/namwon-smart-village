@@ -320,7 +320,7 @@
 .job-more-count {
   color: var(--color-text-muted);
   font-weight: 500;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 /* 하단 액션 (보고서 발급 / 목록) — 설정 패널 하단 일반 영역 */

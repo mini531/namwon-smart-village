@@ -84,7 +84,7 @@
             <div class="board-field board-field--search">
               <label for="searchType">검색어</label>
               <div class="board-field-row">
-                <select class="board-search-select form-select" id="searchType" name="searchType" style="width:140px">
+                <select class="board-search-select form-select" id="searchType" name="searchType">
                   <option value="" selected>전체</option>
                   <option value="01">분석 과제명</option>
                   <option value="02">분석명</option>
@@ -141,17 +141,17 @@
           <div class="card">
             <div class="card-header"><div class="card-title">AI 분석 내역</div></div>
             <div class="card-body card-body--flush">
-              <div class="stats-table-wrap" style="overflow-x:auto;">
+              <div class="stats-table-wrap">
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th style="width:60px; text-align:center;">선택</th>
-                      <th class="col-date" style="width:110px;">기준 일자</th>
+                      <th class="col-select">선택</th>
+                      <th class="col-date">기준 일자</th>
                       <th>정사 영상 명</th>
-                      <th style="width:130px;">분석 범위 유형</th>
+                      <th class="col-meta">분석 범위 유형</th>
                       <th class="col-wide">분석 범위 명</th>
                       <th class="col-wide">분석명</th>
-                      <th style="width:170px;">분석 과제명</th>
+                      <th class="col-task">분석 과제명</th>
                     </tr>
                   </thead>
                   <tbody id="as-tbody"></tbody>
@@ -197,7 +197,7 @@
             <div class="board-field board-field--search">
               <label for="im-search-input">검색어</label>
               <div class="board-field-row">
-                <select class="board-search-select form-select" id="im-search-field" name="searchType" style="width:140px">
+                <select class="board-search-select form-select" id="im-search-field" name="searchType">
                   <option value="" selected>전체</option>
                   <option value="01">분류</option>
                   <option value="02">데이터 명</option>
@@ -238,18 +238,18 @@
           <div class="card">
             <div class="card-header"><div class="card-title">데이터셋 목록</div></div>
             <div class="card-body card-body--flush">
-              <div class="stats-table-wrap" style="overflow-x:auto;">
+              <div class="stats-table-wrap">
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th style="width:60px; text-align:center;">선택</th>
-                      <th style="width:130px;">분류</th>
-                      <th class="col-date" style="width:110px;">기준일자</th>
+                      <th class="col-select">선택</th>
+                      <th class="col-meta">분류</th>
+                      <th class="col-date">기준일자</th>
                       <th class="col-wide">데이터 명</th>
-                      <th style="width:160px;">출처</th>
-                      <th class="num" style="width:100px;">파일 크기</th>
-                      <th style="width:170px;">수정 일시</th>
-                      <th class="col-author" style="width:90px;">등록자</th>
+                      <th class="col-source">출처</th>
+                      <th class="col-num">파일 크기</th>
+                      <th class="col-task">수정 일시</th>
+                      <th class="col-author">등록자</th>
                     </tr>
                   </thead>
                   <tbody id="im-tbody"></tbody>

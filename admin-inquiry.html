@@ -138,7 +138,7 @@
           </div>
           <div class="view-row block">
             <span class="label">내용</span>
-            <div class="view-content" id="v-content" style="min-height:120px;"></div>
+            <div class="view-content" id="v-content"></div>
           </div>
           <div class="view-row block" id="v-attach-row" hidden>
             <span class="label">첨부 파일</span>
@@ -156,7 +156,7 @@
         <div class="card-body">
           <div class="view-row block">
             <span class="label">답변 내용</span>
-            <div class="form-field" style="padding-top:8px;">
+            <div class="form-field">
               <div class="rte-wrap">
                 <div class="rte-toolbar" id="reply-rte-toolbar">
                   <button type="button" class="rte-btn" data-cmd="bold" title="굵게"><strong>B</strong></button>
@@ -353,8 +353,7 @@
 
     if (total === 0) {
       emptyWrap.innerHTML =
-        '<div class="uc-empty" style="padding:50px 20px;text-align:center;color:var(--color-text-muted);">' +
-          '<p style="font-size:14px;">검색 조건에 맞는 문의가 없습니다.</p></div>';
+        '<div class="uc-empty"><p>검색 조건에 맞는 문의가 없습니다.</p></div>';
       countEl.innerHTML = '총 <strong>0</strong>건 중 0~0행';
       renderPagination(1);
       return;

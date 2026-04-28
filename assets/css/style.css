@@ -986,7 +986,7 @@ select {
 }
 /* select+input 콤보 안에서는 input 이 남은 폭을 채우도록 */
 .board-field-row .board-search-input { flex: 1; min-width: 0; }
-.board-field-row .board-search-select { flex: 0 0 auto; width: auto; min-width: 100px; }
+.board-field-row .board-search-select { flex: 0 0 auto; width: auto; min-width: 140px; }
 .board-search-input:focus,
 .board-search-select:focus { border-color: var(--color-primary); }
 
@@ -1442,6 +1442,21 @@ img.modal-thumb,
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* 모달 안 search/list 테이블 — 컬럼 폭 공용 표준 (선택·분류·과제명·출처·파일크기·등록자·기준일) */
+.modal-card--xl .data-table th.col-select,
+.modal-card--xl .data-table td.col-select { width: 60px; text-align: center; }
+.modal-card--xl .data-table th.col-date,
+.modal-card--xl .data-table td.col-date { width: 110px; }
+.modal-card--xl .data-table th.col-meta,
+.modal-card--xl .data-table td.col-meta { width: 130px; }
+.modal-card--xl .data-table th.col-source,
+.modal-card--xl .data-table td.col-source { width: 160px; }
+.modal-card--xl .data-table th.col-task,
+.modal-card--xl .data-table td.col-task { width: 170px; }
+.modal-card--xl .data-table th.col-num,
+.modal-card--xl .data-table td.col-num { width: 100px; }
+.modal-card--xl .data-table th.col-author,
+.modal-card--xl .data-table td.col-author { width: 90px; text-align: center; }
 
 /* =========================================================
    정책 모달 — 개인정보처리방침/이용약관/이메일무단수집거부
@@ -4753,6 +4768,15 @@ body.mobile-nav-open .gnb-backdrop {
   min-height: 200px;
 }
 .view-content img { max-width: 100%; height: auto; }
+
+/* 빈 상태 — 검색 결과 없음 / 등록된 항목 없음 (게시판·관리자·이용사례 공용) */
+.uc-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+.uc-empty svg { opacity: 0.35; margin-bottom: 12px; }
+.uc-empty p { font-size: 14px; }
 .view-footer-meta {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;

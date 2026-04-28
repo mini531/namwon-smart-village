@@ -94,14 +94,7 @@ html, body { overflow: hidden; }
 }
 .uc-table tbody tr:hover .title-txt { color: var(--color-primary); }
 
-/* 빈 상태 */
-.uc-empty {
-  padding: 60px 20px;
-  text-align: center;
-  color: var(--color-text-muted);
-}
-.uc-empty svg { opacity: 0.35; margin-bottom: 12px; }
-.uc-empty p { font-size: 14px; }
+/* 빈 상태 — 공용 .uc-empty 는 style.css 로 이관됨 */
 
 /* 상세 뷰 (페이지 전환 형태 — notice와 동일 패턴) */
 .uc-list-view.hidden { display: none; }
