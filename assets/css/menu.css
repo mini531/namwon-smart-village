@@ -46,6 +46,7 @@
   transition: all 0.18s ease;
   cursor: pointer;
   border-radius: 10px;
+  border: 1px solid transparent;
   position: relative;
 }
 
@@ -99,7 +100,7 @@
   position: absolute;
   top: calc(100% + 2px);
   left: 50%;
-  transform: translateX(-50%) translateY(6px);
+  transform: translateX(-50%);
   background: rgba(26, 28, 30, 0.98);
   border-radius: 12px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.4);
@@ -107,7 +108,7 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0s linear 0s, visibility 0s linear 0s, transform 0s linear 0s;
+  transition: opacity 0s linear 0s, visibility 0s linear 0s;
   z-index: 1100;
   border: 1px solid rgba(255,255,255,0.1);
   padding: 8px;
@@ -132,8 +133,7 @@
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 /* 드롭다운 헤더 */
