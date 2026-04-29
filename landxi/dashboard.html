@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>대시보드 - Land-XI</title>
+  <link rel="icon" href="assets/images/favicon_landxi.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/page-index.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+<div class="dashboard">
+
+  <div class="dash-title">
+    <div>
+      <h2>Land-XI 대시보드</h2>
+      <div class="dash-subtitle">공간정보·AI 학습·분석 운영 현황을 한눈에 확인할 수 있어요</div>
+    </div>
+    <div class="dash-date">
+      <strong id="dash-now-date"></strong>
+      기준일 현재
+    </div>
+  </div>
+
+  <div class="notice-strip">
+    <span class="notice-strip-tag">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
+      공지
+    </span>
+    <a class="notice-strip-text" href="notice.html?notice=1">Land-XI v3.0 신규 분석 모델 4종 배포 — 운영 모델 메뉴에서 활성화 후 사용해주세요</a>
+    <span class="notice-strip-date">2026.04.20</span>
+    <a class="notice-strip-more" href="notice.html">전체 공지 보기 ›</a>
+  </div>
+
+  <div class="kpi-grid kpi-grid--lx">
+    <a href="#" class="kpi-card">
+      <span class="kpi-label">등록 영상</span>
+      <div class="kpi-value">1,247<span class="unit">건</span></div>
+      <div class="kpi-delta">등록 완료 <strong>1,189</strong> · 등록 중 <strong>58</strong></div>
+    </a>
+    <a href="#" class="kpi-card">
+      <span class="kpi-label">데이터셋</span>
+      <div class="kpi-value">38<span class="unit">개</span></div>
+      <div class="kpi-delta">AI 모델 학습용 라벨링 영상 묶음</div>
+    </a>
+    <a href="#" class="kpi-card">
+      <span class="kpi-label">운영 중 AI 분석 과제</span>
+      <div class="kpi-value">12<span class="unit">종</span></div>
+      <div class="kpi-delta">분석 서비스에서 선택 가능한 모델 과제</div>
+    </a>
+    <a href="#" class="kpi-card">
+      <span class="kpi-label">분석 작업 누적</span>
+      <div class="kpi-value">8,492<span class="unit">건</span></div>
+      <div class="kpi-delta">성공 <strong>8,201</strong> · 실패 <strong>291</strong></div>
+    </a>
+  </div>
+
+  <div class="main-grid">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
+          운영 중 AI 모델
+        </div>
+        <a href="#" class="btn btn-ghost btn-sm">전체 보기</a>
+      </div>
+      <div class="card-body card-body--sm">
+        <ul class="ai-model-list">
+          <li class="ai-model-row">
+            <div class="ai-model-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18l-2 13H5L3 6z"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            </div>
+            <div class="ai-model-main">
+              <div class="ai-model-name">방치쓰레기 탐지 <span class="ai-model-version">v2.1</span></div>
+              <div class="ai-model-meta">Detection · mAP 0.87 · 학습일 2026.03.18</div>
+            </div>
+            <span class="ai-model-badge">운영</span>
+          </li>
+          <li class="ai-model-row">
+            <div class="ai-model-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 12 9 12 12 5 15 19 18 12 21 12"/></svg>
+            </div>
+            <div class="ai-model-main">
+              <div class="ai-model-name">리싸이클링 자원 탐지 <span class="ai-model-version">v1.4</span></div>
+              <div class="ai-model-meta">Detection · mAP 0.82 · 학습일 2026.02.27</div>
+            </div>
+            <span class="ai-model-badge">운영</span>
+          </li>
+          <li class="ai-model-row">
+            <div class="ai-model-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+            <div class="ai-model-main">
+              <div class="ai-model-name">개발제한구역 불법행위 탐지 <span class="ai-model-version">v3.0</span></div>
+              <div class="ai-model-meta">Detection · mAP 0.79 · 학습일 2026.04.05</div>
+            </div>
+            <span class="ai-model-badge">운영</span>
+          </li>
+          <li class="ai-model-row">
+            <div class="ai-model-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/></svg>
+            </div>
+            <div class="ai-model-main">
+              <div class="ai-model-name">재난 피해 객체 탐지 <span class="ai-model-version">v1.2</span></div>
+              <div class="ai-model-meta">Classification · mAP 0.91 · 학습일 2026.04.12</div>
+            </div>
+            <span class="ai-model-badge">운영</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          최근 분석 작업
+        </div>
+        <a href="#" class="btn btn-ghost btn-sm">작업 이력</a>
+      </div>
+      <div class="card-body card-body--flush">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>분석명</th>
+                <th>모델</th>
+                <th>상태</th>
+                <th>실행일시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>26041_임자도_정사영상</td>
+                <td><span class="badge">방치쓰레기 v2.1</span></td>
+                <td><span class="badge badge-done">완료</span></td>
+                <td class="col-date">2026.04.20 14:32</td>
+              </tr>
+              <tr>
+                <td>26041_전남_재난피해_드론</td>
+                <td><span class="badge">재난피해 v1.2</span></td>
+                <td><span class="badge badge-processing">진행 중</span></td>
+                <td class="col-date">2026.04.20 09:15</td>
+              </tr>
+              <tr>
+                <td>26041_전남_비닐하우스_권역</td>
+                <td><span class="badge">개발제한 v3.0</span></td>
+                <td><span class="badge badge-done">완료</span></td>
+                <td class="col-date">2026.04.19 16:47</td>
+              </tr>
+              <tr>
+                <td>26041_광주_농지활용_2권역</td>
+                <td><span class="badge">리싸이클링 v1.4</span></td>
+                <td><span class="badge badge-failed">실패</span></td>
+                <td class="col-date">2026.04.19 11:20</td>
+              </tr>
+              <tr>
+                <td>26041_부산_연안_위성영상</td>
+                <td><span class="badge">방치쓰레기 v2.1</span></td>
+                <td><span class="badge badge-done">완료</span></td>
+                <td class="col-date">2026.04.18 17:05</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-grid">
+
+    <div class="card card--span-4">
+      <div class="card-header">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          스토리지 현황
+        </div>
+      </div>
+      <div class="card-body card-body--sm">
+        <div class="storage-row">
+          <div class="storage-row-head">
+            <span class="storage-row-name">SSD 캐시</span>
+            <span class="storage-row-detail"><strong>32.4 TB</strong> / 84 TB</span>
+          </div>
+          <div class="storage-bar"><span class="storage-bar-fill" data-pct="38.6"></span></div>
+        </div>
+        <div class="storage-row">
+          <div class="storage-row-head">
+            <span class="storage-row-name">HDD 아카이브</span>
+            <span class="storage-row-detail"><strong>12.1 TB</strong> / 100 TB</span>
+          </div>
+          <div class="storage-bar"><span class="storage-bar-fill" data-pct="12.1"></span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="footer-include"></div>
+
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script>
+(function () {
+  var now = new Date();
+  var y = now.getFullYear();
+  var m = String(now.getMonth() + 1).padStart(2, '0');
+  var d = String(now.getDate()).padStart(2, '0');
+  document.getElementById('dash-now-date').textContent = y + '.' + m + '.' + d;
+
+  document.querySelectorAll('.storage-bar-fill').forEach(function (el) {
+    el.style.setProperty('--bar-pct', el.dataset.pct + '%');
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+/* usecase.html 전용 스타일 (notice 페이지 기반 + 검색 폼 커스터마이즈) */
+
+html, body { overflow: hidden; }
+
+.page-body {
+  padding-top: var(--header-height);
+  height: 100vh;
+  background: var(--color-page-bg);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.usecase-container {
+  width: 100%;
+  max-width: 1380px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 24px 32px 56px;
+  flex: 1 0 auto;
+}
+#footer-include { flex-shrink: 0; }
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 16px;
+}
+.page-title-wrap h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
+}
+.page-title-wrap h1 svg { color: var(--color-primary); }
+.page-title-wrap p {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* 검색 툴바 · 페이지네이션 스타일은 style.css의 공용 .board-* 클래스로 이관 */
+
+/* 리스트 카드 & 테이블 */
+.uc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+.uc-card-head {
+  padding: 14px 20px;
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.uc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.uc-table thead th {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  padding: 14px 20px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-border);
+}
+.uc-table tbody tr {
+  border-bottom: 1px solid #F1F3F5;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.uc-table tbody tr:last-child { border-bottom: none; }
+.uc-table tbody tr:hover { background: #FAFBFC; }
+.uc-table tbody td {
+  padding: 14px 20px;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+.uc-table tbody td .title-txt {
+  font-weight: 600;
+  color: var(--color-text);
+}
+.uc-table tbody tr:hover .title-txt { color: var(--color-primary); }
+
+/* 빈 상태 — 공용 .uc-empty 는 style.css 로 이관됨 */
+
+/* 상세 뷰 (페이지 전환 형태 — notice와 동일 패턴) */
+.uc-list-view.hidden { display: none; }
+.uc-detail-view { display: none; }
+.uc-detail-view.active { display: block; }
+
+.uc-detail-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: 28px 32px 32px;
+}
+.uc-detail-meta {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+.uc-detail-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.3px;
+  line-height: 1.4;
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+.uc-detail-content {
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--color-text);
+  white-space: pre-line;
+  min-height: 200px;
+  word-break: break-word;
+}
+.uc-detail-content a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+/* 상세 첨부 파일 */
+.uc-detail-attach {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+.uc-detail-attach .attach-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 12px;
+}
+.uc-detail-attach .attach-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 13px;
+  color: var(--color-text);
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.uc-detail-attach .attach-item:hover { border-color: var(--color-primary); }
+.uc-detail-attach .attach-item > svg { flex-shrink: 0; color: var(--color-text-muted); }
+.uc-detail-attach .attach-item:hover > svg,
+.uc-detail-attach .attach-item:hover .attach-name { color: var(--color-primary); }
+.uc-detail-attach .attach-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.uc-detail-attach .attach-size {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.uc-detail-attach .attach-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.uc-detail-attach .attach-download:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+.uc-detail-attach .attach-download svg { color: inherit; }
+
+/* 목록 제목 옆 첨부 아이콘 */
+.uc-attach-inline-icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.uc-detail-foot {
+  display: flex;
+  justify-content: center;
+  margin-top: 26px;
+}
+.uc-list-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 26px;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.uc-list-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+@media (max-width: 720px) {
+  .usecase-container { padding: 18px 14px 36px; }
+  .uc-detail-card { padding: 20px 18px 24px; }
+  .uc-detail-title { font-size: 17px; }
+}

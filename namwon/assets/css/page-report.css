@@ -1,0 +1,546 @@
+/* 발급 화면 전용 — page-body 스크롤 없음. report-layout 고정 높이, 각 컬럼(사이드바·미리보기) 독립 스크롤.
+   → 이중 스크롤 없음, 사이드바는 자기 컬럼 전체를 채워 하단 여백 없음. */
+.page-body { overflow: hidden; }
+
+.report-layout {
+  flex: 1 1 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 0;
+  align-items: stretch;
+  overflow: hidden;
+}
+.report-layout > .report-preview-area {
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* 좌측 설정 패널 — grid cell 전체 채움, 내부만 스크롤 */
+.report-config {
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.config-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.config-title svg { color: var(--color-primary); width: 22px; height: 22px; }
+
+.config-sub { display: none; }
+
+.config-section {
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.config-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 10px;
+}
+
+.config-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.config-field { margin-bottom: 12px; }
+
+.config-field label {
+  display: block;
+  font-size: 14px;
+  color: var(--color-text);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.config-field input,
+.config-field select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 13px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color var(--transition);
+}
+.config-field label { font-size: 12px; margin-bottom: 5px; }
+
+.config-field input:focus,
+.config-field select:focus { border-color: var(--color-primary); }
+
+.date-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  min-width: 0;
+}
+.date-pair .config-field { min-width: 0; }
+.date-pair input[type="date"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* 보고서 종류 라디오 */
+.report-type-radio {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.report-type-radio:hover { border-color: var(--color-primary); }
+
+.report-type-radio input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.report-type-radio:has(input:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.report-type-content { flex: 1; }
+
+.report-type-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 3px;
+}
+
+.report-type-desc {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+/* 작업 선택 리스트 */
+.job-select-list {
+  flex: 1;
+  min-height: 100px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-2);
+}
+
+.job-select-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.job-select-item:last-child { border-bottom: none; }
+
+.job-select-item:hover { background: var(--color-primary-tint); }
+
+.job-select-item.selected { background: var(--color-primary-tint); }
+
+.job-select-item input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  accent-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.job-select-item-info { flex: 1; min-width: 0; }
+
+.job-select-item-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+.job-select-item-meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 3px;
+}
+
+.job-select-item-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.job-empty {
+  text-align: center;
+  padding: 24px 16px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* 저장된 보고서 목록 */
+.saved-reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.saved-report-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-surface-2);
+  transition: all 0.15s;
+}
+
+.saved-report-item:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.saved-report-info { flex: 1; min-width: 0; cursor: pointer; }
+
+.saved-report-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-report-meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 3px;
+}
+
+.saved-report-del {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.saved-report-del:hover { color: var(--color-primary); }
+
+.saved-reports-empty {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 14px 8px;
+  font-style: italic;
+}
+
+/* ============================================================
+   레이아웃 유틸리티 — inline style="..." 대체 클래스
+   ============================================================ */
+
+/* 보고서 종류 라디오 스택 */
+.report-type-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 선택 개수 표시 — 섹션 타이틀 옆 배지 */
+.selected-jobs-count {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text-muted);
+}
+
+/* 전체 선택/해제 버튼 행 */
+.select-all-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.select-all-row .btn {
+  flex: 1;
+  padding: 6px 0;
+  justify-content: center;
+}
+
+/* 기간 필터 캡션 */
+.period-hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+
+/* [전체에서 찾아보기] 버튼 — 리스트 하단 CTA */
+.config-more-btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 8px;
+  font-size: 12px;
+  gap: 6px;
+}
+.job-more-count {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+/* 하단 액션 (보고서 발급 / 목록) — 설정 패널 하단 일반 영역 */
+.config-actions-sticky {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+.config-actions-sticky > .btn { margin: 0 0 8px; }
+.config-actions-sticky > .btn:last-child { margin-bottom: 0; }
+
+/* 발급 후 PDF 인쇄 툴바 — 미리보기 영역 상단에 표시 (스티키 아님, 컨텐츠와 함께 스크롤) */
+.preview-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* 분석 결과 선택 모달 — 선택 카운트 + 테이블 컬럼 */
+.js-selected-inline {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+#js-tbody .col-check { text-align: center; width: 50px; }
+#js-tbody .col-jobid { width: 120px; font-size: 12px; color: var(--color-text-muted); }
+#js-tbody .col-date { width: 100px; font-variant-numeric: tabular-nums; }
+#js-tbody .col-region { width: 160px; }
+#js-tbody .col-cnt { width: 80px; text-align: center; font-weight: 700; color: var(--color-primary); }
+#js-tbody tr.selected { background: var(--color-primary-tint); }
+#js-tbody .col-empty { text-align: center; padding: 32px 0; color: var(--color-text-muted); font-size: 13px; }
+
+/* report-table 컬럼 폭 */
+.rs-job-table-head th.col-job { width: 110px; }
+.rs-job-table-head th.col-cap,
+.rs-job-table-head th.col-ana { white-space: nowrap; }
+.rs-job-table-head th.col-cnt { width: 70px; text-align: center; }
+.rs-job-table-head th.col-high { width: 80px; text-align: center; }
+
+.rs-det-table-head th.col-id { width: 80px; }
+.rs-det-table-head th.col-sev { width: 70px; text-align: center; }
+.rs-det-table-head th.col-date { width: 100px; }
+.rs-det-table-head th.col-status { width: 80px; text-align: center; }
+
+
+
+@media (max-width: 1100px) {
+  .report-layout { grid-template-columns: 340px 1fr; }
+  .report-preview-area { padding: 24px 20px 40px; }
+  .report-sheet { padding: 40px 36px; }
+}
+
+/* 모바일 단계 안내 / 뒤로가기 — 데스크톱은 숨김 */
+.mobile-step-bar { display: none; }
+.mobile-back-btn { display: none; }
+
+@media (max-width: 900px) {
+  .report-layout {
+    grid-template-columns: 1fr;
+    display: block;
+    min-height: 0;
+  }
+  .report-config {
+    position: static;
+    height: auto;
+    padding: 16px 18px 24px;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .report-preview-area {
+    padding: 20px 14px 40px;
+    overflow: visible;
+  }
+  .report-sheet {
+    width: 100%;
+    padding: 28px 22px;
+    box-shadow: 0 6px 18px rgba(15,37,64,0.08);
+  }
+  .preview-toolbar { max-width: 100%; flex-wrap: wrap; gap: 8px; }
+  .chart-grid, .report-kpi-grid { grid-template-columns: 1fr 1fr !important; }
+  .job-select-list { max-height: 240px; }
+
+  /* ── 2단계 마법사 ── */
+  .mobile-step-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 18px;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+  }
+  .mobile-step-bar .step {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mobile-step-bar .step .num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-border);
+    color: var(--color-text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .mobile-step-bar .step.active { color: var(--color-primary); }
+  .mobile-step-bar .step.active .num {
+    background: var(--color-primary);
+    color: #fff;
+  }
+  .mobile-step-bar .step.done .num {
+    background: var(--color-text);
+    color: #fff;
+  }
+  .mobile-step-bar .arrow {
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  .mobile-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--border-radius);
+    color: var(--color-text);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  .mobile-back-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+  /* 단계 1: 설정만 보임, 미리보기 숨김 */
+  body:not(.report-step-2) .report-preview-area { display: none; }
+  /* 단계 2: 미리보기만 보임, 설정 숨김 */
+  body.report-step-2 .report-config { display: none; }
+  body.report-step-2 .mobile-step-bar .step-1 { color: var(--color-text-muted); }
+  body.report-step-2 .mobile-step-bar .step-1 .num { background: var(--color-text); color: #fff; }
+  body.report-step-2 .mobile-step-bar .step-1.active { color: var(--color-text-muted); }
+  body.report-step-2 .mobile-step-bar .step-2 { color: var(--color-primary); }
+  body.report-step-2 .mobile-step-bar .step-2 .num { background: var(--color-primary); color: #fff; }
+}
+
+@media (max-width: 640px) {
+  .report-preview-area { padding: 14px 10px 32px; }
+  .report-sheet { padding: 22px 16px; }
+  .chart-grid, .report-kpi-grid { grid-template-columns: 1fr !important; }
+  .date-pair { grid-template-columns: 1fr; }
+}
+
+@media print {
+  @page { size: A4; margin: 12mm; }
+
+  /* 뷰포트 고정 해제 — html/body 가 전체 컨텐츠 길이로 확장되어야 모든 페이지 인쇄 */
+  html, body {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* 보고서 영역만 보이도록 visibility 로 잘라냄 — position 유지 */
+  body * { visibility: hidden !important; }
+  #report-sheet, #report-sheet * { visibility: visible !important; }
+
+  /* 보고서를 페이지 원점에 배치, 스크롤 컨텍스트·플렉스 해제 */
+  .page-body {
+    display: block !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .report-layout {
+    display: block !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  .report-preview-area {
+    display: block !important;
+    padding: 0 !important;
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  #report-sheet {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .report-section { page-break-inside: avoid; }
+  .report-table thead { display: table-header-group; }
+  .report-table tr { page-break-inside: avoid; }
+  textarea.opinion-textarea {
+    border: 1px solid #ddd !important;
+    resize: none !important;
+    overflow: visible !important;
+  }
+}
+

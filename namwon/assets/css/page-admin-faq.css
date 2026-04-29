@@ -1,0 +1,4 @@
+/* admin-faq.html 전용 — 테이블 카테고리 배지 정렬 등 미세 조정.
+   레이아웃/테이블/폼 등 공용 규칙은 style.css. */
+
+.admin-cat { white-space: nowrap; }

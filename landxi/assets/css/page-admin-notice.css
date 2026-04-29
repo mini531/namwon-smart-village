@@ -1,0 +1,13 @@
+/* admin-notice.html 전용 — 카테고리 배지 variant.
+   레이아웃/테이블/폼/상세 등 공용 규칙은 style.css. */
+
+.admin-cat.urgent {
+  border-color: var(--color-severity-high);
+  color: var(--color-severity-high);
+  background: var(--color-severity-high-bg);
+}
+.admin-cat.work {
+  border-color: #B6C3D6;
+  color: #1F4E79;
+  background: #EDF2FA;
+}

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>활용 사례 - Namwon GeoVision</title>
+  <link rel="icon" href="assets/images/favicon_n.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/page-usecase.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="usecase-container">
+
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span id="page-title-text">활용 사례</span>
+        </h1>
+        <p id="page-title-sub">실제 현장에서 활용된 사례를 확인하세요</p>
+      </div>
+    </div>
+
+    <!-- 목록 뷰 -->
+    <section class="uc-list-view" id="list-view">
+      <!-- 검색 툴바 (공용 board-* 스타일) -->
+      <div class="board-toolbar">
+        <div class="board-field board-field--grow">
+          <label for="uc-search-field">검색어</label>
+          <div class="board-field-row">
+            <select class="board-search-select" id="uc-search-field">
+              <option value="all">전체</option>
+              <option value="title">제목</option>
+              <option value="content">내용</option>
+            </select>
+            <input type="text" class="board-search-input" id="uc-search-input" placeholder="검색어">
+          </div>
+        </div>
+        <div class="board-toolbar-actions">
+          <button type="button" class="btn btn-secondary" id="uc-reset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            초기화
+          </button>
+          <button type="button" class="btn btn-accent" id="uc-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            검색
+          </button>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-card-head">활용사례 목록</div>
+        <table class="uc-table">
+          <thead>
+            <tr>
+              <th>제목</th>
+            </tr>
+          </thead>
+          <tbody id="uc-tbody"></tbody>
+        </table>
+        <div id="uc-empty-wrap"></div>
+      </div>
+
+      <div class="board-paginator">
+        <button type="button" class="board-page-btn" id="uc-first">처음</button>
+        <button type="button" class="board-page-btn" id="uc-prev">이전</button>
+        <div class="board-page-pages" id="uc-pages"></div>
+        <button type="button" class="board-page-btn" id="uc-next">다음</button>
+        <button type="button" class="board-page-btn" id="uc-last">마지막</button>
+        <div class="board-page-size-wrap">
+          <select class="board-page-size" id="uc-page-size">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+          <span>페이지 크기</span>
+        </div>
+        <div class="board-count" id="uc-count">총 <strong>0</strong>건 중 0~0행</div>
+      </div>
+    </section>
+
+    <!-- 상세 뷰 (페이지 전환) -->
+    <section class="uc-detail-view" id="detail-view">
+      <div class="uc-detail-card">
+        <div class="uc-detail-meta" id="dv-date">-</div>
+        <h2 class="uc-detail-title" id="dv-title">활용 사례</h2>
+        <div class="uc-detail-content" id="dv-content"></div>
+        <div class="uc-detail-attach" id="dv-attach" hidden>
+          <div class="attach-title">첨부 파일</div>
+          <div id="dv-attach-list"></div>
+        </div>
+      </div>
+
+      <div class="uc-detail-foot">
+        <button type="button" class="uc-list-btn" id="detail-back">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          목록
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ── 샘플 활용 사례 데이터 ──
+  var USECASES = [
+    {
+      id: 2,
+      title: '[도로안전] Land-XI 기반 AI 도로결함 자동 탐지 실증 — 남원시 관내 6개 권역',
+      date: '2026-04-15T10:32:18',
+      content:
+        '남원시 도로관리과와 Land-XI 플랫폼 운영팀이 공동 수행한 "AI 도로결함 자동 탐지" 실증 사업 결과를 공유합니다. ' +
+        '드론 정사영상과 차량 카메라 영상을 AI가 분석하여 포트홀·크랙·공동의심·표지판 파손 등 도로 안전 위해 요소를 자동으로 탐지·분류하고, 심각도에 따라 현장 조치 우선순위를 자동 산출합니다.\n\n' +
+        '1. 기존 도로 점검의 한계\n' +
+        '· 육안 순찰 중심 — 점검 주기 길고 누락 구간 다수\n' +
+        '· 포트홀·크랙 신고가 민원 접수 이후 사후 대응 위주\n' +
+        '· 도로 시설물 파손 등 이종 결함의 분류 기준 모호\n' +
+        '· 보수 이력 관리 시스템 분산 — 행정 업무 과중\n\n' +
+        '[보도자료] 남원시, "도로 안전관리 AI 플랫폼 시범 도입" — https://www.newsfreezone.co.kr/news/articleView.html?idxno=612034\n\n' +
+        '2. Land-XI 기반 AI 도로안전 서비스\n' +
+        '· 정사영상 탐지: YOLOv8-Road-Ortho v2.1 · mAP 0.87 (포트홀·크랙·보수흔적·공동의심·쓰레기 5종)\n' +
+        '· 카메라 탐지: YOLO-Road-Camera Lightweight v1.4 · mAP 0.83 (분리대·표지판·차선·컬러맨홀·불법주정차 등 8종)\n' +
+        '· 심각도 자동 분류: 고위험/주의/양호 3단계 (탐지 면적·위치·도로 등급 종합)\n' +
+        '· 처리 상태 일원화: 미처리 → 처리중 → 완료 (지도·이력·보고서 자동 동기화)\n\n' +
+        '3. 적용 효과 (2026년 1~4월 실증)\n' +
+        '· 남원시 관내 6개 권역(도통·향교·중앙·금동·쌍교·동충) 대상 드론 정사영상 18건·차량 카메라 12건 분석\n' +
+        '· 총 40건 탐지 (고위험 15건 / 주의 17건 / 양호 8건) — 이 중 13건이 민원 접수 전 선제 탐지\n' +
+        '· 현장 실사 시간 75% 단축 (분기 정밀 점검 대비)\n' +
+        '· 긴급 보수 대응 평균 소요 8.4일 → 3.1일 단축\n\n' +
+        '[보도자료] 남원시, AI 도로결함 탐지로 보수 대응 시간 3배 단축\n\n' +
+        '4. 향후 계획\n' +
+        '· 2026.05 — 전 읍면 확대 적용\n' +
+        '· 2026.06 — 시민 민원 앱 연동 (현장 사진 업로드 시 AI 자동 분류)\n' +
+        '· 2026.Q3 — 보수 예산 편성용 리스크 맵 자동 생성\n\n' +
+        '관련 자료나 타 지자체 사업 제안 시 함께 검토가 필요하면 Namwon GeoVision 운영팀(063-713-1218, privacy@namwon.go.kr)으로 연락 주시기 바랍니다.',
+      attachments: [
+        { name: '도로안전_AI탐지_실증보고서_v1.0.pdf', size: '3.4MB' },
+        { name: '탐지결과_심각도분포_25-26Q1.xlsx', size: '540KB' },
+        { name: '현장조치_프로세스_매뉴얼.pdf', size: '1.1MB' }
+      ]
+    },
+    {
+      id: 1,
+      title: '[영농관리] Land-XI 플랫폼으로 영농문제까지 해결!',
+      date: '2025-11-23T17:17:44',
+      content:
+        'Land-XI 플랫폼을 기반으로 기술개발, 신규사업 기획 및 남원시의 영농문제 해결에 기여한 사례를 소개하고자 합니다~! ' +
+        '남원시는 사료작물 재배가 활발한 농업 중심으로, 매년 상당한 규모의 농업 직불금이 집행되고 있습니다. 그러나 기존의 현장 확인 중심 관리 방식으로는 다음과 같은 문제가 발생하고 있습니다.\n\n' +
+        '1. 주요 문제점\n' +
+        '사료작물 재배 현황의 정확한 파악 어려움\n' +
+        '현장 인력 및 시간 소요 과다\n' +
+        '작물 종류별 생산량 추정의 부정확성\n' +
+        '직불금 지급 기준 검증의 한계\n' +
+        '부정적 직불금 집행으로 인한 예산 낭비\n\n' +
+        '  [보도자료] 남원시, "공익직불금 부정수급 실태 조사 실시" — https://www.newsfreezone.co.kr/news/articleView.html?idxno=579501\n\n' +
+        '이러한 문제는 단순히 행정 효율성의 문제를 넘어 국가 예산의 적정 집행, 성실 농업인과의 형평성 문제로 이어지고 있습니다. ' +
+        '이에 본사 공간사업기획처와 전북지역본부 공간정보사업처는 남원시의 현안을 면밀히 분석하고, Land-XI 플랫폼을 기반으로 한 \'농뷰(Nong-View)\' 서비스 구축을 진행하고 있습니다.\n\n' +
+        '2. 솔루션 개발\n' +
+        '사료작물 관리 서비스: 조사료 재배면적 및 생산량 자동 검출\n' +
+        '농지이용 관리 서비스: 필지 단위 재배(경작, 휴경) 자동 검출\n' +
+        '영농시설 관리 서비스: 비닐하우스(단동, 연동) 등 영농시설 유형·규모 자동 검출\n' +
+        '행정 서비스 구축 예정: \'26.1. 정식 서비스 예정\n\n' +
+        '이 행정서비스는 현장조사부터 행정업무까지 지원하는 맞춤형 AI서비스를 제공하며, AI 자동 분석, 행정 융합 이력관리, 보고서 자동생성 등을 지원합니다.\n\n' +
+        '3. 적용 효과\n' +
+        '스마트 영농 관리 서비스 中 사료 작물 관리서비스 先적용을 통해 1억 7천만원의 예산 절감!\n' +
+        '  — https://www.namwon.go.kr/board/post/view.do?boardUid=ff8080818ea1fec5018ea24651660037&beginDateStr=&endDateStr=&searchType=postTtl&keyword=%EC%98%88%EC%82%B0&paramString=Us7WVBAxc13kgzv1JU3ayAslPphGSM%2FmlfdB4qtWC4OBeJsElaKmGl7kvQ4Au%2B3O&size=10&menuUid=ff8080818e3beff0018e407936b40088&postUid=9be51b0e987947d70198ee8ddbbc30ea\n\n' +
+        '본 사례는 Land-XI 플랫폼이 실질적인 사회 문제 해결과 함께 공공서비스 혁신을 통해 직접적인 행정업무를 지원한 성공적인 비즈니스 모델입니다.\n\n' +
+        '[보도자료] 스마트 영농 관리 서비스 \'농뷰(Nong-View)\' 구축, 예산 절감 효과\n' +
+        '지역본부에서도 이 사례를 통해 타지자체 사업 제안 등 신규 사업 발굴에 많은 활용 부탁드립니다.\n\n' +
+        '관련 자료가 필요하시거나 궁금한 사항있으시면 고유정(063-713-1213)으로 연락주시면 감사하겠습니다.\n\n' +
+        '다음 사례는 Land-XI 플랫폼을 통해 남원시의 생활환경 관리 서비스를 제공했던 내용으로 돌아오겠습니다~!\n\n' +
+        'Comming Soon~~~'
+    }
+  ];
+
+  var state = {
+    field: 'all',   // all | title | content
+    keyword: '',
+    page: 1,
+    pageSize: 10
+  };
+
+  function fmtDateTime(iso) {
+    if (!iso) return '';
+    return iso.replace('T', ' ').replace(/-/g, '.').substring(0, 19);
+  }
+
+  function getFiltered() {
+    var list = USECASES.slice();
+    if (state.keyword) {
+      var kw = state.keyword.toLowerCase();
+      list = list.filter(function (u) {
+        if (state.field === 'title') return u.title.toLowerCase().indexOf(kw) !== -1;
+        if (state.field === 'content') return (u.content || '').toLowerCase().indexOf(kw) !== -1;
+        // all
+        return u.title.toLowerCase().indexOf(kw) !== -1 ||
+          (u.content || '').toLowerCase().indexOf(kw) !== -1;
+      });
+    }
+    // 최신순
+    list.sort(function (a, b) { return b.date.localeCompare(a.date); });
+    return list;
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function linkifyUrls(text) {
+    // http(s) URL을 <a>로 감싸기 (escape 후 호출 — 이미 안전)
+    return text.replace(/(https?:\/\/[^\s<]+)/g, function (m) {
+      return '<a href="' + m + '" target="_blank" rel="noopener">' + m + '</a>';
+    });
+  }
+
+  function render() {
+    var tbody = document.getElementById('uc-tbody');
+    var emptyWrap = document.getElementById('uc-empty-wrap');
+    var countEl = document.getElementById('uc-count');
+
+    var all = getFiltered();
+    var total = all.length;
+
+    tbody.innerHTML = '';
+    emptyWrap.innerHTML = '';
+
+    if (total === 0) {
+      emptyWrap.innerHTML =
+        '<div class="uc-empty">' +
+          '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+          '<p>검색 조건에 맞는 활용 사례가 없습니다.</p>' +
+        '</div>';
+      countEl.innerHTML = '총 <strong>0</strong>건 중 0~0행';
+      renderPagination(1);
+      return;
+    }
+
+    var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+    if (state.page > totalPages) state.page = totalPages;
+    var startIdx = (state.page - 1) * state.pageSize;
+    var endIdx = Math.min(total, startIdx + state.pageSize);
+    var pageItems = all.slice(startIdx, endIdx);
+
+    pageItems.forEach(function (u) {
+      var tr = document.createElement('tr');
+      tr.dataset.id = u.id;
+      var hasAttach = u.attachments && u.attachments.length;
+      var attachIcon = hasAttach
+        ? '<svg class="uc-attach-inline-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>'
+        : '';
+      tr.innerHTML = '<td><span class="title-txt">' + escapeHtml(u.title) + '</span>' + attachIcon + '</td>';
+      tr.addEventListener('click', function () { openDetail(u); });
+      tbody.appendChild(tr);
+    });
+
+    countEl.innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (startIdx + 1) + '~' + endIdx + '행';
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    var pagesEl = document.getElementById('uc-pages');
+    pagesEl.innerHTML = '';
+    var first = document.getElementById('uc-first');
+    var prev = document.getElementById('uc-prev');
+    var next = document.getElementById('uc-next');
+    var last = document.getElementById('uc-last');
+
+    first.disabled = prev.disabled = state.page <= 1;
+    next.disabled = last.disabled = state.page >= totalPages;
+
+    // 현재 페이지 주변 최대 5개 번호 표시
+    var start = Math.max(1, state.page - 2);
+    var end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    for (var p = start; p <= end; p++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'board-page-btn' + (p === state.page ? ' active' : '');
+      btn.textContent = String(p);
+      (function (page) {
+        btn.addEventListener('click', function () {
+          state.page = page;
+          render();
+        });
+      })(p);
+      pagesEl.appendChild(btn);
+    }
+  }
+
+  function openDetail(u, pushHistory) {
+    document.getElementById('dv-title').textContent = u.title;
+    document.getElementById('dv-date').textContent = fmtDateTime(u.date);
+    var contentEl = document.getElementById('dv-content');
+    // 내용 전체 escape 후 URL만 link로 바꾸기
+    contentEl.innerHTML = linkifyUrls(escapeHtml(u.content || ''));
+
+    // 첨부 파일 렌더
+    var attachWrap = document.getElementById('dv-attach');
+    var attachList = document.getElementById('dv-attach-list');
+    if (u.attachments && u.attachments.length) {
+      attachWrap.hidden = false;
+      attachList.innerHTML = '';
+      u.attachments.forEach(function (a) {
+        var item = document.createElement('div');
+        item.className = 'attach-item';
+        item.innerHTML =
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>' +
+          '<span class="attach-name">' + escapeHtml(a.name) + '</span>' +
+          '<span class="attach-size">(' + a.size + ')</span>' +
+          '<button type="button" class="attach-download" aria-label="다운로드">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+            '<span>다운로드</span>' +
+          '</button>';
+        item.querySelector('.attach-download').addEventListener('click', function (e) {
+          e.stopPropagation();
+          downloadAttachment(a);
+        });
+        item.addEventListener('click', function () { downloadAttachment(a); });
+        attachList.appendChild(item);
+      });
+    } else {
+      attachWrap.hidden = true;
+    }
+
+    document.getElementById('list-view').classList.add('hidden');
+    document.getElementById('detail-view').classList.add('active');
+    // 뷰 전환에 따른 페이지 타이틀 갱신 — 메뉴명(단일 '활용 사례') 금지.
+    document.getElementById('page-title-text').textContent = '활용 사례 열람';
+    document.getElementById('page-title-sub').textContent = '활용 사례 상세 내용을 확인합니다';
+    document.title = '활용 사례 열람 - Namwon GeoVision';
+    document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
+
+    if (pushHistory !== false && window.history && window.history.pushState) {
+      window.history.pushState({ usecaseId: u.id }, '', '?uc=' + u.id);
+    }
+  }
+
+  function downloadAttachment(a) {
+    // 데모 구현: 실제 배포에서는 서버의 파일 URL로 교체
+    var content = '[샘플 첨부]\n파일명: ' + a.name + '\n크기: ' + a.size + '\n\n' +
+      'Namwon GeoVision 활용 사례 페이지의 샘플 첨부 파일입니다.';
+    var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = a.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    if (window.NotifyUI) NotifyUI.toast(a.name, '다운로드를 시작합니다');
+  }
+
+  function closeDetail(fromPopState) {
+    document.getElementById('list-view').classList.remove('hidden');
+    document.getElementById('detail-view').classList.remove('active');
+    document.getElementById('page-title-text').textContent = '활용 사례';
+    document.getElementById('page-title-sub').textContent =
+      '실제 현장에서 활용된 사례를 확인하세요';
+    document.title = '활용 사례 - Namwon GeoVision';
+    if (!fromPopState && window.history && window.history.pushState) {
+      window.history.pushState({}, '', window.location.pathname);
+    }
+  }
+
+  // ── 이벤트 바인딩 ──
+  var searchInput = document.getElementById('uc-search-input');
+  var searchField = document.getElementById('uc-search-field');
+  var pageSize = document.getElementById('uc-page-size');
+
+  function applySearch() {
+    state.field = searchField.value;
+    state.keyword = searchInput.value.trim();
+    state.page = 1;
+    render();
+  }
+
+  document.getElementById('uc-search').addEventListener('click', applySearch);
+  searchInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') applySearch();
+  });
+  document.getElementById('uc-reset').addEventListener('click', function () {
+    searchInput.value = '';
+    searchField.value = 'all';
+    state.field = 'all';
+    state.keyword = '';
+    state.page = 1;
+    render();
+  });
+
+  document.getElementById('uc-first').addEventListener('click', function () { state.page = 1; render(); });
+  document.getElementById('uc-prev').addEventListener('click', function () {
+    if (state.page > 1) { state.page -= 1; render(); }
+  });
+  document.getElementById('uc-next').addEventListener('click', function () {
+    state.page += 1; render();
+  });
+  document.getElementById('uc-last').addEventListener('click', function () {
+    var total = getFiltered().length;
+    state.page = Math.max(1, Math.ceil(total / state.pageSize));
+    render();
+  });
+  pageSize.addEventListener('change', function () {
+    state.pageSize = parseInt(pageSize.value, 10) || 10;
+    state.page = 1;
+    render();
+  });
+
+  document.getElementById('detail-back').addEventListener('click', function () { closeDetail(); });
+
+  window.addEventListener('popstate', function (e) {
+    var st = e.state || {};
+    if (st.usecaseId) {
+      var u = USECASES.find(function (x) { return x.id === st.usecaseId; });
+      if (u) { openDetail(u, false); return; }
+    }
+    closeDetail(true);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.getElementById('detail-view').classList.contains('active')) {
+      closeDetail();
+    }
+  });
+
+  // 최초 렌더
+  render();
+
+  // URL ?uc=N 지원 (직접 링크 진입)
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var uid = parseInt(params.get('uc'), 10);
+    if (uid) {
+      var u = USECASES.find(function (x) { return x.id === uid; });
+      if (u) openDetail(u, false);
+    }
+  })();
+})();
+</script>
+</body>
+</html>

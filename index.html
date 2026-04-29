@@ -3,334 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>대시보드 - Namwon GeoVision</title>
+  <title>Land-XI · 플랫폼 선택</title>
   <link rel="icon" href="assets/images/favicon_n.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/menu.css">
-  <link rel="stylesheet" href="assets/css/page-index.css">
+  <link rel="stylesheet" href="assets/css/page-portal.css">
 </head>
 <body>
 
-<div id="header-include"></div>
+<main class="portal-page">
+  <div class="portal-inner">
+    <header class="portal-head">
+      <h1 class="portal-title">Land-XI</h1>
+      <p class="portal-sub">공간 영상 위에, AI 를 더하다.</p>
+    </header>
 
-<div class="page-body">
-<div class="dashboard">
-
-  <!-- 페이지 타이틀 -->
-  <div class="dash-title">
-    <div>
-      <h2>도로 안전관리 대시보드</h2>
-      <div class="dash-subtitle">남원시 AI 기반 도로 안전관리 행정서비스</div>
-    </div>
-    <div class="dash-date">
-      <strong id="dash-now-date"></strong>
-      기준일 현재
-    </div>
-  </div>
-
-  <!-- 공지 스트립 (한 줄) -->
-  <div class="notice-strip">
-    <span class="notice-strip-tag">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
-      공지
-    </span>
-    <a class="notice-strip-text" href="notice.html?notice=8">고위험 탐지 건 긴급 처리 안내 — 지난 주 대비 12% 증가, 이력 관리 &gt; 고위험 필터에서 확인</a>
-    <span class="notice-strip-date">2026.04.15</span>
-    <a class="notice-strip-more" href="notice.html">전체 공지 보기 ›</a>
-  </div>
-
-  <!-- KPI 섹션 (좌측 선 제거, 단색 톤) -->
-  <div class="kpi-grid">
-    <a href="history.html" class="kpi-card">
-      <span class="kpi-label">총 탐지 건수</span>
-      <div class="kpi-value"><span id="kpi-total">–</span><span class="unit">건</span></div>
-      <div class="kpi-delta">전월 대비 <strong>+12%</strong></div>
-    </a>
-    <a href="history.html?severity=high" class="kpi-card is-danger">
-      <span class="kpi-label">고위험 건수</span>
-      <div class="kpi-value"><span id="kpi-high">–</span><span class="unit">건</span></div>
-      <div class="kpi-delta warn">전체의 <strong id="kpi-high-pct">–</strong>%</div>
-    </a>
-    <a href="history.html?status=%EB%AF%B8%EC%B2%98%EB%A6%AC" class="kpi-card">
-      <span class="kpi-label">미처리 건수</span>
-      <div class="kpi-value"><span id="kpi-unprocessed">–</span><span class="unit">건</span></div>
-      <div class="kpi-delta">처리중 <strong id="kpi-processing">–</strong>건 포함</div>
-    </a>
-    <a href="history.html?status=%EC%99%84%EB%A3%8C" class="kpi-card">
-      <span class="kpi-label">처리 완료</span>
-      <div class="kpi-value"><span id="kpi-done">–</span><span class="unit">건</span></div>
-      <div class="kpi-delta">처리율 <strong id="kpi-rate">–</strong>%</div>
-    </a>
-  </div>
-
-  <!-- 메인 그리드: 분석 모델 + 최근 탐지 -->
-  <div class="main-grid">
-
-    <!-- AI 분석 모델 선택 (실사 썸네일 + 강조 제목) -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
-          AI 분석 과제
+    <div class="portal-grid">
+      <a href="landxi/" class="portal-card portal-card--lx">
+        <div class="portal-card-tag">LX 전용</div>
+        <div class="portal-card-title">Land-XI <span>v2.0</span></div>
+        <div class="portal-card-desc">한국국토정보공사(LX) 전용 공간 정보 분석 플랫폼</div>
+        <div class="portal-card-arrow">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </div>
-        <span class="badge badge-primary">2종 운영중</span>
-      </div>
-      <div class="card-body">
-        <div class="model-select-grid">
-          <!-- 정사영상 모델 -->
-          <a href="analysis-orthophoto.html" class="model-select-card">
-            <div class="model-thumb model-thumb--orthophoto">
-<span class="model-thumb-tag">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                드론 정사영상
-              </span>
-            </div>
-            <div class="model-info">
-              <div class="model-name-row">
-                <div class="model-name-strong">정사영상 모델</div>
-                <div class="model-action-inline">
-                  AI 분석 실행
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </div>
-              </div>
-              <div class="model-version"><strong>YOLOv8-Road-Ortho</strong> · v2.1 · mAP 0.87</div>
-              <div class="model-classes">
-                <span class="class-tag">포트홀</span>
-                <span class="class-tag">크랙</span>
-                <span class="class-tag">보수흔적</span>
-                <span class="class-tag">공동의심</span>
-                <span class="class-tag">쓰레기</span>
-              </div>
-            </div>
-          </a>
+      </a>
 
-          <!-- 카메라 모델 -->
-          <a href="analysis-camera.html" class="model-select-card">
-            <div class="model-thumb model-thumb--camera">
-<span class="model-thumb-tag">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-                차량 카메라
-              </span>
-            </div>
-            <div class="model-info">
-              <div class="model-name-row">
-                <div class="model-name-strong">카메라 모델</div>
-                <div class="model-action-inline">
-                  AI 분석 실행
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </div>
-              </div>
-              <div class="model-version"><strong>YOLO-Road-Camera</strong> · Lightweight v1.4 · mAP 0.83</div>
-              <div class="model-classes">
-                <span class="class-tag">분리대파손</span>
-                <span class="class-tag">표지판파손</span>
-                <span class="class-tag">차선불량</span>
-                <span class="class-tag">불법주정차</span>
-                <span class="class-tag">+3종</span>
-              </div>
-            </div>
-          </a>
+      <a href="namwon/home.html" class="portal-card portal-card--namwon">
+        <div class="portal-card-tag">남원시</div>
+        <div class="portal-card-title">남원시 <span>스마트빌리지</span></div>
+        <div class="portal-card-desc">드론 정사영상·차량 카메라·AI 분석 통합 행정 서비스</div>
+        <div class="portal-card-arrow">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </div>
-
-        <!-- 빠른 이동 -->
-        <div class="quick-nav-row">
-          <a href="map-home.html" class="btn btn-primary btn-sm">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-            지도 홈 바로가기
-          </a>
-          <a href="report-road-ortho.html" class="btn btn-ghost btn-sm">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
-            보고서 생성
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- 최근 분석 작업 (카드 리스트) -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          최근 분석 작업
-        </div>
-        <a href="history.html" class="btn btn-ghost btn-sm">작업 이력</a>
-      </div>
-      <div class="card-body card-body--sm">
-        <div class="recent-job-list" id="recent-jobs-list"></div>
-      </div>
+      </a>
     </div>
   </div>
+</main>
 
-  <!-- 하단: 처리 대기 고위험 탐지 -->
-  <div class="bottom-grid">
-    <div class="card card--span-4">
-      <div class="card-header">
-        <div class="card-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/></svg>
-          처리 대기 고위험 탐지
-        </div>
-        <a href="history.html" class="btn btn-ghost btn-sm">전체 이력</a>
-      </div>
-      <div class="card-body card-body--flush">
-        <div class="table-scroll">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>탐지 ID</th>
-                <th>클래스</th>
-                <th>모델</th>
-                <th>위치</th>
-                <th>탐지일</th>
-              </tr>
-            </thead>
-            <tbody id="priority-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /dashboard -->
-
-<div id="footer-include"></div>
-
-</div><!-- /page-body -->
-
-<script src="assets/js/layout.js"></script>
-<script src="assets/js/policy-modal.js"></script>
-<script src="assets/js/detection-modal.js"></script>
-<script>
-(function () {
-  // 현재 날짜 표시 (yyyy.mm.dd)
-  var now = new Date();
-  var y = now.getFullYear();
-  var m = String(now.getMonth() + 1).padStart(2, '0');
-  var d = String(now.getDate()).padStart(2, '0');
-  document.getElementById('dash-now-date').textContent = y + '.' + m + '.' + d;
-
-  var _allDets = [];
-
-  fetch('assets/data/sample-detections.json')
-    .then(function (r) { return r.json(); })
-    .then(function (json) {
-      _allDets = json.detections.slice();
-      if (window.DetectionModal) DetectionModal.applyOverridesTo(_allDets);
-      updateKpi();
-      renderPriority();
-    })
-    .catch(function () {
-      console.warn('detections load failed');
-    });
-
-  function updateKpi() {
-    var total = _allDets.length;
-    var high = 0, unproc = 0, proc = 0, done = 0;
-    _allDets.forEach(function (d) {
-      if (d.severity === 'high') high++;
-      if (d.status === '미처리') unproc++;
-      else if (d.status === '처리중') proc++;
-      else if (d.status === '완료') done++;
-    });
-    document.getElementById('kpi-total').textContent = total;
-    document.getElementById('kpi-high').textContent = high;
-    document.getElementById('kpi-high-pct').textContent = total ? Math.round(high / total * 100) : 0;
-    document.getElementById('kpi-unprocessed').textContent = unproc;
-    document.getElementById('kpi-processing').textContent = proc;
-    document.getElementById('kpi-done').textContent = done;
-    document.getElementById('kpi-rate').textContent = total ? Math.round(done / total * 100) : 0;
-  }
-
-  function renderPriority() {
-    var priority = _allDets
-      .filter(function (d) { return d.severity === 'high' && d.status === '미처리'; })
-      .sort(function (a, b) { return a.detected_at < b.detected_at ? 1 : -1; })
-      .slice(0, 6);
-
-    var ptbody = document.getElementById('priority-tbody');
-    ptbody.innerHTML = '';
-    if (priority.length === 0) {
-      ptbody.innerHTML = '<tr><td colspan="6" class="priority-empty-cell">처리 대기 중인 고위험 탐지가 없습니다</td></tr>';
-      return;
-    }
-    priority.forEach(function (det) {
-      var modelLabel = det.model_type === 'orthophoto' ? '정사영상' : '카메라';
-      var dateStr = det.detected_at.substring(0, 10).replace(/-/g, '.');
-      var tr = document.createElement('tr');
-      tr.className = 'clickable-row';
-      tr.innerHTML =
-        '<td class="priority-id-cell">' + det.id + '</td>' +
-        '<td class="priority-class-cell">' + det.class_ko + '</td>' +
-        '<td><span class="badge">' + modelLabel + '</span></td>' +
-        '<td class="priority-addr-cell">' + det.address + '</td>' +
-        '<td class="priority-date-cell">' + dateStr + '</td>';
-      tr.addEventListener('click', function () {
-        if (!window.DetectionModal) return;
-        DetectionModal.open(det, {
-          onSave: function () {
-            updateKpi();
-            renderPriority();
-          }
-        });
-      });
-      ptbody.appendChild(tr);
-    });
-  }
-
-  // 최근 분석 작업 로드
-  fetch('assets/data/sample-jobs.json')
-    .then(function (r) { return r.json(); })
-    .then(function (json) {
-      var classKoShort = {
-        'Pothole': '포트홀', 'Crack': '크랙', 'Patch': '보수흔적', 'Void_Suspected': '공동의심',
-        'Litter': '쓰레기', 'Barrier_Damaged': '분리대파손', 'Delineator_Damaged': '시선유도봉파손',
-        'Pedestrian_Facility_Damaged': '보행시설파손', 'Sign_Damaged': '표지판파손',
-        'Lane_Faded': '차선불량', 'Color_Manhole': '컬러맨홀', 'Illegal_Parking': '불법주정차'
-      };
-
-      var listEl = document.getElementById('recent-jobs-list');
-      listEl.innerHTML = '';
-      var recent = json.jobs.slice().sort(function (a, b) { return b.analyzed_at.localeCompare(a.analyzed_at); }).slice(0, 4);
-
-      recent.forEach(function (job) {
-        var iconSvg = job.source_type === 'orthophoto'
-          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'
-          : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
-
-        var captured = job.captured_at.replace(/-/g, '.');
-        var analyzed = job.analyzed_at.substring(0, 10).replace(/-/g, '.');
-        var typeLabel = job.source_type === 'orthophoto' ? '정사영상' : '카메라';
-
-        var classEntries = Object.entries(job.class_summary).sort(function (a, b) { return b[1] - a[1]; });
-        var topClass = classEntries[0] ? (classKoShort[classEntries[0][0]] || classEntries[0][0]) : '-';
-
-        var card = document.createElement('a');
-        card.className = 'recent-job-card';
-        card.href = 'history.html?job=' + encodeURIComponent(job.job_id);
-        card.innerHTML =
-          '<div class="recent-job-icon">' + iconSvg + '</div>' +
-          '<div class="recent-job-main">' +
-            '<div class="recent-job-name">' + (job.source_label || job.source_name) + '</div>' +
-            '<div class="recent-job-meta">' +
-              '<span>' + typeLabel + '</span>' +
-              '<span class="meta-chip">촬영 ' + captured + '</span>' +
-              '<span class="meta-chip">분석 ' + analyzed + '</span>' +
-              '<span>주요: ' + topClass + '</span>' +
-            '</div>' +
-          '</div>' +
-          '<div class="recent-job-stat">' +
-            '<span class="stat-num">' + job.detection_count + '</span><span class="stat-unit">건</span>' +
-            (job.high_count > 0 ? '<span class="stat-high">고위험 ' + job.high_count + '</span>' : '') +
-          '</div>';
-        listEl.appendChild(card);
-      });
-    })
-    .catch(function () {
-      document.getElementById('recent-jobs-list').innerHTML =
-        '<div class="recent-jobs-error">분석 작업 데이터를 불러올 수 없습니다.</div>';
-    });
-})();
-</script>
 </body>
 </html>

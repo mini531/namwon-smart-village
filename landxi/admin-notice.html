@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>공지사항 관리 - Land-XI</title>
+  <link rel="icon" href="assets/images/favicon_landxi.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/page-admin-notice.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="admin-container">
+
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          <span id="page-title-text">공지사항 관리</span>
+        </h1>
+        <p id="page-title-sub">공지사항을 등록·수정·삭제하고 게시 기간·팝업 노출을 설정할 수 있습니다</p>
+      </div>
+    </div>
+
+    <!-- 목록 뷰 -->
+    <section class="admin-list-view" id="list-view">
+      <!-- 검색 툴바 — 대형에서 한 행, 좁아지면 자동 줄바꿈 -->
+      <div class="board-toolbar">
+        <div class="board-field board-field--search">
+          <label for="an-search-input">검색어</label>
+          <div class="board-field-row">
+            <select class="board-search-select" id="an-search-field">
+              <option value="all">전체</option>
+              <option value="title">제목</option>
+              <option value="content">내용</option>
+              <option value="author">등록자</option>
+            </select>
+            <input type="text" class="board-search-input" id="an-search-input" placeholder="검색어">
+          </div>
+        </div>
+        <div class="board-field">
+          <label for="an-cat">구분</label>
+          <select class="board-search-select" id="an-cat">
+            <option value="all">전체</option>
+            <option value="urgent">긴급</option>
+            <option value="general">일반</option>
+            <option value="work">업무</option>
+          </select>
+        </div>
+        <div class="board-field board-field--period">
+          <label>게시 기간</label>
+          <div class="board-period-row">
+            <div class="board-period-dates">
+              <input type="date" class="board-date-input" id="an-from" placeholder="YYYY-MM-DD">
+              <span class="board-period-sep">~</span>
+              <input type="date" class="board-date-input" id="an-to" placeholder="YYYY-MM-DD">
+            </div>
+            <div class="board-period-quicks">
+              <button type="button" class="board-quick-btn active" data-months="0">전체</button>
+              <button type="button" class="board-quick-btn" data-months="1">1개월</button>
+              <button type="button" class="board-quick-btn" data-months="3">3개월</button>
+              <button type="button" class="board-quick-btn" data-months="6">6개월</button>
+              <button type="button" class="board-quick-btn" data-months="12">12개월</button>
+            </div>
+          </div>
+        </div>
+        <div class="board-toolbar-actions board-toolbar-actions--end">
+          <button type="button" class="btn btn-secondary" id="an-reset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            초기화
+          </button>
+          <button type="button" class="btn btn-accent" id="an-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            검색
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">공지사항 목록</div>
+          <div class="card-actions">
+            <button type="button" class="btn btn-danger" id="an-del-selected">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
+              선택 삭제
+            </button>
+            <button type="button" class="btn btn-primary" id="an-new">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              등록
+            </button>
+          </div>
+        </div>
+        <table class="data-table is-clickable">
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" class="form-check" id="an-check-all"></th>
+              <th class="col-cat">구분</th>
+              <th>제목</th>
+              <th class="col-date">게시 시작</th>
+              <th class="col-date">게시 종료</th>
+              <th class="col-author">등록자</th>
+              <th class="col-date">등록 일시</th>
+            </tr>
+          </thead>
+          <tbody id="an-tbody"></tbody>
+        </table>
+        <div id="an-empty-wrap"></div>
+      </div>
+
+      <div class="board-paginator">
+        <button type="button" class="board-page-btn" id="an-first">처음</button>
+        <button type="button" class="board-page-btn" id="an-prev">이전</button>
+        <div class="board-page-pages" id="an-pages"></div>
+        <button type="button" class="board-page-btn" id="an-next">다음</button>
+        <button type="button" class="board-page-btn" id="an-last">마지막</button>
+        <div class="board-page-size-wrap">
+          <select class="board-page-size" id="an-page-size">
+            <option value="10">10</option><option value="20">20</option><option value="50">50</option>
+          </select>
+          <span>페이지 크기</span>
+        </div>
+        <div class="board-count" id="an-count">총 <strong>0</strong>건 중 0~0행</div>
+      </div>
+    </section>
+
+    <!-- 등록/수정 폼 뷰 -->
+    <section class="admin-form-view hidden" id="form-view">
+      <div class="card card--pad">
+        <div class="form-row two-col">
+          <div class="form-field">
+            <label class="form-label" for="f-cat">구분<span class="req">*</span></label>
+            <select class="form-control" id="f-cat">
+              <option value="">선택</option>
+              <option value="urgent">긴급</option>
+              <option value="general">일반</option>
+              <option value="work">업무</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="f-title">제목<span class="req">*</span>
+              <span class="char-count"><strong id="f-title-count">0</strong>자/200자</span>
+            </label>
+            <input type="text" class="form-control" id="f-title" maxlength="200" placeholder="제목을 입력해 주세요.">
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div class="form-field">
+            <label class="form-label">게시 기간<span class="req">*</span></label>
+            <div class="datetime-range">
+              <div class="dt-pair">
+                <input type="date" id="f-from-date" placeholder="YYYY-MM-DD">
+                <input type="time" id="f-from-time" value="00:00">
+              </div>
+              <span class="dt-sep">~</span>
+              <div class="dt-pair">
+                <input type="date" id="f-to-date" placeholder="YYYY-MM-DD">
+                <input type="time" id="f-to-time" value="23:59">
+              </div>
+              <label class="check-inline">
+                <input type="checkbox" class="form-check" id="f-unlimited">무한 게시
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div class="form-field">
+            <label class="form-label">팝업 설정<span class="req">*</span></label>
+            <div class="datetime-range">
+              <label class="check-inline">
+                <input type="checkbox" class="form-check" id="f-popup">메인화면 팝업 표시
+              </label>
+              <div class="dt-pair">
+                <input type="date" id="f-popup-from-date" placeholder="YYYY-MM-DD" disabled>
+                <input type="time" id="f-popup-from-time" value="00:00" disabled>
+              </div>
+              <span class="dt-sep">~</span>
+              <div class="dt-pair">
+                <input type="date" id="f-popup-to-date" placeholder="YYYY-MM-DD" disabled>
+                <input type="time" id="f-popup-to-time" value="23:59" disabled>
+              </div>
+              <div class="dt-quicks">
+                <button type="button" class="board-quick-btn" data-weeks="1" disabled>1주일</button>
+                <button type="button" class="board-quick-btn" data-weeks="2" disabled>2주일</button>
+                <button type="button" class="board-quick-btn" data-weeks="3" disabled>3주일</button>
+                <button type="button" class="board-quick-btn" data-weeks="4" disabled>4주일</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div class="form-field">
+            <label class="form-label">내용<span class="req">*</span></label>
+            <div class="rte-wrap">
+              <div class="rte-toolbar" id="rte-toolbar">
+                <button type="button" class="rte-btn" data-cmd="bold" title="굵게"><strong>B</strong></button>
+                <button type="button" class="rte-btn" data-cmd="underline" title="밑줄"><u>U</u></button>
+                <button type="button" class="rte-btn" data-cmd="strikeThrough" title="취소선"><s>S</s></button>
+                <span class="rte-sep"></span>
+                <button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="글머리 기호">• 목록</button>
+                <button type="button" class="rte-btn" data-cmd="insertOrderedList" title="번호 목록">1. 목록</button>
+                <span class="rte-sep"></span>
+                <button type="button" class="rte-btn" data-cmd="justifyLeft" title="왼쪽 정렬">⟵</button>
+                <button type="button" class="rte-btn" data-cmd="justifyCenter" title="가운데 정렬">⎯</button>
+                <button type="button" class="rte-btn" data-cmd="justifyRight" title="오른쪽 정렬">⟶</button>
+                <span class="rte-sep"></span>
+                <button type="button" class="rte-btn" id="rte-link" title="링크">🔗</button>
+                <button type="button" class="rte-btn" id="rte-image" title="이미지">🖼</button>
+                <button type="button" class="rte-btn" data-cmd="removeFormat" title="서식 지우기">↺</button>
+              </div>
+              <div class="rte-editor" id="f-content" contenteditable="true" data-placeholder="내용을 입력하세요"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div class="form-field">
+            <label class="form-label">첨부 파일</label>
+            <div class="attach-upload">
+              <input type="file" id="f-file-input" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.xlsx,.xls,.doc,.docx,.ppt,.pptx,.hwp" multiple hidden>
+              <button type="button" class="btn btn-secondary" id="f-file-btn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                파일 추가
+              </button>
+              <span class="attach-hint">허용 확장자: .jpg, .jpeg, .png, .gif, .bmp, .pdf, .xlsx, .xls, .doc, .docx, .ppt, .pptx, .hwp · 파일당 최대 10.0 MB · 최대 3개</span>
+              <div class="attach-list" id="f-attach-list"></div>
+              <div class="attach-list-empty" id="f-attach-empty">첨부된 파일이 없습니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 액션: 카드 바깥 — 전체 페이지 공통 표준 -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="f-cancel">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          취소
+        </button>
+        <button type="button" class="btn btn-primary" id="f-save">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          저장
+        </button>
+      </div>
+    </section>
+
+    <!-- 상세/보기 뷰 -->
+    <section class="admin-view-view hidden" id="view-view">
+      <div class="card card--pad">
+        <div class="view-row">
+          <span class="label">구분</span>
+          <span class="value"><span class="admin-cat" id="v-cat">일반</span></span>
+        </div>
+        <div class="view-row">
+          <span class="label">제목</span>
+          <span class="value" id="v-title">-</span>
+        </div>
+        <div class="view-row">
+          <span class="label">게시 기간</span>
+          <span class="value" id="v-period">-</span>
+        </div>
+        <div class="view-row">
+          <span class="label">팝업 설정</span>
+          <span class="value" id="v-popup">-</span>
+        </div>
+        <div class="view-row block">
+          <span class="label">내용</span>
+          <div class="view-content" id="v-content"></div>
+        </div>
+        <div class="view-row block" id="v-attach-row" hidden>
+          <span class="label">첨부 파일</span>
+          <div id="v-attach-list"></div>
+        </div>
+        <div class="view-footer-meta">
+          <div><span class="mt-label">등록자</span><span class="mt-value" id="v-author">-</span></div>
+          <div><span class="mt-label">등록 일시</span><span class="mt-value" id="v-created">-</span></div>
+          <div><span class="mt-label">수정자</span><span class="mt-value" id="v-updater">-</span></div>
+          <div><span class="mt-label">수정 일시</span><span class="mt-value" id="v-updated">-</span></div>
+        </div>
+      </div>
+      <div class="form-actions form-actions--split">
+        <button type="button" class="btn btn-secondary" id="v-list">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          목록
+        </button>
+        <div class="form-actions-group">
+          <button type="button" class="btn btn-danger" id="v-delete">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
+            삭제
+          </button>
+          <button type="button" class="btn btn-primary" id="v-edit">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            수정
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script src="assets/js/confirm-modal.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'namwon-admin-notices-v2';
+  var CAT_LABEL = { urgent: '긴급', general: '일반', work: '업무' };
+  var MAX_FILES = 3;
+  var MAX_SIZE_MB = 10;
+  var INFINITE_DATE = '9999-12-31T23:59:59';
+
+  var DEFAULT_SEED = [
+    { id: 12, category: 'urgent',  title: '[긴급] 정기 서버 점검 안내 (4/25 01:00~04:00)',
+      startAt: '2026-04-23T09:00:00', endAt: '2026-04-25T04:00:00',
+      popupOn: true, popupFrom: '2026-04-23T00:00:00', popupTo: '2026-04-25T04:00:00',
+      content: '<p>안녕하세요, Land-XI 운영팀입니다.</p><p>서비스 안정화를 위해 아래와 같이 정기 점검을 시행합니다. 점검 시간 동안 전체 서비스 접속이 제한됩니다.</p><ul><li><strong>점검 일시:</strong> 2026-04-25(금) 01:00 ~ 04:00 (3시간)</li><li><strong>점검 내용:</strong> DB 인덱스 재구성, OS 보안 패치, AI 추론 엔진 업그레이드</li><li><strong>영향:</strong> 관리자 페이지·지도 서비스·분석 실행 전면 중단</li></ul><p>불편을 드려 죄송합니다. 점검 완료 시 별도 공지 드리겠습니다.</p>',
+      attachments: [], author: '이주원', createdAt: '2026-04-23T09:00:00', updater: '', updatedAt: '' },
+    { id: 11, category: 'general', title: '4월 정사영상·카메라 AI 추론 모델 v2.3 배포',
+      startAt: '2026-04-15T00:00:00', endAt: '9999-12-31T23:59:59',
+      popupOn: false, popupFrom: null, popupTo: null,
+      content: '<p>정사영상·카메라 AI 추론 모델이 v2.3 으로 업그레이드되었습니다.</p><ul><li>곤포사일리지 탐지 정확도 +6.2%p (산그늘 조건 대응)</li><li>포트홀 소형(&lt;20cm) 탐지 재현율 +4.8%p</li><li>추론 속도 약 12% 개선</li></ul><p>기존 업로드 영상 재추론이 필요한 경우 추론 이력에서 "재분석" 버튼을 사용해 주세요.</p>',
+      attachments: [ { name: '모델v2.3_릴리즈노트.pdf', size: 820000 } ],
+      author: '이주원', createdAt: '2026-04-15T10:02:00', updater: '', updatedAt: '' },
+    { id: 10, category: 'work',   title: '개인정보 처리방침 개정 안내 (4/10 시행)',
+      startAt: '2026-04-03T00:00:00', endAt: '9999-12-31T23:59:59',
+      popupOn: false, popupFrom: null, popupTo: null,
+      content: '<p>개인정보 보호법 개정에 따라 2026-04-10 부로 개인정보 처리방침이 일부 개정됩니다.</p><ul><li>개인정보 보유·이용 기간 명시 조항 보강</li><li>가명정보 처리 기준 추가</li><li>해외 위탁업체(Cloud) 관련 조항 명시</li></ul><p>개정 전문은 서비스 하단 "개인정보 처리방침" 링크에서 확인하실 수 있습니다.</p>',
+      attachments: [ { name: '개인정보처리방침_개정_비교표.xlsx', size: 58000 } ],
+      author: '이주원', createdAt: '2026-04-03T14:20:00', updater: '이주원', updatedAt: '2026-04-05T09:10:00' },
+    { id: 9,  category: 'general', title: '지도 서비스 배경 레이어에 2026 최신 정사영상 추가',
+      startAt: '2026-03-28T00:00:00', endAt: '9999-12-31T23:59:59',
+      popupOn: false, popupFrom: null, popupTo: null,
+      content: '<p>지도 서비스에 2026년 3월 촬영 정사영상 레이어가 추가되었습니다. 기존 2024년 영상과 토글 전환이 가능합니다.</p><p>레이어 선택: 지도 우측 상단 레이어 아이콘 → "배경 영상" 섹션</p>',
+      attachments: [], author: '이주원', createdAt: '2026-03-28T09:14:00', updater: '', updatedAt: '' },
+    { id: 8,  category: 'work',   title: '2026년 상반기 사용자 교육 일정 안내 (5/14·5/28)',
+      startAt: '2026-03-25T00:00:00', endAt: '2026-05-28T18:00:00',
+      popupOn: false, popupFrom: null, popupTo: null,
+      content: '<p>Land-XI 신규 사용자 및 기능 심화 교육을 아래와 같이 진행합니다.</p><ul><li><strong>신규 과정:</strong> 2026-05-14(목) 10:00~12:00 · 남원시청 3층 대회의실</li><li><strong>심화 과정:</strong> 2026-05-28(목) 14:00~17:00 · 남원시청 3층 대회의실</li><li>신청: 홍보전산과 이주원 주무관 (내선 8234) 또는 문의하기 게시판</li></ul>',
+      attachments: [ { name: '교육일정_상세안내.pdf', size: 480000 } ],
+      author: '이주원', createdAt: '2026-03-25T10:00:00', updater: '', updatedAt: '' },
+    { id: 7,  category: 'urgent',  title: '[긴급] 카메라 AI 추론 서비스 일시 지연 현상 해결 안내',
+      startAt: '2026-03-18T16:00:00', endAt: '2026-03-20T00:00:00',
+      popupOn: false, popupFrom: null, popupTo: null,
+      content: '<p>2026-03-18 13:20~15:40 발생한 카메라 AI 추론 지연 현상이 해결되었습니다.</p><p>원인: 추론 서버 내부 GPU 드라이버 일시 장애. 해당 시간 요청한 분석 작업은 자동 재큐잉되어 정상 처리되었습니다.</p>',
+      attachments: [], author: '이주원', createdAt: '2026-03-18T16:00:00', updater: '', updatedAt: '' },
+    { id: 6,  category: 'general', title: '월간 보고서 엑셀 템플릿 v2 배포',
+      startAt: '2026-03-10T00:00:00', endAt: '9999-12-31T23:59:59',
+      popupOn: false, popupFrom: null, popupTo: null,
+      content: '<p>월간 보고서 생성 시 제공되는 엑셀 템플릿이 v2 로 업데이트되었습니다.</p><ul><li>도로 구간별 요약 시트 추가</li><li>차트 자동 삽입 옵션</li><li>그래프 색상 표준 개선</li></ul>',
+      attachments: [ { name: '월간보고서_v2_샘플.xlsx', size: 132000 } ],
+      author: '이주원', createdAt: '2026-03-10T09:42:00', updater: '', updatedAt: '' },
+    { id: 5,  category: 'work',   title: '영상 업로드 용량 제한 상향 (파일당 2GB → 5GB)',
+      startAt: '2026-02-25T00:00:00', endAt: '9999-12-31T23:59:59',
+      popupOn: false, popupFrom: null, popupTo: null,
+      content: '<p>사용자 요청이 많았던 파일당 업로드 용량 제한이 5GB 로 상향되었습니다. 1회 업로드 최대 개수는 동일(10개)입니다.</p><p>고용량 영상은 분할 업로드 대신 단일 파일 업로드가 가능해졌습니다.</p>',
+      attachments: [], author: '이주원', createdAt: '2026-02-25T11:08:00', updater: '', updatedAt: '' },
+    { id: 4,  category: 'general', title: '지도 서비스 신규 레이어 공개 — 도로 포장 재질 구분',
+      startAt: '2026-02-14T00:00:00', endAt: '9999-12-31T23:59:59',
+      popupOn: false, popupFrom: null, popupTo: null,
+      content: '<p>지도 서비스에 도로 포장 재질(아스팔트/콘크리트/비포장) 분류 레이어가 공개되었습니다.</p>',
+      attachments: [], author: '이주원', createdAt: '2026-02-14T15:22:00', updater: '', updatedAt: '' },
+    { id: 3,  category: 'work',   title: '2026년 1월 월간 운영 실적 공유',
+      startAt: '2026-02-03T00:00:00', endAt: '9999-12-31T23:59:59',
+      popupOn: false, popupFrom: null, popupTo: null,
+      content: '<p>1월 한 달 총 <strong>142건</strong> 의 분석 작업이 수행되었으며, 곤포사일리지 누적 탐지 건수는 <strong>8,712건</strong> 입니다.</p>',
+      attachments: [ { name: '2026_1월_실적요약.pdf', size: 92000 } ],
+      author: '이주원', createdAt: '2026-02-03T09:00:00', updater: '', updatedAt: '' },
+    { id: 2,  category: 'general', title: 'Land-XI(NAMWON GEOVISION) 서비스 정식 오픈 및 이용 가이드',
+      startAt: '2025-12-24T09:28:00', endAt: '9999-12-31T23:59:59',
+      popupOn: true, popupFrom: '2025-12-24T00:00:00', popupTo: '2026-01-24T23:59:59',
+      content: '<p>Land-XI 플랫폼이 정식 오픈하였습니다.</p><p>본 서비스는 AI 기반 도로 안전관리 및 영농 관리 서비스를 제공합니다.</p><p>자세한 이용 안내는 <strong>서비스 지원 &gt; 활용 사례</strong>에서 확인하실 수 있습니다.</p>',
+      attachments: [ { name: '이용가이드_v1.0.pdf', size: 1245000 } ],
+      author: '이주원', createdAt: '2025-12-24T09:28:37', updater: '', updatedAt: '' },
+    { id: 1,  category: 'general', title: 'AI 분석 방법 안내',
+      startAt: '2025-12-24T15:39:00', endAt: '9999-12-31T23:59:59',
+      popupOn: false, popupFrom: null, popupTo: null,
+      content: '<p>Land-XI AI 분석 기능 사용 방법을 안내드립니다.</p><ul><li>지도 서비스 메뉴 접속</li><li>분석 대상 작업 체크</li><li>탐지 현황·클래스 분포 확인</li></ul>',
+      attachments: [], author: '이주원', createdAt: '2025-12-24T15:39:07', updater: '', updatedAt: '' }
+  ];
+
+  // ── 상태 ──
+  var state = {
+    list: load(),
+    filter: { field: 'all', keyword: '', cat: 'all', from: '', to: '', quick: 0 },
+    page: 1,
+    pageSize: 10,
+    editingId: null,
+    viewingId: null,
+    pendingFiles: [] // { name, size, _removeIdx (optional for existing) }
+  };
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return DEFAULT_SEED.slice();
+  }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.list)); } catch (e) {}
+  }
+
+  function fmtDateTime(iso) {
+    if (!iso) return '';
+    return iso.replace('T', ' ').replace(/-/g, '.').substring(0, 19);
+  }
+  function fmtDate(iso) {
+    if (!iso) return '';
+    return iso.substring(0, 10).replace(/-/g, '.');
+  }
+  function nowIso() {
+    var d = new Date();
+    var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' +
+      pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function fmtFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  }
+
+  // ── 필터 ──
+  function getFiltered() {
+    var list = state.list.slice();
+    var f = state.filter;
+    if (f.cat !== 'all') list = list.filter(function (n) { return n.category === f.cat; });
+    if (f.keyword) {
+      var kw = f.keyword.toLowerCase();
+      list = list.filter(function (n) {
+        if (f.field === 'title') return n.title.toLowerCase().indexOf(kw) !== -1;
+        if (f.field === 'content') return (n.content || '').toLowerCase().indexOf(kw) !== -1;
+        if (f.field === 'author') return (n.author || '').toLowerCase().indexOf(kw) !== -1;
+        return n.title.toLowerCase().indexOf(kw) !== -1 ||
+          (n.content || '').toLowerCase().indexOf(kw) !== -1 ||
+          (n.author || '').toLowerCase().indexOf(kw) !== -1;
+      });
+    }
+    if (f.from) list = list.filter(function (n) { return n.createdAt.substring(0, 10) >= f.from; });
+    if (f.to) list = list.filter(function (n) { return n.createdAt.substring(0, 10) <= f.to; });
+    list.sort(function (a, b) { return b.createdAt.localeCompare(a.createdAt); });
+    return list;
+  }
+
+  // ── 목록 렌더 ──
+  function renderList() {
+    var tbody = document.getElementById('an-tbody');
+    var emptyWrap = document.getElementById('an-empty-wrap');
+    var countEl = document.getElementById('an-count');
+    var list = getFiltered();
+    var total = list.length;
+
+    tbody.innerHTML = '';
+    emptyWrap.innerHTML = '';
+
+    if (total === 0) {
+      emptyWrap.innerHTML =
+        '<div class="uc-empty"><p>검색 조건에 맞는 공지사항이 없습니다.</p></div>';
+      countEl.innerHTML = '총 <strong>0</strong>건 중 0~0행';
+      renderPagination(1);
+      document.getElementById('an-check-all').checked = false;
+      return;
+    }
+
+    var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+    if (state.page > totalPages) state.page = totalPages;
+    var startIdx = (state.page - 1) * state.pageSize;
+    var endIdx = Math.min(total, startIdx + state.pageSize);
+    var pageItems = list.slice(startIdx, endIdx);
+
+    pageItems.forEach(function (n) {
+      var tr = document.createElement('tr');
+      tr.dataset.id = n.id;
+      var endDisplay = (n.endAt === INFINITE_DATE) ? '9999-12-31 23:59' : fmtDateTime(n.endAt).substring(0, 16);
+      tr.innerHTML =
+        '<td class="col-check"><input type="checkbox" class="form-check an-row-check" data-id="' + n.id + '"></td>' +
+        '<td class="col-cat"><span class="admin-cat ' + n.category + '">' + CAT_LABEL[n.category] + '</span></td>' +
+        '<td><button type="button" class="title-link" data-id="' + n.id + '">' + escapeHtml(n.title) + '</button></td>' +
+        '<td class="col-date">' + fmtDateTime(n.startAt).substring(0, 16) + '</td>' +
+        '<td class="col-date">' + endDisplay + '</td>' +
+        '<td class="col-author">' + escapeHtml(n.author || '-') + '</td>' +
+        '<td class="col-date">' + fmtDateTime(n.createdAt) + '</td>';
+      tbody.appendChild(tr);
+    });
+
+    countEl.innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (startIdx + 1) + '~' + endIdx + '행';
+    renderPagination(totalPages);
+    document.getElementById('an-check-all').checked = false;
+  }
+
+  function renderPagination(totalPages) {
+    var pagesEl = document.getElementById('an-pages');
+    pagesEl.innerHTML = '';
+    var first = document.getElementById('an-first');
+    var prev = document.getElementById('an-prev');
+    var next = document.getElementById('an-next');
+    var last = document.getElementById('an-last');
+    first.disabled = prev.disabled = state.page <= 1;
+    next.disabled = last.disabled = state.page >= totalPages;
+    var start = Math.max(1, state.page - 2);
+    var end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    for (var p = start; p <= end; p++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'board-page-btn' + (p === state.page ? ' active' : '');
+      btn.textContent = String(p);
+      (function (pg) { btn.addEventListener('click', function () { state.page = pg; renderList(); }); })(p);
+      pagesEl.appendChild(btn);
+    }
+  }
+
+  // ── 뷰 전환 ──
+  // 페이지 타이틀/서브텍스트는 뷰에 따라 바뀐다. 메뉴명(단일 라벨) 금지,
+  // 각 뷰의 행동을 드러내는 이름으로.
+  var VIEW_TITLES = {
+    list: { title: '공지사항 관리',  sub: '공지사항을 등록·수정·삭제하고 게시 기간·팝업 노출을 설정할 수 있습니다' },
+    form: { title: '공지사항 등록',  sub: '새 공지사항을 작성합니다. 필수 항목을 채운 뒤 저장하세요' },
+    formEdit: { title: '공지사항 수정', sub: '선택한 공지사항을 수정합니다. 변경 후 저장하세요' },
+    view: { title: '공지사항 열람',  sub: '공지사항 상세 내용을 확인합니다' }
+  };
+  function updatePageTitle(key) {
+    var t = VIEW_TITLES[key] || VIEW_TITLES.list;
+    document.getElementById('page-title-text').textContent = t.title;
+    document.getElementById('page-title-sub').textContent = t.sub;
+    document.title = t.title + ' - Land-XI';
+  }
+  function showView(which) {
+    document.getElementById('list-view').classList.toggle('hidden', which !== 'list');
+    document.getElementById('form-view').classList.toggle('hidden', which !== 'form');
+    document.getElementById('view-view').classList.toggle('hidden', which !== 'view');
+    if (which === 'form') {
+      updatePageTitle(state.editingId ? 'formEdit' : 'form');
+    } else {
+      updatePageTitle(which);
+    }
+    document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  // ── 등록/수정 폼 ──
+  function openForm(id) {
+    state.editingId = id || null;
+    state.pendingFiles = [];
+    var n = id ? state.list.find(function (x) { return x.id === id; }) : null;
+    if (n) {
+      document.getElementById('f-cat').value = n.category;
+      document.getElementById('f-title').value = n.title;
+      setTitleCount();
+      var isInfinite = n.endAt === INFINITE_DATE;
+      document.getElementById('f-unlimited').checked = isInfinite;
+      document.getElementById('f-from-date').value = n.startAt.substring(0, 10);
+      document.getElementById('f-from-time').value = n.startAt.substring(11, 16);
+      document.getElementById('f-to-date').value = isInfinite ? '' : n.endAt.substring(0, 10);
+      document.getElementById('f-to-time').value = isInfinite ? '23:59' : n.endAt.substring(11, 16);
+      document.getElementById('f-to-date').disabled = isInfinite;
+      document.getElementById('f-to-time').disabled = isInfinite;
+      document.getElementById('f-popup').checked = !!n.popupOn;
+      if (n.popupOn && n.popupFrom) {
+        document.getElementById('f-popup-from-date').value = n.popupFrom.substring(0, 10);
+        document.getElementById('f-popup-from-time').value = n.popupFrom.substring(11, 16);
+        document.getElementById('f-popup-to-date').value = n.popupTo.substring(0, 10);
+        document.getElementById('f-popup-to-time').value = n.popupTo.substring(11, 16);
+      }
+      togglePopupFields();
+      document.getElementById('f-content').innerHTML = n.content || '';
+      state.pendingFiles = (n.attachments || []).slice();
+    } else {
+      document.getElementById('f-cat').value = '';
+      document.getElementById('f-title').value = '';
+      setTitleCount();
+      document.getElementById('f-unlimited').checked = false;
+      document.getElementById('f-from-date').value = '';
+      document.getElementById('f-from-time').value = '00:00';
+      document.getElementById('f-to-date').value = '';
+      document.getElementById('f-to-time').value = '23:59';
+      document.getElementById('f-to-date').disabled = false;
+      document.getElementById('f-to-time').disabled = false;
+      document.getElementById('f-popup').checked = false;
+      document.getElementById('f-popup-from-date').value = '';
+      document.getElementById('f-popup-from-time').value = '00:00';
+      document.getElementById('f-popup-to-date').value = '';
+      document.getElementById('f-popup-to-time').value = '23:59';
+      togglePopupFields();
+      document.getElementById('f-content').innerHTML = '';
+    }
+    renderAttachList();
+    showView('form');
+  }
+
+  function setTitleCount() {
+    var v = document.getElementById('f-title').value || '';
+    document.getElementById('f-title-count').textContent = v.length;
+  }
+
+  function togglePopupFields() {
+    var on = document.getElementById('f-popup').checked;
+    ['f-popup-from-date', 'f-popup-from-time', 'f-popup-to-date', 'f-popup-to-time'].forEach(function (id) {
+      document.getElementById(id).disabled = !on;
+    });
+    document.querySelectorAll('.board-quick-btn[data-weeks]').forEach(function (b) { b.disabled = !on; });
+  }
+
+  function toggleUnlimited() {
+    var on = document.getElementById('f-unlimited').checked;
+    document.getElementById('f-to-date').disabled = on;
+    document.getElementById('f-to-time').disabled = on;
+    if (on) {
+      document.getElementById('f-to-date').value = '';
+      document.getElementById('f-to-time').value = '23:59';
+    }
+  }
+
+  function renderAttachList() {
+    var wrap = document.getElementById('f-attach-list');
+    var empty = document.getElementById('f-attach-empty');
+    wrap.innerHTML = '';
+    if (!state.pendingFiles.length) {
+      empty.hidden = false;
+      return;
+    }
+    empty.hidden = true;
+    state.pendingFiles.forEach(function (f, idx) {
+      var row = document.createElement('div');
+      row.className = 'attach-row';
+      row.innerHTML =
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>' +
+        '<span class="attach-name">' + escapeHtml(f.name) + '</span>' +
+        '<span class="attach-size">(' + fmtFileSize(f.size) + ')</span>' +
+        '<button type="button" class="attach-remove" data-idx="' + idx + '">삭제</button>';
+      wrap.appendChild(row);
+    });
+  }
+
+  // ── 상세 뷰 ──
+  function openDetail(id) {
+    var n = state.list.find(function (x) { return x.id === id; });
+    if (!n) return;
+    state.viewingId = id;
+    var catEl = document.getElementById('v-cat');
+    catEl.className = 'admin-cat ' + n.category;
+    catEl.textContent = CAT_LABEL[n.category];
+    document.getElementById('v-title').textContent = n.title;
+    var endDisp = (n.endAt === INFINITE_DATE) ? '무한 게시' : fmtDateTime(n.endAt);
+    document.getElementById('v-period').textContent = fmtDateTime(n.startAt) + ' ~ ' + endDisp;
+    document.getElementById('v-popup').textContent = n.popupOn
+      ? '메인화면 팝업 · ' + fmtDateTime(n.popupFrom) + ' ~ ' + fmtDateTime(n.popupTo)
+      : '팝업 미표시';
+    document.getElementById('v-content').innerHTML = n.content || '';
+
+    var attachRow = document.getElementById('v-attach-row');
+    var attachList = document.getElementById('v-attach-list');
+    if (n.attachments && n.attachments.length) {
+      attachRow.hidden = false;
+      attachList.innerHTML = n.attachments.map(function (a) {
+        return '<div class="attach-row">' +
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>' +
+          '<span class="attach-name">' + escapeHtml(a.name) + '</span>' +
+          '<span class="attach-size">(' + fmtFileSize(a.size) + ')</span>' +
+        '</div>';
+      }).join('');
+    } else {
+      attachRow.hidden = true;
+      attachList.innerHTML = '';
+    }
+
+    document.getElementById('v-author').textContent = n.author || '-';
+    document.getElementById('v-created').textContent = fmtDateTime(n.createdAt) || '-';
+    document.getElementById('v-updater').textContent = n.updater || '-';
+    document.getElementById('v-updated').textContent = fmtDateTime(n.updatedAt) || '-';
+
+    showView('view');
+  }
+
+  // ── 저장 ──
+  function saveForm() {
+    var cat = document.getElementById('f-cat').value;
+    var title = document.getElementById('f-title').value.trim();
+    var fromDate = document.getElementById('f-from-date').value;
+    var fromTime = document.getElementById('f-from-time').value || '00:00';
+    var unlimited = document.getElementById('f-unlimited').checked;
+    var toDate = document.getElementById('f-to-date').value;
+    var toTime = document.getElementById('f-to-time').value || '23:59';
+    var popupOn = document.getElementById('f-popup').checked;
+    var content = document.getElementById('f-content').innerHTML.trim();
+
+    if (!cat) { NotifyUI.warn('구분을 선택해 주세요.'); return; }
+    if (!title) { NotifyUI.warn('제목을 입력해 주세요.'); return; }
+    if (!fromDate) { NotifyUI.warn('게시 시작 날짜를 입력해 주세요.'); return; }
+    if (!unlimited && !toDate) { NotifyUI.warn('게시 종료 날짜를 입력하거나 "무한 게시"를 선택해 주세요.'); return; }
+    if (!content || content === '<br>') { NotifyUI.warn('내용을 입력해 주세요.'); return; }
+
+    var startAt = fromDate + 'T' + fromTime + ':00';
+    var endAt = unlimited ? INFINITE_DATE : (toDate + 'T' + toTime + ':00');
+    var popupFrom = null, popupTo = null;
+    if (popupOn) {
+      var pfd = document.getElementById('f-popup-from-date').value;
+      var pft = document.getElementById('f-popup-from-time').value || '00:00';
+      var ptd = document.getElementById('f-popup-to-date').value;
+      var ptt = document.getElementById('f-popup-to-time').value || '23:59';
+      if (!pfd || !ptd) { NotifyUI.warn('팝업 기간을 입력해 주세요.'); return; }
+      popupFrom = pfd + 'T' + pft + ':00';
+      popupTo = ptd + 'T' + ptt + ':00';
+    }
+
+    var now = nowIso();
+    if (state.editingId) {
+      var idx = state.list.findIndex(function (x) { return x.id === state.editingId; });
+      if (idx >= 0) {
+        state.list[idx].category = cat;
+        state.list[idx].title = title;
+        state.list[idx].startAt = startAt;
+        state.list[idx].endAt = endAt;
+        state.list[idx].popupOn = popupOn;
+        state.list[idx].popupFrom = popupFrom;
+        state.list[idx].popupTo = popupTo;
+        state.list[idx].content = content;
+        state.list[idx].attachments = state.pendingFiles.slice();
+        state.list[idx].updater = '관리자';
+        state.list[idx].updatedAt = now;
+      }
+    } else {
+      var nextId = state.list.reduce(function (m, x) { return Math.max(m, x.id); }, 0) + 1;
+      state.list.unshift({
+        id: nextId,
+        category: cat,
+        title: title,
+        startAt: startAt,
+        endAt: endAt,
+        popupOn: popupOn,
+        popupFrom: popupFrom,
+        popupTo: popupTo,
+        content: content,
+        attachments: state.pendingFiles.slice(),
+        author: '관리자',
+        createdAt: now,
+        updater: '',
+        updatedAt: ''
+      });
+    }
+    save();
+    state.editingId = null;
+    state.pendingFiles = [];
+    showView('list');
+    renderList();
+  }
+
+  // ── 삭제 ──
+  function deleteById(id) {
+    state.list = state.list.filter(function (n) { return n.id !== id; });
+    save();
+  }
+  function deleteSelected() {
+    var ids = Array.prototype.slice.call(document.querySelectorAll('.an-row-check:checked'))
+      .map(function (cb) { return parseInt(cb.dataset.id, 10); });
+    if (ids.length === 0) { NotifyUI.warn('삭제할 항목을 선택해 주세요.'); return; }
+    ConfirmModal.open({
+      title: '선택 삭제',
+      message: ids.length + '개 항목을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+      confirmText: '삭제',
+      danger: true,
+      onConfirm: function () {
+        state.list = state.list.filter(function (n) { return ids.indexOf(n.id) === -1; });
+        save();
+        renderList();
+      }
+    });
+  }
+
+  // ── 퀵 필터 (게시 기간) ──
+  function applyQuick(months) {
+    var to = '';
+    var from = '';
+    if (months > 0) {
+      var now = new Date();
+      var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+      to = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+      var past = new Date(now);
+      past.setMonth(past.getMonth() - months);
+      from = past.getFullYear() + '-' + pad(past.getMonth() + 1) + '-' + pad(past.getDate());
+    }
+    document.getElementById('an-from').value = from;
+    document.getElementById('an-to').value = to;
+    state.filter.quick = months;
+    document.querySelectorAll('.board-quick-btn[data-months]').forEach(function (b) {
+      b.classList.toggle('active', parseInt(b.dataset.months, 10) === months);
+    });
+  }
+
+  // 팝업 기간 1~4주 퀵
+  function applyPopupWeeks(weeks) {
+    var today = new Date();
+    var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+    var from = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
+    var toD = new Date(today);
+    toD.setDate(toD.getDate() + weeks * 7);
+    var to = toD.getFullYear() + '-' + pad(toD.getMonth() + 1) + '-' + pad(toD.getDate());
+    document.getElementById('f-popup-from-date').value = from;
+    document.getElementById('f-popup-from-time').value = '00:00';
+    document.getElementById('f-popup-to-date').value = to;
+    document.getElementById('f-popup-to-time').value = '23:59';
+  }
+
+  // ── 이벤트 바인딩 ──
+  document.getElementById('an-search').addEventListener('click', applySearch);
+  document.getElementById('an-search-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') applySearch();
+  });
+  document.getElementById('an-reset').addEventListener('click', function () {
+    document.getElementById('an-search-field').value = 'all';
+    document.getElementById('an-search-input').value = '';
+    document.getElementById('an-cat').value = 'all';
+    applyQuick(0);
+    state.filter = { field: 'all', keyword: '', cat: 'all', from: '', to: '', quick: 0 };
+    state.page = 1;
+    renderList();
+  });
+  function applySearch() {
+    state.filter.field = document.getElementById('an-search-field').value;
+    state.filter.keyword = document.getElementById('an-search-input').value.trim();
+    state.filter.cat = document.getElementById('an-cat').value;
+    state.filter.from = document.getElementById('an-from').value;
+    state.filter.to = document.getElementById('an-to').value;
+    state.page = 1;
+    renderList();
+  }
+  document.querySelectorAll('.board-quick-btn[data-months]').forEach(function (b) {
+    b.addEventListener('click', function () { applyQuick(parseInt(b.dataset.months, 10)); });
+  });
+
+  // 페이지네이션
+  document.getElementById('an-first').addEventListener('click', function () { state.page = 1; renderList(); });
+  document.getElementById('an-prev').addEventListener('click', function () {
+    if (state.page > 1) { state.page -= 1; renderList(); }
+  });
+  document.getElementById('an-next').addEventListener('click', function () { state.page += 1; renderList(); });
+  document.getElementById('an-last').addEventListener('click', function () {
+    state.page = Math.max(1, Math.ceil(getFiltered().length / state.pageSize));
+    renderList();
+  });
+  document.getElementById('an-page-size').addEventListener('change', function () {
+    state.pageSize = parseInt(this.value, 10) || 10;
+    state.page = 1;
+    renderList();
+  });
+
+  // 목록: 제목 클릭 / 전체 선택 / 개별 체크
+  document.getElementById('an-tbody').addEventListener('click', function (e) {
+    var row = e.target.closest('tr[data-id]');
+    if (row) { openDetail(parseInt(row.dataset.id, 10)); return; }
+  });
+  document.getElementById('an-check-all').addEventListener('change', function () {
+    var on = this.checked;
+    document.querySelectorAll('.an-row-check').forEach(function (cb) { cb.checked = on; });
+  });
+  document.getElementById('an-del-selected').addEventListener('click', deleteSelected);
+  document.getElementById('an-new').addEventListener('click', function () { openForm(null); });
+
+  // 폼 이벤트
+  document.getElementById('f-title').addEventListener('input', setTitleCount);
+  document.getElementById('f-unlimited').addEventListener('change', toggleUnlimited);
+  document.getElementById('f-popup').addEventListener('change', togglePopupFields);
+  document.querySelectorAll('.board-quick-btn[data-weeks]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (this.disabled) return;
+      applyPopupWeeks(parseInt(b.dataset.weeks, 10));
+    });
+  });
+
+  // 리치 텍스트 에디터 — execCommand 기반 (간이)
+  document.getElementById('rte-toolbar').addEventListener('mousedown', function (e) {
+    // mousedown으로 잡아야 editor focus가 빠지지 않음
+    var btn = e.target.closest('.rte-btn[data-cmd]');
+    if (!btn) return;
+    e.preventDefault();
+    document.execCommand(btn.dataset.cmd, false, null);
+  });
+  document.getElementById('rte-link').addEventListener('mousedown', function (e) {
+    e.preventDefault();
+    // execCommand 는 focus 가 에디터에 있어야 동작 — selection 을 저장해두고 복원
+    var sel = window.getSelection();
+    var range = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    PromptModal.open({
+      title: '링크 삽입',
+      message: '링크 주소를 입력하세요',
+      defaultValue: 'https://',
+      placeholder: 'https://example.com',
+      onConfirm: function (url) {
+        if (!url) return;
+        if (range) {
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+        document.execCommand('createLink', false, url);
+      }
+    });
+  });
+  document.getElementById('rte-image').addEventListener('mousedown', function (e) {
+    e.preventDefault();
+    var sel = window.getSelection();
+    var range = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    PromptModal.open({
+      title: '이미지 삽입',
+      message: '이미지 URL을 입력하세요',
+      defaultValue: '',
+      placeholder: 'https://example.com/image.jpg',
+      onConfirm: function (url) {
+        if (!url) return;
+        if (range) {
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+        document.execCommand('insertImage', false, url);
+      }
+    });
+  });
+
+  // 파일 첨부
+  document.getElementById('f-file-btn').addEventListener('click', function () {
+    document.getElementById('f-file-input').click();
+  });
+  document.getElementById('f-file-input').addEventListener('change', function (e) {
+    var files = Array.prototype.slice.call(e.target.files || []);
+    for (var i = 0; i < files.length; i++) {
+      if (state.pendingFiles.length >= MAX_FILES) {
+        NotifyUI.warn('첨부 파일은 최대 ' + MAX_FILES + '개까지 가능합니다.');
+        break;
+      }
+      var f = files[i];
+      if (f.size > MAX_SIZE_MB * 1024 * 1024) {
+        NotifyUI.warn('"' + f.name + '"은(는) 최대 ' + MAX_SIZE_MB + 'MB 제한을 초과합니다.');
+        continue;
+      }
+      state.pendingFiles.push({ name: f.name, size: f.size });
+    }
+    e.target.value = '';
+    renderAttachList();
+  });
+  document.getElementById('f-attach-list').addEventListener('click', function (e) {
+    var btn = e.target.closest('.attach-remove');
+    if (!btn) return;
+    var idx = parseInt(btn.dataset.idx, 10);
+    state.pendingFiles.splice(idx, 1);
+    renderAttachList();
+  });
+
+  document.getElementById('f-cancel').addEventListener('click', function () {
+    state.editingId = null;
+    state.pendingFiles = [];
+    showView(state.viewingId ? 'view' : 'list');
+  });
+  document.getElementById('f-save').addEventListener('click', saveForm);
+
+  // 상세 이벤트
+  document.getElementById('v-list').addEventListener('click', function () {
+    state.viewingId = null;
+    showView('list');
+  });
+  document.getElementById('v-edit').addEventListener('click', function () {
+    openForm(state.viewingId);
+  });
+  document.getElementById('v-delete').addEventListener('click', function () {
+    ConfirmModal.open({
+      title: '공지사항 삭제',
+      message: '이 공지사항을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+      confirmText: '삭제',
+      danger: true,
+      onConfirm: function () {
+        deleteById(state.viewingId);
+        state.viewingId = null;
+        showView('list');
+        renderList();
+      }
+    });
+  });
+
+  // 최초 렌더
+  renderList();
+})();
+</script>
+</body>
+</html>

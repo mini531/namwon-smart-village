@@ -1,0 +1,389 @@
+/* =========================================================
+   Namwon GeoVision - 메가 메뉴 스타일
+   레퍼런스: https://mini531.github.io/landxi/public/theme3/common.css 기반
+   ========================================================= */
+
+/* =========================================================
+   네비게이션 영역
+   ========================================================= */
+.gnb-nav {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  flex: 1;
+  padding: 0 8px;
+}
+
+.menu-list {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  gap: 2px;
+  list-style: none;
+}
+
+/* =========================================================
+   메뉴 아이템
+   ========================================================= */
+.menu-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.menu-item > a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: calc(100% - 16px);
+  padding: 0 16px;
+  color: rgba(255,255,255,0.72);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+  cursor: pointer;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  position: relative;
+}
+
+.menu-item > a .nav-icon-sm {
+  width: 20px; height: 20px;
+  transition: transform 0.2s ease;
+  opacity: 0.75;
+}
+
+.menu-item > a .nav-label {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.menu-item:hover > a,
+.menu-item.active > a {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.menu-item:hover > a .nav-icon-sm,
+.menu-item.active > a .nav-icon-sm {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.menu-item.active > a {
+  background: rgba(255,255,255,0.12);
+}
+
+/* 화살표 (작은) */
+.menu-arrow {
+  display: none; /* 아이콘+라벨 수직 레이아웃에서는 숨김 */
+}
+
+/* =========================================================
+   드롭다운 메뉴 - 레퍼런스 다크 테마
+   ========================================================= */
+/* 호버 갭 브릿지: 메뉴 아이템 아래 투명 영역으로 드롭다운 호버 유지 */
+.menu-item::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+/* 로그아웃 상태 — 메가 메뉴·보조 메뉴 숨기고 로그인 버튼만 노출 */
+.gnb-header.is-logged-out .gnb-nav { display: none; }
+.gnb-header.is-logged-out .sub-menu .action-dropdown { display: none; }
+
+/* 비로그인 안내 문구 — 메가 메뉴 자리에 노출 */
+.gnb-guest-msg {
+  display: none;
+  align-items: center;
+  height: 100%;
+  padding: 0 24px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+.gnb-guest-msg strong {
+  color: #fff;
+  font-weight: 700;
+  margin: 0 1px;
+}
+.gnb-header.is-logged-out .gnb-guest-msg { display: flex; }
+
+.gnb-login-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 22px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  text-decoration: none;
+  transition: all .15s;
+}
+.gnb-login-btn:hover {
+  border-color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.08);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26, 28, 30, 0.98);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  min-width: 220px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0s linear 0s, visibility 0s linear 0s;
+  z-index: 1100;
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 8px;
+}
+
+/* 상단 삼각형 말풍선 포인터 */
+.dropdown::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid rgba(26, 28, 30, 0.98);
+  filter: drop-shadow(0 -1px 0 rgba(255,255,255,0.1));
+}
+
+.menu-item.hover-open .dropdown {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.15s ease;
+}
+
+/* 드롭다운 헤더 */
+.dropdown-header {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+/* 드롭다운 링크 */
+.dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  color: rgba(255,255,255,0.75);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  border-radius: 8px;
+  margin-bottom: 2px;
+}
+
+.dropdown-link svg {
+  color: rgba(255,255,255,0.4);
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.dropdown-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+.dropdown-link:hover svg {
+  color: var(--color-primary-light);
+}
+
+.dropdown-link.current-page {
+  color: #fff;
+  background: rgba(var(--color-primary-rgb), 0.22);
+  font-weight: 600;
+}
+
+.dropdown-link.current-page svg { color: var(--color-primary-light); }
+
+/* =========================================================
+   우측 보조 메뉴 - 아이콘 + 호버 툴팁 (레퍼런스 패턴)
+   ========================================================= */
+.gnb-header .sub-menu {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-left: auto;
+  padding: 0 24px;
+}
+
+.action-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  height: 100%;
+}
+
+.action-icon {
+  width: 22px;
+  height: 22px;
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.action-dropdown:hover .action-icon {
+  color: var(--color-primary-light);
+  transform: translateY(-1px);
+}
+
+/* 현재 페이지가 이 드롭다운 하위 링크인 경우 — 아이콘 색만 강조 */
+.action-dropdown.active .action-icon {
+  color: #fff;
+}
+
+/* 호버 갭 브릿지 */
+.action-dropdown::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: -10px;
+  right: -10px;
+  height: 14px;
+}
+
+.action-tooltip {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: -12px;
+  background: rgba(26, 28, 30, 0.98);
+  width: 230px;
+  padding: 14px 12px 10px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+  z-index: 1100;
+}
+
+.action-dropdown:hover .action-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* 아이콘 클릭 후 강제 닫힘 상태 — 마우스가 나갈 때까지 :hover 무시 */
+.action-dropdown.force-closed .action-tooltip {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateY(-6px) !important;
+}
+
+.action-tooltip h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  padding: 0 10px 2px;
+  margin: 0;
+}
+
+.action-tooltip p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  padding: 0 10px 12px;
+  margin: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 8px;
+}
+
+.action-tooltip ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0;
+  margin: 0;
+}
+
+.action-tooltip ul li a {
+  display: block;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 7px;
+  transition: all 0.15s;
+}
+
+.action-tooltip ul li a:hover {
+  background: rgba(255,255,255,0.07);
+  color: var(--color-primary-light);
+}
+
+.action-tooltip ul li a.current-page {
+  background: rgba(var(--color-primary-rgb), 0.18);
+  color: #fff;
+  font-weight: 700;
+}
+
+.user-profile-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.user-profile-mini:hover { color: #fff; }
+
+.user-profile-mini .user-svg-avatar {
+  width: 26px;
+  height: 26px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+  padding: 5px;
+  color: rgba(255,255,255,0.85);
+}
+
+/* =========================================================
+   메뉴 구분선
+   ========================================================= */
+.menu-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255,255,255,0.12);
+  margin: 0 8px;
+  align-self: center;
+}

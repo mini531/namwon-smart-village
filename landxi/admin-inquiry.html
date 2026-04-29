@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문의 관리 - Land-XI</title>
+  <link rel="icon" href="assets/images/favicon_landxi.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="admin-container">
+
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <span id="page-title-text">문의 관리</span>
+        </h1>
+        <p id="page-title-sub">사용자 문의를 조회하고 답변을 작성·수정하거나 삭제할 수 있습니다</p>
+      </div>
+    </div>
+
+    <!-- 목록 뷰 -->
+    <section class="admin-list-view" id="list-view">
+      <div class="board-toolbar">
+        <div class="board-field board-field--search">
+          <label for="iq-search-input">검색어</label>
+          <div class="board-field-row">
+            <select class="board-search-select" id="iq-search-field">
+              <option value="all">전체</option>
+              <option value="title">제목</option>
+              <option value="content">내용</option>
+              <option value="author">등록자</option>
+            </select>
+            <input type="text" class="board-search-input" id="iq-search-input" placeholder="검색어">
+          </div>
+        </div>
+        <div class="board-field">
+          <label for="iq-status">상태</label>
+          <select class="board-search-select" id="iq-status">
+            <option value="all">전체</option>
+            <option value="pending">답변 대기</option>
+            <option value="replied">답변 완료</option>
+          </select>
+        </div>
+        <div class="board-field board-field--period">
+          <label>등록일</label>
+          <div class="board-period-row">
+            <div class="board-period-dates">
+              <input type="date" class="board-date-input" id="iq-from" placeholder="YYYY-MM-DD">
+              <span class="board-period-sep">~</span>
+              <input type="date" class="board-date-input" id="iq-to" placeholder="YYYY-MM-DD">
+            </div>
+            <div class="board-period-quicks">
+              <button type="button" class="board-quick-btn active" data-months="0">전체</button>
+              <button type="button" class="board-quick-btn" data-months="1">1개월</button>
+              <button type="button" class="board-quick-btn" data-months="3">3개월</button>
+              <button type="button" class="board-quick-btn" data-months="6">6개월</button>
+              <button type="button" class="board-quick-btn" data-months="12">12개월</button>
+            </div>
+          </div>
+        </div>
+        <div class="board-toolbar-actions board-toolbar-actions--end">
+          <button type="button" class="btn btn-secondary" id="iq-reset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            초기화
+          </button>
+          <button type="button" class="btn btn-accent" id="iq-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            검색
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">문의 목록</div>
+        </div>
+        <table class="data-table is-clickable">
+          <thead>
+            <tr>
+              <th>제목</th>
+              <th class="col-status">상태</th>
+              <th class="col-date">등록 일시</th>
+              <th class="col-author">등록자</th>
+              <th class="col-date">답변 일시</th>
+              <th class="col-author">답변자</th>
+            </tr>
+          </thead>
+          <tbody id="iq-tbody"></tbody>
+        </table>
+        <div id="iq-empty-wrap"></div>
+      </div>
+
+      <div class="board-paginator">
+        <button type="button" class="board-page-btn" id="iq-first">처음</button>
+        <button type="button" class="board-page-btn" id="iq-prev">이전</button>
+        <div class="board-page-pages" id="iq-pages"></div>
+        <button type="button" class="board-page-btn" id="iq-next">다음</button>
+        <button type="button" class="board-page-btn" id="iq-last">마지막</button>
+        <div class="board-page-size-wrap">
+          <select class="board-page-size" id="iq-page-size">
+            <option value="10">10</option><option value="20">20</option><option value="50">50</option>
+          </select>
+          <span>페이지 크기</span>
+        </div>
+        <div class="board-count" id="iq-count">총 <strong>0</strong>건 중 0~0행</div>
+      </div>
+    </section>
+
+    <!-- 상세/답변 뷰 — 질문 카드 + 답변 카드 -->
+    <section class="admin-view-view hidden" id="view-view">
+      <!-- 질문 카드 (읽기 전용) -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">질문</div>
+          <span class="admin-pill" id="v-status">-</span>
+        </div>
+        <div class="card-body">
+          <div class="view-row">
+            <span class="label">등록자</span>
+            <span class="value" id="v-author">-</span>
+          </div>
+          <div class="view-row">
+            <span class="label">등록 일시</span>
+            <span class="value" id="v-created">-</span>
+          </div>
+          <div class="view-row">
+            <span class="label">제목</span>
+            <span class="value" id="v-title">-</span>
+          </div>
+          <div class="view-row block">
+            <span class="label">내용</span>
+            <div class="view-content" id="v-content"></div>
+          </div>
+          <div class="view-row block" id="v-attach-row" hidden>
+            <span class="label">첨부 파일</span>
+            <div id="v-attach-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 답변 카드 (편집) -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">답변</div>
+          <span class="card-meta" id="v-replier-meta">미답변</span>
+        </div>
+        <div class="card-body">
+          <div class="view-row block">
+            <span class="label">답변 내용</span>
+            <div class="form-field">
+              <div class="rte-wrap">
+                <div class="rte-toolbar" id="reply-rte-toolbar">
+                  <button type="button" class="rte-btn" data-cmd="bold" title="굵게"><strong>B</strong></button>
+                  <button type="button" class="rte-btn" data-cmd="underline" title="밑줄"><u>U</u></button>
+                  <button type="button" class="rte-btn" data-cmd="strikeThrough" title="취소선"><s>S</s></button>
+                  <span class="rte-sep"></span>
+                  <button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="글머리 기호">• 목록</button>
+                  <button type="button" class="rte-btn" data-cmd="insertOrderedList" title="번호 목록">1. 목록</button>
+                  <span class="rte-sep"></span>
+                  <button type="button" class="rte-btn" id="reply-rte-link" title="링크">🔗</button>
+                  <button type="button" class="rte-btn" data-cmd="removeFormat" title="서식 지우기">↺</button>
+                </div>
+                <div class="rte-editor" id="v-answer-input" contenteditable="true" data-placeholder="답변을 입력하세요. 저장 시 문의 상태가 '답변 완료'로 변경됩니다."></div>
+              </div>
+            </div>
+          </div>
+          <div class="view-row block">
+            <span class="label">첨부 파일</span>
+            <div class="attach-upload">
+              <input type="file" id="v-reply-file-input" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.xlsx,.xls,.doc,.docx,.ppt,.pptx,.hwp" multiple hidden>
+              <button type="button" class="btn btn-secondary" id="v-reply-file-btn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                파일 추가
+              </button>
+              <span class="attach-hint">허용 확장자: .jpg, .jpeg, .png, .gif, .bmp, .pdf, .xlsx, .xls, .doc, .docx, .ppt, .pptx, .hwp · 파일당 최대 10.0 MB · 최대 3개</span>
+              <div class="attach-list" id="v-reply-attach-list"></div>
+              <div class="attach-list-empty" id="v-reply-attach-empty">첨부된 파일이 없습니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 액션: 카드 바깥 배치 — 전체 페이지 공통 표준 -->
+      <div class="form-actions form-actions--split">
+        <button type="button" class="btn btn-secondary" id="v-list">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          목록
+        </button>
+        <button type="button" class="btn btn-primary" id="v-reply">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 00-4-4H4"/></svg>
+          답변 저장
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script src="assets/js/confirm-modal.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // contact.html 의 문의 데이터와 동일 저장소 — 사용자 등록/답변 상태가
+  // 관리 페이지와 실시간으로 맞춰진다.
+  var STORAGE_KEY = 'namwon-inquiries-v3';
+
+  // contact.html 과 동일한 초기 시드 — 사용자가 contact.html 을 먼저
+  // 방문하지 않은 상태에서도 관리 페이지가 빈 목록으로 보이지 않도록.
+  // 첫 로드 시 localStorage 에 저장해 양쪽이 같은 데이터를 공유한다.
+  var SEED = [
+    { id: 115, title: '사용자 매뉴얼 PDF 최신본을 어디서 받을 수 있나요?',
+      content: '서비스 지원 > 사용자 매뉴얼 링크가 비어있어 다운로드가 되지 않습니다. 최신본(v2.3 기준) 받을 수 있는 경로 알려주세요.',
+      author: '차남호', authorDept: '환경관리과', status: 'pending', createdAt: '2026-04-22T15:08:33', attachments: [] },
+    { id: 114, title: '분석 결과 지도 위에 중첩되는 표시 투명도를 조절할 수 있나요?',
+      content: '도로 포장 재질 레이어와 포트홀 탐지 결과를 동시에 보니 가독성이 떨어집니다. 레이어별 투명도 슬라이더가 있으면 좋겠습니다.',
+      author: '박정수', authorDept: '도로관리과', status: 'pending', createdAt: '2026-04-20T10:41:02', attachments: [] },
+    { id: 113, title: '지도 서비스에서 확대하면 일부 영역이 회색으로 표시됩니다',
+      content: '인월면 동쪽 산간 지역을 18단계 이상 확대하면 정사영상이 회색 타일로 바뀌는데, 최신 영상이 해당 구역만 누락된 것인지 캐시 문제인지 확인 부탁드립니다.\n\n브라우저: Chrome 122, 사용자 계정: parkjs@namwon.go.kr',
+      author: '박정수', authorDept: '도로관리과', status: 'replied', createdAt: '2026-04-17T13:20:44',
+      attachments: [ { name: '회색표시_캡처.png', size: 1820000 } ],
+      answer: '안녕하세요, 도로관리과 기술지원입니다.\n\n확인 결과 해당 구역(인월면 동쪽 산간)은 2026-03 촬영분에서 구름 때문에 촬영 누락된 구역입니다. 2026-05 재촬영 일정에 포함돼 있어, 6월 초 배포 시 정상 표시 예정입니다.\n\n임시로 2024년 정사영상 레이어를 사용하시면 해당 구역도 확인 가능합니다.',
+      answeredAt: '2026-04-18T09:55:10', answeredBy: '이주원' },
+    { id: 112, title: '농업기술센터용 대시보드 위젯 커스터마이징 요청',
+      content: '농업기술센터 업무 특성상 곤포사일리지 탐지·비닐하우스 분포·경작지 면적 변화를 한 화면에서 보고 싶습니다. 부서별 대시보드 위젯을 사용자가 조합할 수 있게 해주실 수 있나요?',
+      author: '노명석', authorDept: '농업기술센터', status: 'pending', createdAt: '2026-04-16T11:12:05', attachments: [] },
+    { id: 111, title: '분석 이력 검색 시 날짜 범위 최대치 제한이 있나요?',
+      content: '2024-01-01 ~ 현재까지 전체 기간으로 설정하면 검색이 안 됩니다. 분할해서 검색해야 하는데 1년 단위로 나누는 것이 맞는지 가이드 부탁합니다.',
+      author: '유정호', authorDept: '기획감사실', status: 'replied', createdAt: '2026-04-14T16:45:00', attachments: [],
+      answer: '현재 최대 조회 범위는 <strong>12개월</strong> 입니다. 성능 최적화를 위한 제약이며, 장기 통계는 보고서 생성 메뉴에서 연간 단위로 내보내기가 가능합니다.\n\n다음 분기 로드맵에서 범위 제한 완화를 검토 중입니다.',
+      answeredAt: '2026-04-15T08:30:00', answeredBy: '이주원' },
+    { id: 110, title: '곤포사일리지 탐지 결과가 실제 현장과 차이 나는 경우가 있어요',
+      content: '운봉면 4권역 최근 분석(26.04.11)에서 곤포 탐지 개수가 현장 확인보다 약 5~8개 적게 잡혔습니다.\n산그늘이 진 구역은 탐지율이 좀 낮은 듯한데, 이런 경우 보정 방법이나 재분석 요청 절차가 있나요?\n\n첨부로 해당 필지 지번과 현장 사진 올렸습니다. 확인 부탁드립니다.',
+      author: '손지영', authorDept: '농업기술센터', status: 'replied', createdAt: '2026-04-14T14:22:10',
+      attachments: [ { name: '운봉면4권역_현장사진.zip', size: 4832000 }, { name: '필지_지번_목록.xlsx', size: 28500 } ],
+      answer: '안녕하세요. 산그늘 조건의 탐지 정확도 개선이 4월 모델 v2.3 업데이트에 포함되어 있습니다. (4/15 배포)\n\n해당 필지에 대해 추론 이력 > "재분석" 을 실행해 주시면 v2.3 모델로 재처리됩니다. 재분석 후에도 차이가 크다면 첨부하신 현장 사진과 함께 추가 문의 주세요. 개별 필지 보정도 진행 가능합니다.',
+      answeredAt: '2026-04-16T10:12:40', answeredBy: '이주원' },
+    { id: 109, title: '환경관리과 업무용으로 지도 레이어 권한 분리 요청',
+      content: '환경관리과에서는 영농 관련 탐지 레이어(곤포·비닐하우스)는 필요하지 않습니다. 부서별로 기본 노출 레이어를 다르게 설정할 수 있을까요?',
+      author: '차남호', authorDept: '환경관리과', status: 'pending', createdAt: '2026-04-11T09:30:12', attachments: [] },
+    { id: 108, title: '회원가입 신청 후 승인까지 얼마나 걸리나요?',
+      content: '4/8 오전에 계정 신청을 했는데 아직 활성화가 안 됐습니다. 승인 기준 시간이 있다면 공유 부탁드립니다.',
+      author: '강해원', authorDept: '홍보전산과(외부협력)', status: 'replied', createdAt: '2026-04-09T10:15:22', attachments: [],
+      answer: '영업일 기준 1~2일 내 승인이 원칙이며, 신청 내용이 누락된 경우 담당자가 추가 정보 요청을 드립니다. 확인해보니 소속 부서 확인이 필요해 대기 중이었습니다. 방금 처리되었으니 다시 로그인해 주세요.',
+      answeredAt: '2026-04-09T14:02:11', answeredBy: '이주원' },
+    { id: 107, title: '보고서 PDF 에 지도 캡처 이미지가 잘려서 나옵니다',
+      content: 'A4 세로 방향으로 PDF 를 내보내면 지도 우측 30% 가량이 잘립니다. 가로 방향은 정상이지만 세로로 맞추고 싶어서요.',
+      author: '김서영', authorDept: '환경관리과', status: 'pending', createdAt: '2026-04-07T16:22:08',
+      attachments: [ { name: '보고서_세로방향_잘림.pdf', size: 740000 } ] },
+    { id: 106, title: 'AI 추론 보고서 활용 방법 문의',
+      content: '월간 보고서에서 정사영상 분석 결과만 골라서 출력할 수 있나요?\n카메라 영상 분석과 정사영상 분석 결과를 분리해서 따로 보고서를 만들고 싶은데, 현재는 두 모델이 합쳐진 형태로만 출력되는 것 같습니다.',
+      author: '이한길', authorDept: '도로관리과', status: 'replied', createdAt: '2026-04-03T10:00:59',
+      attachments: [],
+      answer: '안녕하세요, 도로관리과입니다.\n\n보고서 생성 메뉴에서 모델 종류 필터를 "정사영상" 또는 "카메라" 로 지정하시면 해당 모델의 분석 결과만 포함된 보고서가 생성됩니다.\n\n1) 상단 메뉴 > 보고서 > 보고서 생성\n2) 기본 설정 > 모델 종류 > "정사영상" 선택\n3) 기간·지역·보고서 유형 선택 후 "보고서 생성" 클릭\n4) PDF 다운로드 버튼으로 저장\n\n추가 문의 사항은 언제든지 남겨주세요.',
+      answeredAt: '2026-04-04T09:12:00', answeredBy: '이주원' },
+    { id: 105, title: '비밀번호 5회 실패 후 잠금 해제는 어떻게 하나요?',
+      content: '직원 중 한 분이 비밀번호를 여러 번 틀려 계정이 잠겼습니다. 관리자 처리가 필요한지 알려주세요.',
+      author: '오길수', authorDept: '도로관리과', status: 'replied', createdAt: '2026-03-28T14:10:40', attachments: [],
+      answer: '사용자 관리 페이지에서 해당 계정 상세 > 비밀번호 실패 초기화 버튼으로 즉시 해제 가능합니다. 잠금 해제 후에는 사용자에게 비밀번호 재설정 링크를 발송해 주세요.',
+      answeredAt: '2026-03-28T15:22:01', answeredBy: '이주원' },
+    { id: 104, title: '모바일에서 지도가 느리게 로딩됩니다',
+      content: '태블릿(iPad Pro, Safari)에서 지도 서비스가 타일 당 3~4초씩 지연됩니다. 모바일 최적화 일정이 있나요?',
+      author: '정용찬', authorDept: '홍보전산과', status: 'pending', createdAt: '2026-03-25T11:08:00', attachments: [] }
+  ];
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    // 저장소가 비어 있으면 seed 를 즉시 저장해 contact.html 과 공유.
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED)); } catch (e) {}
+    return SEED.slice();
+  }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.list)); } catch (e) {}
+  }
+
+  var MAX_FILES = 3;
+  var MAX_SIZE_MB = 10;
+
+  var state = {
+    list: load(),
+    filter: { field: 'all', keyword: '', status: 'all', from: '', to: '', quick: 0 },
+    page: 1,
+    pageSize: 10,
+    viewingId: null,
+    replyFiles: []
+  };
+
+  function fmtDateTime(iso) {
+    if (!iso) return '';
+    return iso.replace('T', ' ').replace(/-/g, '.').substring(0, 19);
+  }
+  function nowIso() {
+    var d = new Date();
+    var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' +
+      pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+  function escapeHtml(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function fmtFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  }
+
+  function getFiltered() {
+    var list = state.list.slice();
+    var f = state.filter;
+    if (f.status !== 'all') list = list.filter(function (n) { return n.status === f.status; });
+    if (f.keyword) {
+      var kw = f.keyword.toLowerCase();
+      list = list.filter(function (n) {
+        var t = (n.title || '').toLowerCase();
+        var c = (n.content || '').toLowerCase();
+        var a = (n.author || '').toLowerCase();
+        if (f.field === 'title') return t.indexOf(kw) !== -1;
+        if (f.field === 'content') return c.indexOf(kw) !== -1;
+        if (f.field === 'author') return a.indexOf(kw) !== -1;
+        return t.indexOf(kw) !== -1 || c.indexOf(kw) !== -1 || a.indexOf(kw) !== -1;
+      });
+    }
+    if (f.from) list = list.filter(function (n) { return (n.createdAt || '').substring(0, 10) >= f.from; });
+    if (f.to) list = list.filter(function (n) { return (n.createdAt || '').substring(0, 10) <= f.to; });
+    list.sort(function (a, b) { return (b.createdAt || '').localeCompare(a.createdAt || ''); });
+    return list;
+  }
+
+  function renderList() {
+    var tbody = document.getElementById('iq-tbody');
+    var emptyWrap = document.getElementById('iq-empty-wrap');
+    var countEl = document.getElementById('iq-count');
+    var list = getFiltered();
+    var total = list.length;
+    tbody.innerHTML = '';
+    emptyWrap.innerHTML = '';
+
+    if (total === 0) {
+      emptyWrap.innerHTML =
+        '<div class="uc-empty"><p>검색 조건에 맞는 문의가 없습니다.</p></div>';
+      countEl.innerHTML = '총 <strong>0</strong>건 중 0~0행';
+      renderPagination(1);
+      return;
+    }
+
+    var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+    if (state.page > totalPages) state.page = totalPages;
+    var startIdx = (state.page - 1) * state.pageSize;
+    var endIdx = Math.min(total, startIdx + state.pageSize);
+
+    // 컬럼: 제목, 상태, 등록 일시, 등록자, 답변 일시, 답변자
+    list.slice(startIdx, endIdx).forEach(function (n) {
+      var tr = document.createElement('tr');
+      tr.dataset.id = n.id;
+      var statusLabel = n.status === 'replied' ? '답변 완료' : '답변 대기';
+      var statusCls = n.status === 'replied' ? 'replied' : 'pending';
+      tr.innerHTML =
+        '<td><button type="button" class="title-link" data-id="' + n.id + '">' + escapeHtml(n.title) + '</button></td>' +
+        '<td class="col-status"><span class="admin-pill ' + statusCls + '">' + statusLabel + '</span></td>' +
+        '<td class="col-date">' + fmtDateTime(n.createdAt) + '</td>' +
+        '<td class="col-author">' + escapeHtml(n.author || '-') + '</td>' +
+        '<td class="col-date">' + (n.answeredAt ? fmtDateTime(n.answeredAt) : '-') + '</td>' +
+        '<td class="col-author">' + escapeHtml(n.answeredBy || '-') + '</td>';
+      tbody.appendChild(tr);
+    });
+
+    countEl.innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (startIdx + 1) + '~' + endIdx + '행';
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    var pagesEl = document.getElementById('iq-pages');
+    pagesEl.innerHTML = '';
+    document.getElementById('iq-first').disabled = document.getElementById('iq-prev').disabled = state.page <= 1;
+    document.getElementById('iq-next').disabled = document.getElementById('iq-last').disabled = state.page >= totalPages;
+    var start = Math.max(1, state.page - 2);
+    var end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    for (var p = start; p <= end; p++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'board-page-btn' + (p === state.page ? ' active' : '');
+      btn.textContent = String(p);
+      (function (pg) { btn.addEventListener('click', function () { state.page = pg; renderList(); }); })(p);
+      pagesEl.appendChild(btn);
+    }
+  }
+
+  var VIEW_TITLES = {
+    list: { title: '문의 관리',  sub: '사용자 문의를 조회하고 답변을 작성·수정할 수 있습니다' },
+    view: { title: '문의 답변',  sub: '문의 내용을 확인하고 답변을 작성합니다' }
+  };
+  function updatePageTitle(key) {
+    var t = VIEW_TITLES[key] || VIEW_TITLES.list;
+    document.getElementById('page-title-text').textContent = t.title;
+    document.getElementById('page-title-sub').textContent = t.sub;
+    document.title = t.title + ' - Land-XI';
+  }
+  function showView(which) {
+    document.getElementById('list-view').classList.toggle('hidden', which !== 'list');
+    document.getElementById('view-view').classList.toggle('hidden', which !== 'view');
+    updatePageTitle(which);
+    document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  function openDetail(id) {
+    var n = state.list.find(function (x) { return x.id === id; });
+    if (!n) return;
+    state.viewingId = id;
+    var statusEl = document.getElementById('v-status');
+    statusEl.className = 'admin-pill ' + (n.status === 'replied' ? 'replied' : 'pending');
+    statusEl.textContent = n.status === 'replied' ? '답변 완료' : '답변 대기';
+    document.getElementById('v-title').textContent = n.title || '-';
+    document.getElementById('v-content').textContent = n.content || '';
+    document.getElementById('v-author').textContent = n.author || '-';
+    document.getElementById('v-created').textContent = fmtDateTime(n.createdAt) || '-';
+
+    var attachRow = document.getElementById('v-attach-row');
+    var attachList = document.getElementById('v-attach-list');
+    if (n.attachments && n.attachments.length) {
+      attachRow.hidden = false;
+      attachList.innerHTML = '<div class="attach-list">' + n.attachments.map(function (a) {
+        return '<div class="attach-row">' +
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>' +
+          '<span class="attach-name">' + escapeHtml(a.name) + '</span>' +
+          '<span class="attach-size">(' + fmtFileSize(a.size) + ')</span>' +
+        '</div>';
+      }).join('') + '</div>';
+    } else {
+      attachRow.hidden = true;
+      attachList.innerHTML = '';
+    }
+    document.getElementById('v-answer-input').innerHTML = n.answer || '';
+    state.replyFiles = (n.answerAttachments || []).slice();
+    renderReplyAttachList();
+    var meta = n.answeredAt
+      ? ((n.answeredBy || '관리자') + ' · ' + fmtDateTime(n.answeredAt))
+      : '미답변';
+    document.getElementById('v-replier-meta').textContent = meta;
+    showView('view');
+  }
+
+  function renderReplyAttachList() {
+    var wrap = document.getElementById('v-reply-attach-list');
+    var empty = document.getElementById('v-reply-attach-empty');
+    wrap.innerHTML = '';
+    if (!state.replyFiles.length) {
+      empty.hidden = false;
+      return;
+    }
+    empty.hidden = true;
+    state.replyFiles.forEach(function (f, idx) {
+      var row = document.createElement('div');
+      row.className = 'attach-row';
+      row.innerHTML =
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>' +
+        '<span class="attach-name">' + escapeHtml(f.name) + '</span>' +
+        '<span class="attach-size">(' + fmtFileSize(f.size) + ')</span>' +
+        '<button type="button" class="attach-remove" data-idx="' + idx + '">삭제</button>';
+      wrap.appendChild(row);
+    });
+  }
+
+  function saveReply() {
+    var answer = document.getElementById('v-answer-input').innerHTML.trim();
+    if (!answer || answer === '<br>') { NotifyUI.warn('답변 내용을 입력해 주세요.'); return; }
+    var idx = state.list.findIndex(function (x) { return x.id === state.viewingId; });
+    if (idx < 0) return;
+    state.list[idx].answer = answer;
+    state.list[idx].answerAttachments = state.replyFiles.slice();
+    state.list[idx].answeredAt = nowIso();
+    state.list[idx].answeredBy = '관리자';
+    state.list[idx].status = 'replied';
+    save();
+    if (window.NotifyUI) NotifyUI.toast('답변이 저장되었습니다', '완료');
+    openDetail(state.viewingId);
+  }
+
+  function applyQuick(months) {
+    var to = '', from = '';
+    if (months > 0) {
+      var now = new Date();
+      var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+      to = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+      var past = new Date(now);
+      past.setMonth(past.getMonth() - months);
+      from = past.getFullYear() + '-' + pad(past.getMonth() + 1) + '-' + pad(past.getDate());
+    }
+    document.getElementById('iq-from').value = from;
+    document.getElementById('iq-to').value = to;
+    state.filter.quick = months;
+    document.querySelectorAll('.board-quick-btn[data-months]').forEach(function (b) {
+      b.classList.toggle('active', parseInt(b.dataset.months, 10) === months);
+    });
+  }
+
+  function applySearch() {
+    state.filter.field = document.getElementById('iq-search-field').value;
+    state.filter.keyword = document.getElementById('iq-search-input').value.trim();
+    state.filter.status = document.getElementById('iq-status').value;
+    state.filter.from = document.getElementById('iq-from').value;
+    state.filter.to = document.getElementById('iq-to').value;
+    state.page = 1;
+    renderList();
+  }
+
+  document.getElementById('iq-search').addEventListener('click', applySearch);
+  document.getElementById('iq-search-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') applySearch();
+  });
+  document.getElementById('iq-reset').addEventListener('click', function () {
+    document.getElementById('iq-search-field').value = 'all';
+    document.getElementById('iq-search-input').value = '';
+    document.getElementById('iq-status').value = 'all';
+    applyQuick(0);
+    state.filter = { field: 'all', keyword: '', status: 'all', from: '', to: '', quick: 0 };
+    state.page = 1;
+    renderList();
+  });
+  document.querySelectorAll('.board-quick-btn[data-months]').forEach(function (b) {
+    b.addEventListener('click', function () { applyQuick(parseInt(b.dataset.months, 10)); });
+  });
+  document.getElementById('iq-first').addEventListener('click', function () { state.page = 1; renderList(); });
+  document.getElementById('iq-prev').addEventListener('click', function () {
+    if (state.page > 1) { state.page -= 1; renderList(); }
+  });
+  document.getElementById('iq-next').addEventListener('click', function () { state.page += 1; renderList(); });
+  document.getElementById('iq-last').addEventListener('click', function () {
+    state.page = Math.max(1, Math.ceil(getFiltered().length / state.pageSize));
+    renderList();
+  });
+  document.getElementById('iq-page-size').addEventListener('change', function () {
+    state.pageSize = parseInt(this.value, 10) || 10;
+    state.page = 1;
+    renderList();
+  });
+  document.getElementById('iq-tbody').addEventListener('click', function (e) {
+    var row = e.target.closest('tr[data-id]');
+    if (row) { openDetail(parseInt(row.dataset.id, 10)); return; }
+  });
+
+  // 답변 작성 RTE
+  document.getElementById('reply-rte-toolbar').addEventListener('mousedown', function (e) {
+    var btn = e.target.closest('.rte-btn[data-cmd]');
+    if (!btn) return;
+    e.preventDefault();
+    document.execCommand(btn.dataset.cmd, false, null);
+  });
+  document.getElementById('reply-rte-link').addEventListener('mousedown', function (e) {
+    e.preventDefault();
+    var sel = window.getSelection();
+    var range = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    PromptModal.open({
+      title: '링크 삽입',
+      message: '링크 주소를 입력하세요',
+      defaultValue: 'https://',
+      placeholder: 'https://example.com',
+      onConfirm: function (url) {
+        if (!url) return;
+        if (range) {
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+        document.execCommand('createLink', false, url);
+      }
+    });
+  });
+
+  // 답변 첨부 파일
+  document.getElementById('v-reply-file-btn').addEventListener('click', function () {
+    document.getElementById('v-reply-file-input').click();
+  });
+  document.getElementById('v-reply-file-input').addEventListener('change', function (e) {
+    var files = Array.prototype.slice.call(e.target.files || []);
+    for (var i = 0; i < files.length; i++) {
+      if (state.replyFiles.length >= MAX_FILES) {
+        NotifyUI.warn('첨부 파일은 최대 ' + MAX_FILES + '개까지 가능합니다.');
+        break;
+      }
+      var f = files[i];
+      if (f.size > MAX_SIZE_MB * 1024 * 1024) {
+        NotifyUI.warn('"' + f.name + '"은(는) 최대 ' + MAX_SIZE_MB + 'MB 제한을 초과합니다.');
+        continue;
+      }
+      state.replyFiles.push({ name: f.name, size: f.size });
+    }
+    e.target.value = '';
+    renderReplyAttachList();
+  });
+  document.getElementById('v-reply-attach-list').addEventListener('click', function (e) {
+    var btn = e.target.closest('.attach-remove');
+    if (!btn) return;
+    var idx = parseInt(btn.dataset.idx, 10);
+    state.replyFiles.splice(idx, 1);
+    renderReplyAttachList();
+  });
+
+  document.getElementById('v-list').addEventListener('click', function () {
+    state.viewingId = null;
+    showView('list');
+    renderList();
+  });
+  document.getElementById('v-reply').addEventListener('click', saveReply);
+
+  renderList();
+})();
+</script>
+</body>
+</html>

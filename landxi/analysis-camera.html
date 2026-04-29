@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>카메라 AI 추론 - Land-XI</title>
+  <link rel="icon" href="assets/images/favicon_landxi.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/page-analysis-camera.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="analysis-layout">
+
+    <!-- ── 좌측 설정 패널 ── -->
+    <aside class="side-panel">
+      <div class="side-panel-header">
+        <div class="side-panel-title">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          카메라 AI 추론
+        </div>
+        <div class="side-panel-sub">이미지셋 하나를 선택하고 분석을 실행합니다</div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-section-title">이미지셋 선택</div>
+        <div class="section-hint">
+          차량 카메라로 수집된 이미지셋 묶음 하나를 선택하세요.
+        </div>
+        <div class="video-file-list" id="video-file-list"></div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-section-title">AI 모델 선택</div>
+        <div class="model-card-radio">
+          <label class="model-radio-item active" id="model-cam-lw">
+            <input type="radio" name="cam-model" value="lightweight" checked>
+            <div class="model-radio-info">
+              <div class="model-radio-name">YOLO-Road-Camera Lightweight</div>
+              <div class="model-radio-sub">v1.4 · mAP 0.83 · 실시간 처리</div>
+            </div>
+          </label>
+          <label class="model-radio-item" id="model-cam-hd">
+            <input type="radio" name="cam-model" value="hd">
+            <div class="model-radio-info">
+              <div class="model-radio-name">YOLO-Road-Camera HD</div>
+              <div class="model-radio-sub">v2.0 · mAP 0.89 · 정밀 분석</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-section-title">분석 설정</div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="config-label">NMS IoU</span>
+            <span class="slider-value" id="iou-val-disp">0.50</span>
+          </div>
+          <input type="range" class="config-slider" id="iou-threshold" min="10" max="90" value="50"
+            oninput="document.getElementById('iou-val-disp').textContent=(this.value/100).toFixed(2)">
+        </div>
+
+        <div class="config-row">
+          <span class="config-label">처리 해상도</span>
+          <select class="config-select form-select">
+            <option>1280×720</option>
+            <option selected>1920×1080</option>
+            <option>3840×2160</option>
+          </select>
+        </div>
+
+        <div class="config-row config-row--gap">
+          <span class="config-label">프레임 간격</span>
+          <select class="config-select form-select">
+            <option>1 fps</option>
+            <option selected>5 fps</option>
+            <option>10 fps</option>
+            <option>30 fps</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="analyze-btn" id="analyze-btn" onclick="startAnalysis()" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span id="analyze-btn-label">AI 분석 시작</span>
+      </button>
+    </aside>
+
+    <!-- ── 중앙 뷰어 ── -->
+    <main class="viewer-area">
+      <div class="viewer-toolbar">
+        <span class="viewer-toolbar-title" id="viewer-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          원본 영상을 선택하세요
+        </span>
+        <button class="viewer-ctrl-btn" onclick="NotifyUI.success('GeoJSON 내보내기 완료 (시뮬레이션)')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          GeoJSON
+        </button>
+        <button class="viewer-ctrl-btn" onclick="window.location.href='map-home.html?type=camera'">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>
+          지도에서 보기
+        </button>
+      </div>
+
+      <div class="viewer-canvas-wrap">
+        <canvas id="cam-viewer-canvas" width="960" height="540"></canvas>
+
+        <div class="analysis-overlay" id="analysis-overlay">
+          <div class="overlay-pct" id="overlay-pct">0%</div>
+          <div class="overlay-step" id="overlay-step">분석 준비 중...</div>
+          <div class="overlay-progress-bar">
+            <div class="overlay-progress-fill" id="overlay-progress-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-section" id="result-section" hidden>
+        <div class="result-tabs" id="result-tabs">
+          <div class="result-tab active" data-tab="all">전체 탐지<span class="rt-count" id="tab-count-all">0</span></div>
+          <div class="result-tab" data-tab="high">고위험<span class="rt-count" id="tab-count-high">0</span></div>
+          <div class="result-tab" data-tab="medium">주의<span class="rt-count" id="tab-count-medium">0</span></div>
+          <div class="result-tab" data-tab="low">양호<span class="rt-count" id="tab-count-low">0</span></div>
+          <div class="result-tab" data-tab="none">이상 없음<span class="rt-count" id="tab-count-none">0</span></div>
+          <div class="rt-spacer"></div>
+          <button type="button" class="result-max-btn" id="result-max-btn" title="패널 최대화">
+            <svg id="result-max-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+            <svg id="result-max-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+          </button>
+        </div>
+        <div class="result-panel" id="result-list-panel">
+          <div class="result-list-head">
+            <div></div>
+            <div>클래스</div>
+            <div>주소</div>
+            <div>프레임 / 시각</div>
+          </div>
+          <div id="result-rows"></div>
+        </div>
+        <div class="result-list-footer" id="result-list-footer" hidden>
+          <span class="rf-info" id="rf-info">0 / 0</span>
+          <a class="rf-load-more" id="rf-load-more" href="history.html">추론 이력 조회에서 전체 보기 →</a>
+        </div>
+      </div>
+    </main>
+
+    <!-- ── 우측 파이프라인 + 정보 패널 ── -->
+    <aside class="pipeline-panel">
+      <div class="pipeline-header">
+        <div class="pipeline-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          처리 파이프라인
+        </div>
+        <div class="pipeline-sub" id="pipeline-status-text">분석 대기 중</div>
+      </div>
+
+      <div class="pipeline-steps" id="pipeline-steps"></div>
+
+      <div id="result-summary-area" hidden>
+        <div class="result-summary-box">
+          <div class="rs-label">탐지 완료</div>
+          <div class="rs-value"><span id="result-count">0</span><span class="rs-unit">건</span></div>
+        </div>
+      </div>
+
+      <div class="gnss-panel" id="gnss-panel" hidden>
+        <div class="gnss-title">GNSS 위치 정보</div>
+        <div class="gnss-row">
+          <span class="gnss-label">위도</span>
+          <span class="gnss-val" id="gnss-lat">–</span>
+        </div>
+        <div class="gnss-row">
+          <span class="gnss-label">경도</span>
+          <span class="gnss-val" id="gnss-lng">–</span>
+        </div>
+        <div class="gnss-row">
+          <span class="gnss-label">주소</span>
+          <span class="gnss-val gnss-val--sm" id="gnss-addr">–</span>
+        </div>
+        <div class="gnss-row">
+          <span class="gnss-label">탐지 시각</span>
+          <span class="gnss-val gnss-val--sm" id="gnss-time">–</span>
+        </div>
+      </div>
+
+      <div class="caption-section" id="caption-section" hidden>
+        <div class="caption-title">AI 캡셔닝</div>
+        <div class="caption-box empty" id="caption-text">탐지 항목을 선택하면 AI 설명이 표시됩니다.</div>
+      </div>
+
+      <div class="idle-message" id="idle-message">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        <p>좌측에서 영상을 선택하고<br>AI 분석 시작 버튼을 눌러주세요</p>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/detect.js"></script>
+<script>
+(function () {
+  var PIPELINE_STEPS = [
+    { key: 'decode', name: '영상 디코딩', desc: 'MP4/AVI 파일에서 프레임 추출' },
+    { key: 'preproc', name: '전처리', desc: '해상도 조정 및 노이즈 제거' },
+    { key: 'detect', name: 'YOLO 추론', desc: '객체 탐지 모델 실행' },
+    { key: 'track', name: '객체 추적', desc: '프레임 간 동일 객체 연계' },
+    { key: 'gnss', name: 'GNSS 좌표 매핑', desc: '탐지 위치 지리좌표 변환' },
+    { key: 'postproc', name: '후처리', desc: 'NMS 및 중복 제거' },
+    { key: 'export', name: '결과 저장', desc: 'GeoJSON / DB 저장' }
+  ];
+
+  var CAPTIONS = {
+    Pothole: '노면에 포트홀이 탐지되었습니다. 차량 통행 시 위험이 우려되므로 즉시 보수가 필요합니다.',
+    Barrier_Damaged: '중앙분리대 구조물 파손이 확인되었습니다. 대향차로 침범 위험이 있어 긴급 조치가 필요합니다.',
+    Sign_Damaged: '교통표지판 훼손으로 운전자 인식이 어렵습니다. 교체 조치가 필요합니다.',
+    Lane_Faded: '차선 마모로 야간 및 우천 시 시인성이 저하된 구간입니다. 재도색이 권고됩니다.',
+    Delineator_Damaged: '시선유도봉 파손이 확인되었습니다. 야간 안전사고 예방을 위한 교체가 필요합니다.',
+    Pedestrian_Facility_Damaged: '보행안전시설물 파손 상태로, 보행자 안전을 위해 점검 및 보수가 필요합니다.',
+    Color_Manhole: '컬러 맨홀 현장 확인이 필요합니다. 미끄럼 방지 상태를 점검하세요.',
+    Illegal_Parking: '불법 주정차 차량이 탐지되었습니다. 교통 흐름 방해 및 보행자 시야 차단이 우려됩니다.'
+  };
+
+  var cameraSources = [];
+  var allDetections = [];
+  var jobsData = null;
+  var selectedSource = null;
+  var currentResults = [];
+  var activeTab = 'all';
+  var isRunning = false;
+
+  // 데이터 로드
+  Promise.all([
+    fetch('assets/data/sample-detections.json').then(function (r) { return r.json(); }),
+    fetch('assets/data/sample-jobs.json').then(function (r) { return r.json(); })
+  ]).then(function (results) {
+    allDetections = results[0].detections;
+    jobsData = results[1];
+    cameraSources = jobsData.camera_sources || [];
+    init();
+  }).catch(function () { init(); });
+
+  function init() {
+    buildVideoList();
+    buildPipelineSteps();
+    initModelRadios();
+    drawIdleCanvas();
+  }
+
+  function buildVideoList() {
+    var container = document.getElementById('video-file-list');
+    container.innerHTML = '';
+
+    cameraSources.forEach(function (src, idx) {
+      var item = document.createElement('label');
+      item.className = 'video-file-item';
+      item.dataset.idx = idx;
+      item.innerHTML =
+        '<input type="radio" name="cam-source" value="' + idx + '"' + (idx === 0 ? ' checked' : '') + '>' +
+        '<div class="video-thumb">' +
+          '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>' +
+        '</div>' +
+        '<div class="video-info">' +
+          '<div class="video-name">' + (src.route || src.file_name) + '</div>' +
+          '<div class="video-meta">' + src.captured_at.replace(/-/g, '.') + ' · ' + src.duration + ' · ' + src.frame_count.toLocaleString() + ' 프레임</div>' +
+        '</div>';
+
+      item.querySelector('input').addEventListener('change', function () {
+        document.querySelectorAll('.video-file-item').forEach(function (el) { el.classList.remove('selected'); });
+        item.classList.add('selected');
+        selectedSource = src;
+        updateViewer();
+        updateAnalyzeBtn();
+      });
+
+      if (idx === 0) {
+        item.classList.add('selected');
+        selectedSource = src;
+      }
+      container.appendChild(item);
+    });
+    // 첫 항목 자동 반영
+    if (selectedSource) {
+      updateViewer();
+      updateAnalyzeBtn();
+    }
+  }
+
+  function updateViewer() {
+    if (!selectedSource) return;
+    document.getElementById('viewer-title').innerHTML =
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>' +
+      selectedSource.file_name + ' · ' + selectedSource.route;
+    drawIdleCanvas();
+  }
+
+  function updateAnalyzeBtn() {
+    var btn = document.getElementById('analyze-btn');
+    btn.disabled = !selectedSource || isRunning;
+    var label = document.getElementById('analyze-btn-label');
+    if (isRunning) label.textContent = '분석 중...';
+    else if (!selectedSource) label.textContent = 'AI 분석 시작';
+    else label.textContent = 'AI 분석 시작';
+  }
+
+  function buildPipelineSteps() {
+    var container = document.getElementById('pipeline-steps');
+    container.innerHTML = '';
+    PIPELINE_STEPS.forEach(function (step, i) {
+      var el = document.createElement('div');
+      el.className = 'pipeline-step';
+      el.innerHTML =
+        '<div class="step-dot" id="dot-' + step.key + '">' + (i + 1) + '</div>' +
+        '<div class="step-content">' +
+          '<div class="step-name">' + step.name + '</div>' +
+          '<div class="step-desc">' + step.desc + '</div>' +
+          '<div class="step-status pending" id="status-' + step.key + '">대기</div>' +
+        '</div>';
+      container.appendChild(el);
+    });
+  }
+
+  function resetPipeline() {
+    PIPELINE_STEPS.forEach(function (step, i) {
+      var dot = document.getElementById('dot-' + step.key);
+      var status = document.getElementById('status-' + step.key);
+      dot.className = 'step-dot';
+      dot.textContent = i + 1;
+      status.className = 'step-status pending';
+      status.textContent = '대기';
+    });
+  }
+
+  function initModelRadios() {
+    document.querySelectorAll('.model-radio-item').forEach(function (item) {
+      item.querySelector('input').addEventListener('change', function () {
+        document.querySelectorAll('.model-radio-item').forEach(function (i) { i.classList.remove('active'); });
+        item.classList.add('active');
+      });
+    });
+  }
+
+  function drawIdleCanvas() {
+    var canvas = document.getElementById('cam-viewer-canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0F1923';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 그리드 라인
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    for (var x = 60; x < canvas.width; x += 60) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+    for (var y = 60; y < canvas.height; y += 60) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    }
+
+    // 중앙 아이콘
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '14px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(selectedSource ? '분석 실행 대기 중' : '영상 선택 대기', canvas.width / 2, canvas.height / 2);
+  }
+
+  function drawCameraScene(canvas, dets) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#1a2535';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 하늘
+    var skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.35);
+    skyGrad.addColorStop(0, '#0d1520');
+    skyGrad.addColorStop(1, '#1e3050');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height * 0.35);
+
+    // 도로
+    ctx.fillStyle = '#2a3444';
+    ctx.fillRect(0, canvas.height * 0.35, canvas.width, canvas.height * 0.65);
+
+    // 차선
+    ctx.strokeStyle = 'rgba(255,255,220,0.7)';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([40, 20]);
+    ctx.beginPath();
+    ctx.moveTo(canvas.width * 0.5, canvas.height * 0.35);
+    ctx.lineTo(canvas.width * 0.5, canvas.height);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 측면 차선
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.lineWidth = 2;
+    [[0.15, 0.85], [0.85, 0.15]].forEach(function (pair) {
+      ctx.beginPath();
+      ctx.moveTo(canvas.width * pair[0], canvas.height * 0.35);
+      ctx.lineTo(canvas.width * pair[1], canvas.height);
+      ctx.stroke();
+    });
+
+    // 탐지 박스
+    var sevColors = { high: '#C8102E', medium: '#868E96', low: '#CED4DA' };
+    dets.slice(0, 5).forEach(function (det, i) {
+      var col = sevColors[det.severity] || '#868E96';
+      var x = 80 + (i % 3) * 240 + Math.random() * 40;
+      var y = canvas.height * 0.38 + (i % 2) * 100 + Math.random() * 40;
+      var w = 120 + Math.random() * 60;
+      var h = 80 + Math.random() * 40;
+      if (x + w > canvas.width - 20) x = canvas.width - w - 20;
+
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, w, h);
+
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.15;
+      ctx.fillRect(x, y, w, h);
+      ctx.globalAlpha = 1;
+
+      // 라벨
+      ctx.fillStyle = col;
+      var label = det.class_ko.substring(0, 7);
+      ctx.font = 'bold 12px Inter, sans-serif';
+      var lw = ctx.measureText(label).width + 18;
+      ctx.fillRect(x, y - 20, lw, 20);
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'left';
+      ctx.fillText(label, x + 4, y - 5);
+
+    });
+
+    // 상단 타임스탬프
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(12, 12, 230, 28);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = '12px Inter, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('REC  ' + (selectedSource ? selectedSource.captured_at.replace(/-/g, '.') : '2026.04.15') + '  09:14:32', 20, 31);
+
+    // 카메라 정보
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(canvas.width - 152, 12, 140, 28);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillText((selectedSource && selectedSource.vehicle) || 'CAM01', canvas.width - 144, 31);
+  }
+
+  window.startAnalysis = function () {
+    if (isRunning || !selectedSource) return;
+    isRunning = true;
+    updateAnalyzeBtn();
+    resetPipeline();
+    document.getElementById('result-section').hidden = true;
+    document.getElementById('gnss-panel').hidden = true;
+    document.getElementById('caption-section').hidden = true;
+    document.getElementById('result-summary-area').hidden = true;
+    document.getElementById('idle-message').hidden = true;
+
+    var overlay = document.getElementById('analysis-overlay');
+    overlay.classList.add('visible');
+    document.getElementById('pipeline-status-text').textContent = '분석 실행 중...';
+
+    var totalSteps = PIPELINE_STEPS.length;
+    var stepIdx = 0;
+    var pct = 0;
+
+    function runStep() {
+      if (stepIdx >= totalSteps) { finishAnalysis(); return; }
+      var step = PIPELINE_STEPS[stepIdx];
+      var dot = document.getElementById('dot-' + step.key);
+      var statusEl = document.getElementById('status-' + step.key);
+
+      dot.className = 'step-dot running';
+      dot.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
+      statusEl.className = 'step-status running';
+      statusEl.textContent = '처리 중...';
+
+      var targetPct = Math.round((stepIdx + 1) / totalSteps * 100);
+      var pctInterval = setInterval(function () {
+        if (pct < targetPct) {
+          pct++;
+          document.getElementById('overlay-pct').textContent = pct + '%';
+          document.getElementById('overlay-progress-fill').style.width = pct + '%';
+          document.getElementById('overlay-step').textContent = step.name + '...';
+        }
+      }, 20);
+
+      setTimeout(function () {
+        clearInterval(pctInterval);
+        pct = targetPct;
+        document.getElementById('overlay-pct').textContent = pct + '%';
+        document.getElementById('overlay-progress-fill').style.width = pct + '%';
+        dot.className = 'step-dot done';
+        dot.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+        statusEl.className = 'step-status done';
+        statusEl.textContent = '완료';
+        stepIdx++;
+        setTimeout(runStep, 150);
+      }, 700 + Math.random() * 400);
+    }
+
+    runStep();
+  };
+
+  var currentFrames = [];     // 모든 프레임 (탐지+미탐지)
+  var renderedCount = 0;      // 현재 탭에서 이미 렌더된 행 수
+  var PAGE_SIZE = 300;
+
+  function buildFrameList() {
+    // selectedSource.frame_count 기반으로 샘플링된 프레임 목록 생성
+    // 데모용: 총 ~1200 프레임 샘플, 20건 탐지는 랜덤 프레임에 배치
+    var total = 1200;
+    if (selectedSource && selectedSource.frame_count) {
+      // 5fps 샘플링: frame_count / 6 정도
+      total = Math.min(1500, Math.max(300, Math.floor(selectedSource.frame_count / 6)));
+    }
+
+    var cameraDets = allDetections.filter(function (d) { return d.model_type === 'camera'; });
+    // 각 탐지에 가상의 frame index 할당 (균등 분포 흉내)
+    var detFrameIdxSet = {};
+    cameraDets.forEach(function (d, i) {
+      var idx = Math.floor((i + 0.5) * (total / (cameraDets.length + 1)));
+      idx += (i * 37) % 60 - 30; // 약간 흔들기
+      if (idx < 0) idx = 0;
+      if (idx >= total) idx = total - 1;
+      while (detFrameIdxSet[idx] != null) idx = (idx + 1) % total;
+      detFrameIdxSet[idx] = d;
+    });
+
+    // 촬영 시작 시각 (source의 captured_at 또는 기본값)
+    var baseTime = Date.parse((selectedSource && selectedSource.captured_at || '2026-04-15') + 'T08:30:00');
+    if (isNaN(baseTime)) baseTime = Date.parse('2026-04-15T08:30:00');
+    var frameIntervalMs = 200; // 5fps
+
+    var list = [];
+    for (var i = 0; i < total; i++) {
+      var t = new Date(baseTime + i * frameIntervalMs);
+      var timeStr = ('0' + t.getHours()).slice(-2) + ':' +
+                    ('0' + t.getMinutes()).slice(-2) + ':' +
+                    ('0' + t.getSeconds()).slice(-2);
+      var det = detFrameIdxSet[i] || null;
+      list.push({
+        idx: i,
+        frameNo: i + 1,
+        timeStr: timeStr,
+        detection: det,
+        severity: det ? det.severity : null
+      });
+    }
+    return list;
+  }
+
+  function finishAnalysis() {
+    document.getElementById('analysis-overlay').classList.remove('visible');
+    isRunning = false;
+    updateAnalyzeBtn();
+    document.getElementById('pipeline-status-text').textContent = '분석 완료';
+
+    // 전체 프레임 목록 생성 + 탐지 결과 분리
+    currentFrames = buildFrameList();
+    currentResults = currentFrames
+      .filter(function (f) { return f.detection; })
+      .map(function (f) { return f.detection; });
+
+    var canvas = document.getElementById('cam-viewer-canvas');
+    drawCameraScene(canvas, currentResults.slice(0, 5));
+
+    document.getElementById('result-count').textContent = currentResults.length;
+    document.getElementById('result-summary-area').hidden = false;
+
+    updateTabCounts();
+    renderResultList('all');
+
+    document.getElementById('result-section').hidden = false;
+    document.getElementById('gnss-panel').hidden = false;
+    document.getElementById('caption-section').hidden = false;
+  }
+
+  function updateTabCounts() {
+    var counts = { all: 0, high: 0, medium: 0, low: 0, none: 0 };
+    currentFrames.forEach(function (f) {
+      if (f.detection) {
+        counts.all++;
+        if (counts[f.severity] != null) counts[f.severity]++;
+      } else {
+        counts.none++;
+      }
+    });
+    ['all', 'high', 'medium', 'low', 'none'].forEach(function (k) {
+      var el = document.getElementById('tab-count-' + k);
+      if (el) el.textContent = counts[k].toLocaleString();
+    });
+  }
+
+  function getFilteredFrames(tab) {
+    if (tab === 'all') return currentFrames.filter(function (f) { return f.detection; });
+    if (tab === 'none') return currentFrames.filter(function (f) { return !f.detection; });
+    return currentFrames.filter(function (f) { return f.detection && f.severity === tab; });
+  }
+
+  function renderResultList(tab) {
+    var rowsEl = document.getElementById('result-rows');
+    var footer = document.getElementById('result-list-footer');
+    rowsEl.innerHTML = '';
+    renderedCount = 0;
+
+    var filtered = getFilteredFrames(tab);
+
+    if (filtered.length === 0) {
+      rowsEl.innerHTML = '<div class="result-list-empty">' +
+        (tab === 'none'
+          ? '모든 프레임에 탐지 결과가 있습니다.'
+          : '해당 조건의 결과가 없습니다.') +
+        '</div>';
+      footer.hidden = true;
+      return;
+    }
+    if (tab === 'none') {
+      // 이상 없음 탭은 너무 많으므로 상위 300개만 표시
+    }
+
+    appendRows(tab, filtered);
+    updateFooter(filtered.length);
+  }
+
+  function appendRows(tab, filtered) {
+    var rowsEl = document.getElementById('result-rows');
+    var end = Math.min(filtered.length, renderedCount + PAGE_SIZE);
+    var frag = document.createDocumentFragment();
+    var sevColors = { high: '#C8102E', medium: '#F4A261', low: '#2A9D8F' };
+    var sevKo = { high: '고위험', medium: '주의', low: '양호' };
+
+    for (var i = renderedCount; i < end; i++) {
+      var f = filtered[i];
+      var det = f.detection;
+      var row = document.createElement('div');
+      row.className = 'result-row' + (det ? '' : ' no-detect');
+      row.dataset.frameIdx = f.idx;
+
+      var sevColor = det ? sevColors[f.severity] : '#CED4DA';
+      var className = det ? det.class_ko : '이상 없음';
+      var addr = det ? det.address : '–';
+
+      row.innerHTML =
+        '<div class="rr-sev" style="--sev-color:' + sevColor + '"></div>' +
+        '<div class="rr-class" title="' + className + (det ? ' · ' + sevKo[f.severity] : '') + '">' + className + '</div>' +
+        '<div class="rr-meta" title="' + addr + '">' + addr + '</div>' +
+        '<div class="rr-frame">#' + f.frameNo + ' · ' + f.timeStr + '</div>';
+
+      (function (frame, rowEl) {
+        rowEl.addEventListener('click', function () {
+          document.querySelectorAll('.result-row').forEach(function (r) { r.classList.remove('selected'); });
+          rowEl.classList.add('selected');
+          showFrameInfo(frame);
+        });
+      })(f, row);
+
+      frag.appendChild(row);
+    }
+    rowsEl.appendChild(frag);
+    renderedCount = end;
+  }
+
+  function updateFooter(totalCount) {
+    var footer = document.getElementById('result-list-footer');
+    var info = document.getElementById('rf-info');
+    var btn = document.getElementById('rf-load-more');
+    footer.hidden = false;
+    info.textContent = renderedCount.toLocaleString() + ' / ' + totalCount.toLocaleString();
+    // 더 보기는 항상 표시 (추론 이력 조회 메뉴로 이동)
+    btn.hidden = false;
+  }
+
+  function showFrameInfo(frame) {
+    var mainCanvas = document.getElementById('cam-viewer-canvas');
+    var titleEl = document.getElementById('viewer-title');
+    var iconSvg = '<svg class="viewer-title-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+    var srcName = selectedSource ? selectedSource.file_name : '';
+
+    if (frame.detection) {
+      drawCameraScene(mainCanvas, [frame.detection]);
+      titleEl.innerHTML = iconSvg + srcName + ' · 프레임 #' + frame.frameNo + ' · ' + frame.detection.id;
+      showDetectionInfo(frame.detection);
+    } else {
+      drawCameraScene(mainCanvas, []);
+      titleEl.innerHTML = iconSvg + srcName + ' · 프레임 #' + frame.frameNo + ' · 탐지 없음';
+      // GNSS/캡션 초기화
+      document.getElementById('gnss-lat').textContent = '–';
+      document.getElementById('gnss-lng').textContent = '–';
+      document.getElementById('gnss-addr').textContent = '–';
+      document.getElementById('gnss-time').textContent = '2026.04.15 ' + frame.timeStr;
+      var capEl = document.getElementById('caption-text');
+      capEl.textContent = '이 프레임에서는 이상 객체가 탐지되지 않았습니다.';
+      capEl.classList.add('empty');
+    }
+  }
+
+  function showDetectionInfo(det) {
+    document.getElementById('gnss-lat').textContent = det.lat.toFixed(5);
+    document.getElementById('gnss-lng').textContent = det.lng.toFixed(5);
+    document.getElementById('gnss-addr').textContent = det.address;
+    document.getElementById('gnss-time').textContent = det.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+
+    var cap = CAPTIONS[det.class_en] || '이상 객체가 탐지되었습니다. 현장 확인이 필요합니다.';
+    var capEl = document.getElementById('caption-text');
+    capEl.textContent = cap;
+    capEl.classList.remove('empty');
+  }
+
+  function switchTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll('.result-tab').forEach(function (t) {
+      t.classList.toggle('active', t.dataset.tab === tab);
+    });
+    renderResultList(tab);
+  }
+  window.switchTab = switchTab;
+
+  // 탭 클릭 바인딩
+  document.addEventListener('click', function (e) {
+    var tabEl = e.target.closest('.result-tab');
+    if (tabEl && tabEl.dataset.tab) {
+      switchTab(tabEl.dataset.tab);
+      return;
+    }
+    var maxBtn = e.target.closest('#result-max-btn');
+    if (maxBtn) {
+      toggleResultMax();
+      return;
+    }
+  });
+
+  function toggleResultMax() {
+    var section = document.getElementById('result-section');
+    var viewer = document.querySelector('.viewer-area');
+    var btn = document.getElementById('result-max-btn');
+    var iconOpen = document.getElementById('result-max-icon-open');
+    var iconClose = document.getElementById('result-max-icon-close');
+    if (!section || !viewer || !btn) return;
+    var maxed = section.classList.toggle('maximized');
+    viewer.classList.toggle('result-max', maxed);
+    btn.setAttribute('title', maxed ? '패널 축소' : '패널 최대화');
+    if (iconOpen && iconClose) {
+      iconOpen.hidden = maxed;
+      iconClose.hidden = !maxed;
+    }
+  }
+})();
+</script>
+</body>
+</html>

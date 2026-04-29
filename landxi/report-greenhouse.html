@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>비닐하우스 탐지 보고서 - Land-XI</title>
+  <link rel="icon" href="assets/images/favicon_landxi.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/page-report-list.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="admin-container">
+
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M3 15h18M3 9h18"/></svg>
+          <span>비닐하우스 탐지 보고서</span>
+        </h1>
+        <p>비닐하우스(단동·다동) 탐지 결과를 엑셀 파일로 발급 받아요</p>
+      </div>
+    </div>
+
+    <div class="board-toolbar">
+      <div class="board-field board-field--search">
+        <label for="r-search-input">검색어</label>
+        <div class="board-field-row">
+          <select class="board-search-select" id="r-search-field">
+            <option value="all">전체</option>
+            <option value="requester">요청자</option>
+            <option value="info">행정정보</option>
+          </select>
+          <input type="text" class="board-search-input" id="r-search-input" placeholder="검색어를 입력하세요.">
+        </div>
+      </div>
+      <div class="board-field">
+        <label for="sttuCd">상태</label>
+        <select class="board-search-select form-select" id="sttuCd" name="sttuCd">
+          <option value="" selected>전체</option>
+          <option value="PENDING">처리 대기</option>
+          <option value="PROCESSING">처리중</option>
+          <option value="FAILED">처리 실패</option>
+          <option value="PROCESSED">처리 완료</option>
+        </select>
+      </div>
+      <div class="board-field board-field--period">
+        <label>발급 일자</label>
+        <div class="board-period-row">
+          <div class="board-period-dates">
+            <input type="date" class="board-date-input" id="r-from" placeholder="YYYY-MM-DD">
+            <span class="board-period-sep">~</span>
+            <input type="date" class="board-date-input" id="r-to" placeholder="YYYY-MM-DD">
+          </div>
+          <div class="board-period-quicks">
+            <button type="button" class="board-quick-btn active" data-months="0">전체</button>
+            <button type="button" class="board-quick-btn" data-months="1">1개월</button>
+            <button type="button" class="board-quick-btn" data-months="3">3개월</button>
+            <button type="button" class="board-quick-btn" data-months="6">6개월</button>
+            <button type="button" class="board-quick-btn" data-months="12">12개월</button>
+          </div>
+        </div>
+      </div>
+      <div class="board-toolbar-actions board-toolbar-actions--end">
+        <button type="button" class="btn btn-secondary" id="r-reset">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          초기화
+        </button>
+        <button type="button" class="btn btn-accent" id="r-search-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          검색
+        </button>
+      </div>
+    </div>
+
+    <div class="card report-list-card">
+      <div class="card-header">
+        <div class="card-title">보고서 목록</div>
+        <div class="card-actions">
+          <button type="button" class="btn btn-primary" id="r-issue">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            발급
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="report-list" id="r-list"></div>
+      </div>
+      <div class="board-paginator board-paginator--embedded">
+        <button type="button" class="board-page-btn">처음</button>
+        <button type="button" class="board-page-btn">이전</button>
+        <div class="board-page-pages"><button type="button" class="board-page-btn active">1</button></div>
+        <button type="button" class="board-page-btn">다음</button>
+        <button type="button" class="board-page-btn">마지막</button>
+        <div class="board-page-size-wrap">
+          <select class="board-page-size">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+          <span>페이지 크기</span>
+        </div>
+        <div class="board-count" id="r-count">총 <strong>0</strong>건 중 0~0행</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script src="assets/js/confirm-modal.js"></script>
+<script src="assets/js/pledge-modal.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // 행정정보·AI 분석명 2개 모두 필수
+  var REPORTS = [
+    { id: 6, issuedAt: '2025.12.30 12:19:05', info: '영농시설분석(단동,다동)_5권역', aiName: '남원시_5권역_영농시설 분석',          status: 'PROCESSED',  downloadCount: 5, requester: '홍길동' },
+    { id: 5, issuedAt: '2026.04.23 09:40:12', info: '영농시설분석(단동,다동)_2권역', aiName: '남원시_2권역_영농시설 분석',          status: 'PROCESSED',  downloadCount: 3, requester: '이주원' },
+    { id: 4, issuedAt: '2026.04.20 13:22:45', info: '영농시설분석(단동,다동)_5권역', aiName: '남원시_5권역_영농시설 분석',          status: 'PROCESSED',  downloadCount: 1, requester: '김관리' },
+    { id: 3, issuedAt: '2026.04.18 10:15:08', info: '영농시설분석(단동,다동)_4권역', aiName: '남원시_4권역_영농시설 분석',          status: 'PROCESSED',  downloadCount: 2, requester: '현미경' },
+    { id: 2, issuedAt: '2026.04.15 16:05:20', info: '영농시설분석(단동,다동)_2권역', aiName: '남원시_2권역_영농시설 분석 재발급',    status: 'PROCESSING', downloadCount: 0, requester: '이주원' },
+    { id: 1, issuedAt: '2026.04.11 09:08:40', info: '영농시설분석(단동,다동)_5권역', aiName: '남원시_5권역_영농시설 분석',          status: 'FAILED',     downloadCount: 0, requester: '노명석' }
+  ];
+
+  var STATUS_LABEL = { PENDING: '처리 대기', PROCESSING: '처리중', PROCESSED: '처리 완료', FAILED: '처리 실패' };
+  var STATUS_CLASS = { PENDING: 'warn',      PROCESSING: 'warn',   PROCESSED: 'ok',       FAILED: 'off' };
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function renderCard(r) {
+    var dl = r.status === 'PROCESSED'
+      ? '<button type="button" class="btn btn-accent btn-sm dl-btn" data-id="' + r.id + '">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+          '엑셀 다운로드</button>'
+      : '';
+    return '<div class="report-card">' +
+      '<div class="report-card-row1">' +
+        '<span class="admin-pill ' + STATUS_CLASS[r.status] + '">' + STATUS_LABEL[r.status] + '</span>' +
+        '<div class="meta-left">' +
+          '<span class="meta-kv issued"><span class="label">발급 일시</span><span class="value">' + esc(r.issuedAt) + '</span></span>' +
+          '<span class="meta-kv"><span class="label">요청자</span><span class="value">' + esc(r.requester) + '</span></span>' +
+          '<span class="meta-kv"><span class="label">다운로드</span><span class="value">' + esc(r.downloadCount) + '회</span></span>' +
+        '</div>' +
+        dl +
+      '</div>' +
+      '<div class="report-card-row3 pair">' +
+        '<div class="item"><span class="label">행정정보</span><span class="value">' + esc(r.info) + '</span></div>' +
+        '<div class="item"><span class="label">AI 분석명</span><span class="value">' + esc(r.aiName) + '</span></div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function render() {
+    var list = document.getElementById('r-list');
+    list.innerHTML = REPORTS.length ? REPORTS.map(renderCard).join('') : '<div class="report-list-empty">발급된 보고서가 없어요. 상단 [발급] 버튼으로 요청해 주세요.</div>';
+    document.getElementById('r-count').innerHTML = '총 <strong>' + REPORTS.length + '</strong>건 중 1~' + REPORTS.length + '행';
+  }
+
+  render();
+
+  document.getElementById('r-issue').addEventListener('click', function () {
+    window.location.href = 'report-greenhouse-issue.html';
+  });
+
+  document.getElementById('r-list').addEventListener('click', function (e) {
+    var btn = e.target.closest('.dl-btn');
+    if (!btn) return;
+    var userEl = document.querySelector('.user-profile-mini span');
+    var applicant = userEl ? userEl.textContent.trim() : '관리자';
+    PledgeModal.open({
+      applicant: applicant,
+      reqNamePlaceholder: '예) 비닐하우스 현황 조사',
+      purposePlaceholder: '예) 단동·다동 분포 파악',
+      onConfirm: function (data) {
+        if (window.NotifyUI) NotifyUI.success(
+          '요청명: ' + data.reqName + '\n활용 기간: ' + data.startDate + ' ~ ' + data.endDate + '\n사용 목적: ' + data.purpose,
+          '엑셀 다운로드가 시작되었어요'
+        );
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

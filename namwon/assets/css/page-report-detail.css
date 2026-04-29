@@ -1,0 +1,129 @@
+/* 발급 상세 화면 전용 — 공지사항·FAQ 등 관리 페이지의 표준 page-header + .card 레이아웃 그대로 사용 */
+
+/* 슬림 스티키 바 — 스크롤 시 전역 헤더 바로 아래 붙어 타이틀·액션만 간결히 노출 */
+.page-header-slim {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 2px 8px rgba(15, 37, 64, 0.06);
+  transform: translateY(-100%);
+  transition: transform 0.18s ease-out;
+  pointer-events: none;
+}
+.page-header-slim.is-visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.page-header-slim-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 32px;
+}
+.page-header-slim .slim-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.page-header-slim .slim-actions { display: flex; gap: 8px; }
+@media (max-width: 720px) {
+  .page-header-slim-inner { padding: 8px 14px; }
+}
+
+/* 카드 내부 — 배경만 옅게 깔아 가운데 PDF 시트를 종이 느낌으로 돋보이게 */
+.report-detail-card .card-body {
+  padding: 36px 20px;
+  background: #F2F4F7;
+}
+
+.report-detail-card .report-sheet {
+  width: 820px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 40px 48px;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgba(15, 37, 64, 0.08);
+}
+@media (max-width: 900px) {
+  .report-detail-card .card-body { padding: 18px 8px; }
+  .report-detail-card .report-sheet { padding: 24px 18px; }
+}
+
+/* 인쇄 — 중앙 PDF 시트만 페이지 가득 채워 인쇄 */
+@media print {
+  @page { size: A4; margin: 12mm; }
+
+  html, body {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* 본문 외 요소 display:none — display:none 이 visibility:hidden 보다 안전하게 영역 축소 */
+  #header-include,
+  #footer-include,
+  .gvt-footer,
+  .page-header { display: none !important; }
+
+  /* 래퍼 체인 정규화 — 배경·그림자·패딩 제거, 일반 블록으로 */
+  .page-body,
+  .admin-container,
+  .card,
+  .card-body,
+  .report-detail-card,
+  .report-detail-card .card-body {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    width: auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* PDF 시트는 인쇄 가능 영역 전체 사용 (화면에서의 820px 제약 해제) */
+  #report-sheet,
+  .report-detail-card .report-sheet {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .report-section { page-break-inside: avoid; }
+  .report-table thead { display: table-header-group; }
+  .report-table tr { page-break-inside: avoid; }
+}
+
+/* 종합 의견 — 상세 화면에서는 textarea 가 아닌 읽기 전용 텍스트 블록 */
+.opinion-body {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  padding: 14px 16px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+}

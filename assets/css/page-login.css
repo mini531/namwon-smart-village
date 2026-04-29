@@ -110,24 +110,37 @@ body { background: #F8F9FB; }
 }
 
 .feature-list {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  max-width: 460px;
+  gap: 10px;
+  max-width: 520px;
 }
 .feature-item {
+  position: relative;
+  width: 100%;
+  text-align: left;
   display: flex;
   align-items: flex-start;
   gap: 14px;
   padding: 14px 18px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
-  transition: all 0.2s ease;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
 }
 .feature-item:hover {
-  background: rgba(255, 255, 255, 0.13);
-  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+.feature-item.is-active {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
 }
 .feature-item .fi-icon {
   width: 40px;
@@ -139,19 +152,44 @@ body { background: #F8F9FB; }
   justify-content: center;
   flex-shrink: 0;
   color: #fff;
+  transition: background .2s;
 }
-.feature-item .fi-body { min-width: 0; }
+.feature-item.is-active .fi-icon {
+  background: var(--color-primary);
+}
+.feature-item .fi-body { min-width: 0; flex: 1; }
 .feature-item .fi-title {
   font-size: 15px;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 2px;
   letter-spacing: -0.2px;
 }
 .feature-item .fi-desc {
   font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.78);
   line-height: 1.55;
+  margin-top: 6px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height .3s ease, opacity .25s ease, margin-top .3s ease;
+}
+.feature-item.is-active .fi-desc {
+  max-height: 120px;
+  opacity: 1;
+}
+
+/* 활성 카드에 따라 배경 이미지 전환 — .hero-side 가 data-active 속성 보유 */
+.hero-side[data-active="road"]::before        { background-image: linear-gradient(135deg, rgba(15, 23, 35, 0.86) 0%, rgba(15, 23, 35, 0.82) 50%, rgba(10, 18, 28, 0.92) 100%), url('../images/hero.png'); }
+.hero-side[data-active="silage"]::before      { background-image: linear-gradient(135deg, rgba(15, 23, 35, 0.86) 0%, rgba(15, 23, 35, 0.82) 50%, rgba(10, 18, 28, 0.92) 100%), url('../images/login/feature-silage.jpg'); }
+.hero-side[data-active="farmland"]::before    { background-image: linear-gradient(135deg, rgba(15, 23, 35, 0.86) 0%, rgba(15, 23, 35, 0.82) 50%, rgba(10, 18, 28, 0.92) 100%), url('../images/login/feature-farmland.jpg'); }
+.hero-side[data-active="greenhouse"]::before  { background-image: linear-gradient(135deg, rgba(15, 23, 35, 0.86) 0%, rgba(15, 23, 35, 0.82) 50%, rgba(10, 18, 28, 0.92) 100%), url('../images/login/feature-greenhouse.jpg'); }
+.hero-side[data-active="trash"]::before       { background-image: linear-gradient(135deg, rgba(15, 23, 35, 0.86) 0%, rgba(15, 23, 35, 0.82) 50%, rgba(10, 18, 28, 0.92) 100%), url('../images/login/feature-trash.jpg'); }
+.hero-side::before {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-image .6s ease;
 }
 
 /* 하단 풋터 */

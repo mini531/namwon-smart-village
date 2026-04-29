@@ -96,6 +96,51 @@
   height: 10px;
 }
 
+/* 로그아웃 상태 — 메가 메뉴·보조 메뉴 숨기고 로그인 버튼만 노출 */
+.gnb-header.is-logged-out .gnb-nav { display: none; }
+.gnb-header.is-logged-out .sub-menu .action-dropdown { display: none; }
+
+/* 비로그인 안내 문구 — 메가 메뉴 자리에 노출 */
+.gnb-guest-msg {
+  display: none;
+  align-items: center;
+  height: 100%;
+  padding: 0 24px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+.gnb-guest-msg strong {
+  color: #fff;
+  font-weight: 700;
+  margin: 0 1px;
+}
+.gnb-header.is-logged-out .gnb-guest-msg { display: flex; }
+
+.gnb-login-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 22px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  text-decoration: none;
+  transition: all .15s;
+}
+.gnb-login-btn:hover {
+  border-color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.08);
+}
+
 .dropdown {
   position: absolute;
   top: calc(100% + 2px);

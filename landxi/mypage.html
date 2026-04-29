@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마이 페이지 - Land-XI</title>
+  <link rel="icon" href="assets/images/favicon_landxi.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/page-mypage.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="mypage-container">
+
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="page-title-text">마이 페이지</span>
+        </h1>
+        <p id="page-title-sub">회원 정보 및 스토리지 사용 현황을 확인하세요</p>
+      </div>
+    </div>
+
+    <!-- 메인 뷰 -->
+    <section class="mp-view active" id="view-main">
+    <!-- 회원 정보 -->
+    <div class="table-card">
+      <div class="table-head">
+        <div class="th-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          회원 정보
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="welcome"><strong id="profile-name">관리자</strong>님 반갑습니다.</div>
+        <div class="profile-grid">
+          <div class="profile-cell">
+            <div class="pc-label">이름</div>
+            <div class="pc-value" id="pt-name">관리자</div>
+          </div>
+          <div class="profile-cell">
+            <div class="pc-label">부서</div>
+            <div class="pc-value" id="pt-dept">도로관리과</div>
+          </div>
+          <div class="profile-cell">
+            <div class="pc-label">직위</div>
+            <div class="pc-value" id="pt-rank">주무관</div>
+          </div>
+          <div class="profile-cell">
+            <div class="pc-label">가입 일시</div>
+            <div class="pc-value" id="pt-joined">2025.04.10 11:18</div>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button type="button" class="btn btn-secondary" id="btn-change-pwd">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            비밀번호 변경
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-edit-profile">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            회원정보 수정
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 스토리지 (2열) -->
+    <div class="two-col">
+      <div class="table-card storage-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            스토리지 사용량
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="donut-wrap">
+            <div class="donut">
+              <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#E9ECEF" stroke-width="14"></circle>
+                <circle id="donut-arc" cx="60" cy="60" r="50" fill="none" stroke="#2A9D8F" stroke-width="14"
+                  stroke-dasharray="314.16" stroke-dashoffset="314.16" stroke-linecap="round"
+                  transform="rotate(-90 60 60)"></circle>
+              </svg>
+              <div class="donut-center">
+                <div class="dc-pct" id="donut-pct">0%</div>
+                <div class="dc-label">사용 중</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-item">
+                <span class="legend-swatch used"></span>
+                <span>사용</span>
+                <span class="legend-val" id="legend-used">0 GB</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-swatch free"></span>
+                <span>잔여</span>
+                <span class="legend-val" id="legend-free">0 GB</span>
+              </div>
+            </div>
+          </div>
+          <div class="storage-footer">
+            <div class="sf-total">전체 <strong id="sf-total">50 GB</strong></div>
+            <button type="button" class="btn btn-primary" id="btn-request-storage">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              스토리지 증량 신청
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card storage-history-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            스토리지 증량 신청 이력
+          </div>
+          <span class="th-info th-info--small" id="history-count">총 0건</span>
+        </div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="col-capacity">신청 용량 (GB)</th>
+                  <th>신청 사유</th>
+                  <th class="col-date">신청 일시</th>
+                  <th class="col-status">처리 여부</th>
+                  <th>처리 내용</th>
+                </tr>
+              </thead>
+              <tbody id="history-tbody"></tbody>
+            </table>
+          </div>
+          <div id="history-empty"></div>
+        </div>
+      </div>
+    </div>
+    </section>
+
+    <!-- 회원정보 수정 뷰 -->
+    <section class="mp-view" id="view-edit">
+      <div class="table-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            기본 정보
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="edit-form-grid">
+            <div class="ef-field">
+              <label>이름</label>
+              <input type="text" id="ef-name" readonly>
+              <div class="ef-hint">이름은 관리자에게 문의해 변경할 수 있습니다.</div>
+            </div>
+            <div class="ef-field">
+              <label>아이디 (이메일)</label>
+              <input type="email" id="ef-email" readonly>
+              <div class="ef-hint">아이디는 변경할 수 없습니다.</div>
+            </div>
+            <div class="ef-field">
+              <label>전화번호 <span class="req">*</span></label>
+              <input type="tel" id="ef-phone" placeholder="010-0000-0000">
+            </div>
+            <div class="ef-field">
+              <label>직위</label>
+              <input type="text" id="ef-rank" placeholder="예) 주무관">
+            </div>
+            <div class="ef-field ef-field-wide">
+              <label>부서 <span class="req">*</span></label>
+              <select id="ef-dept" class="form-select">
+                <option value="도로관리과">도로관리과</option>
+                <option value="교통행정과">교통행정과</option>
+                <option value="도시계획과">도시계획과</option>
+                <option value="정보통신팀">정보통신팀</option>
+                <option value="안전총괄과">안전총괄과</option>
+                <option value="재난관리과">재난관리과</option>
+                <option value="홍보전산과">홍보전산과</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            정보 이용 동의 설정
+          </div>
+        </div>
+        <div class="card-body">
+          <label class="consent-check">
+            <input type="checkbox" id="consent-marketing">
+            <span class="cc-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="cc-text"><span class="cc-tag">선택</span>홍보를 위한 정보수집 동의</span>
+          </label>
+
+          <div class="consent-info">
+            <div class="ci-title">회원정보 수집 및 이용에 관한 사항</div>
+            <ul>
+              <li><strong>회원정보의 수집·이용 목적:</strong> 광고 홍보 활동 등을 위한 목적으로만 수집됩니다.</li>
+              <li><strong>회원정보 수집·이용 항목:</strong> 휴대전화 번호, 이메일, SMS/이메일 수신 동의</li>
+              <li>선택 항목에 동의하지 않은 경우도 회원가입 및 일반적인 서비스를 이용할 수 있습니다.</li>
+            </ul>
+          </div>
+
+          <label class="consent-check consent-sub">
+            <input type="checkbox" id="consent-sms">
+            <span class="cc-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="cc-text"><span class="cc-tag">선택</span>광고성 정보 SMS 수신 동의</span>
+          </label>
+          <label class="consent-check consent-sub">
+            <input type="checkbox" id="consent-email">
+            <span class="cc-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="cc-text"><span class="cc-tag">선택</span>광고성 정보 Email 수신 동의</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="btn-edit-cancel">취소</button>
+        <button type="button" class="btn btn-primary" id="btn-edit-save">저장</button>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<!-- 스토리지 증량 신청 모달 -->
+<div class="modal-backdrop" id="storage-modal">
+  <div class="modal-card modal-card--lg">
+    <div class="modal-head">
+      <div class="title">스토리지 증량 신청</div>
+      <button class="close-btn" id="sr-close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="pwd-field" id="sr-field-capacity">
+        <label>신청 용량 (GB) <span class="req">*</span></label>
+        <div class="sr-preset">
+          <button type="button" class="sr-preset-btn" data-gb="32">32</button>
+          <button type="button" class="sr-preset-btn" data-gb="64">64</button>
+          <button type="button" class="sr-preset-btn" data-gb="128">128</button>
+          <button type="button" class="sr-preset-btn" data-gb="256">256</button>
+          <button type="button" class="sr-preset-btn" data-gb="512">512</button>
+          <button type="button" class="sr-preset-btn" data-gb="1024">1024</button>
+          <button type="button" class="sr-preset-btn" data-gb="custom">직접 입력</button>
+        </div>
+        <input type="number" id="sr-capacity" min="10" max="10240" step="1" placeholder="GB 단위로 입력">
+        <div class="err-msg">10GB 이상 10240GB 이하의 용량을 입력해 주세요.</div>
+      </div>
+      <div class="pwd-field" id="sr-field-reason">
+        <label>신청 사유 <span class="req">*</span></label>
+        <textarea id="sr-reason" rows="5" placeholder="신청 사유를 입력해 주세요."></textarea>
+        <div class="err-msg">신청 사유를 입력해 주세요.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <div class="mf-spacer"></div>
+      <button type="button" class="btn btn-secondary" id="sr-cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="sr-save">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 비밀번호 확인 모달 (회원정보 수정 진입용) -->
+<div class="modal-backdrop" id="pwdc-modal">
+  <div class="modal-card modal-card--sm">
+    <div class="modal-head">
+      <div class="title">본인 확인</div>
+      <button class="close-btn" id="pwdc-close">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-body-note">
+        회원정보 수정을 위해 현재 비밀번호를 한 번 더 입력해 주세요.
+      </p>
+      <div class="pwd-field" id="pwdc-field">
+        <label>현재 비밀번호 <span class="req">*</span></label>
+        <input type="password" id="pwdc-input" autocomplete="current-password" placeholder="현재 사용 중인 비밀번호">
+        <div class="err-msg">비밀번호가 일치하지 않습니다.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <div class="mf-spacer"></div>
+      <button type="button" class="btn btn-secondary" id="pwdc-cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="pwdc-confirm">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 비밀번호 변경 모달 -->
+<div class="modal-backdrop" id="pwd-modal">
+  <div class="modal-card modal-card--md">
+    <div class="modal-head">
+      <div class="title">비밀번호 변경</div>
+      <button class="close-btn" id="pwd-close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="pwd-field" id="pwd-field-current">
+        <label>현재 비밀번호 <span class="req">*</span></label>
+        <input type="password" id="pwd-current" autocomplete="current-password" placeholder="현재 사용 중인 비밀번호를 입력하세요">
+        <div class="err-msg">현재 비밀번호를 입력해 주세요.</div>
+      </div>
+      <div class="pwd-field" id="pwd-field-new">
+        <label>새 비밀번호 <span class="req">*</span></label>
+        <input type="password" id="pwd-new" autocomplete="new-password" placeholder="영문·숫자·특수문자 조합 8자 이상">
+        <div class="err-msg">영문·숫자·특수문자를 조합해 8자 이상 입력해 주세요.</div>
+      </div>
+      <div class="pwd-field" id="pwd-field-confirm">
+        <label>새 비밀번호 확인 <span class="req">*</span></label>
+        <input type="password" id="pwd-confirm" autocomplete="new-password" placeholder="새 비밀번호를 다시 입력하세요">
+        <div class="err-msg">새 비밀번호가 일치하지 않습니다.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <div class="mf-spacer"></div>
+      <button type="button" class="btn btn-secondary" id="pwd-cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="pwd-save">저장</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ── 샘플 회원 정보 ──
+  var PROFILE = {
+    displayName: '관리자',
+    name: '관리자',
+    email: 'admin@namwon.go.kr',
+    phone: '063-620-6102',
+    dept: '도로관리과',
+    rank: '주무관',
+    joined: '2025-04-10T11:18:44',
+    consent: {
+      marketing: false,
+      sms: false,
+      email: false
+    }
+  };
+  // 데모용 비밀번호 (실제 배포본은 서버 검증)
+  var DEMO_PASSWORD = 'admin1234';
+
+  // 스토리지: 현재 사용량 / 전체 (단위 GB)
+  var STORAGE = {
+    used: 16.4,
+    total: 50
+  };
+
+  // 증량 신청 이력 샘플 (Land-XI 맥락)
+  var STORAGE_HISTORY = [
+    {
+      capacity: 100,
+      reason: '정사영상 원본 누적 저장용 — 4월 광역 촬영 건',
+      requestedAt: '2026-04-05T09:20:00',
+      status: 'approved',
+      note: '승인 완료 · 2026.04.08 반영'
+    },
+    {
+      capacity: 50,
+      reason: '카메라 분석 추론 결과 백업',
+      requestedAt: '2026-04-12T14:42:00',
+      status: 'pending',
+      note: '검토 중'
+    }
+  ];
+
+  function fmtDateTime(iso) {
+    if (!iso) return '';
+    return iso.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+  }
+
+  function escapeHtml(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── 프로필 렌더 ──
+  function renderProfile() {
+    document.getElementById('profile-name').textContent = PROFILE.displayName || PROFILE.name;
+    document.getElementById('pt-name').textContent = PROFILE.name;
+    document.getElementById('pt-dept').textContent = PROFILE.dept;
+    document.getElementById('pt-rank').textContent = PROFILE.rank;
+    document.getElementById('pt-joined').textContent = fmtDateTime(PROFILE.joined);
+  }
+
+  // ── 도넛 차트 ──
+  function renderDonut() {
+    var pct = STORAGE.total > 0 ? (STORAGE.used / STORAGE.total) : 0;
+    var pctInt = Math.round(pct * 100);
+    var arcLen = 2 * Math.PI * 50; // 314.16
+    var offset = arcLen * (1 - pct);
+
+    document.getElementById('donut-pct').textContent = pctInt + '%';
+    document.getElementById('legend-used').textContent = STORAGE.used.toFixed(1) + ' GB';
+    document.getElementById('legend-free').textContent = (STORAGE.total - STORAGE.used).toFixed(1) + ' GB';
+    document.getElementById('sf-total').textContent = STORAGE.total + ' GB';
+
+    // 첫 렌더 시 애니메이션
+    var arc = document.getElementById('donut-arc');
+    setTimeout(function () {
+      arc.style.strokeDashoffset = offset;
+    }, 50);
+  }
+
+  // ── 이력 테이블 ──
+  function renderHistory() {
+    var tbody = document.getElementById('history-tbody');
+    var empty = document.getElementById('history-empty');
+    var cntEl = document.getElementById('history-count');
+    tbody.innerHTML = '';
+    empty.innerHTML = '';
+
+    cntEl.textContent = '총 ' + STORAGE_HISTORY.length + '건';
+
+    if (STORAGE_HISTORY.length === 0) {
+      empty.innerHTML =
+        '<div class="empty-state">' +
+          '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+          '<p>조회된 데이터가 없습니다.</p>' +
+        '</div>';
+      return;
+    }
+
+    var statusMap = {
+      approved: { label: '승인', cls: 'approved' },
+      pending: { label: '검토 중', cls: 'pending' },
+      rejected: { label: '반려', cls: 'rejected' }
+    };
+
+    STORAGE_HISTORY.slice().sort(function (a, b) {
+      return b.requestedAt.localeCompare(a.requestedAt);
+    }).forEach(function (h) {
+      var st = statusMap[h.status] || { label: '-', cls: '' };
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="col-capacity">+' + h.capacity + '</td>' +
+        '<td>' + escapeHtml(h.reason) + '</td>' +
+        '<td class="col-date">' + fmtDateTime(h.requestedAt) + '</td>' +
+        '<td class="col-status"><span class="status-pill ' + st.cls + '">' + st.label + '</span></td>' +
+        '<td class="history-note-cell">' + escapeHtml(h.note || '-') + '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── 비밀번호 변경 모달 ──
+  var pwdModal = document.getElementById('pwd-modal');
+
+  function openPwdModal() {
+    ['pwd-current', 'pwd-new', 'pwd-confirm'].forEach(function (id) {
+      document.getElementById(id).value = '';
+    });
+    ['pwd-field-current', 'pwd-field-new', 'pwd-field-confirm'].forEach(function (id) {
+      document.getElementById(id).classList.remove('has-error');
+    });
+    pwdModal.classList.add('show');
+    setTimeout(function () { document.getElementById('pwd-current').focus(); }, 30);
+  }
+
+  function closePwdModal() {
+    pwdModal.classList.remove('show');
+  }
+
+  function validatePwd() {
+    var cur = document.getElementById('pwd-current').value;
+    var np = document.getElementById('pwd-new').value;
+    var cf = document.getElementById('pwd-confirm').value;
+    var ok = true;
+
+    var curField = document.getElementById('pwd-field-current');
+    var newField = document.getElementById('pwd-field-new');
+    var cfField = document.getElementById('pwd-field-confirm');
+
+    curField.classList.toggle('has-error', !cur);
+    if (!cur) ok = false;
+
+    // 영문/숫자/특수문자 조합 8자 이상
+    var strong = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(np);
+    newField.classList.toggle('has-error', !strong);
+    if (!strong) ok = false;
+
+    var match = np && np === cf;
+    cfField.classList.toggle('has-error', !match);
+    if (!match) {
+      cfField.querySelector('.err-msg').textContent = '새 비밀번호가 일치하지 않습니다.';
+      ok = false;
+    }
+
+    return ok;
+  }
+
+  function savePwd() {
+    if (!validatePwd()) return;
+    // 데모: 실제 배포본은 서버 호출. 여기선 성공 알림만.
+    closePwdModal();
+    if (window.NotifyUI) NotifyUI.toast('비밀번호가 변경되었습니다. 다음 로그인부터 새 비밀번호를 사용하세요.', '변경 완료', { type: 'success' });
+  }
+
+  document.getElementById('pwd-close').addEventListener('click', closePwdModal);
+  document.getElementById('pwd-cancel').addEventListener('click', closePwdModal);
+  document.getElementById('pwd-save').addEventListener('click', savePwd);
+  pwdModal.addEventListener('click', function (e) {
+    if (e.target === pwdModal) closePwdModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && pwdModal.classList.contains('show')) closePwdModal();
+  });
+  // 입력 시 에러 즉시 제거
+  ['pwd-current', 'pwd-new', 'pwd-confirm'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', function () {
+      document.getElementById('pwd-field-' + id.replace('pwd-', '')).classList.remove('has-error');
+    });
+    document.getElementById(id).addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') savePwd();
+    });
+  });
+
+  // ── 회원정보 수정 뷰 + 비밀번호 확인 ──
+  var pwdcModal = document.getElementById('pwdc-modal');
+
+  function switchView(view) {
+    document.querySelectorAll('.mp-view').forEach(function (v) {
+      v.classList.toggle('active', v.id === 'view-' + view);
+    });
+    var titleText = document.getElementById('page-title-text');
+    var sub = document.getElementById('page-title-sub');
+    if (view === 'edit') {
+      titleText.textContent = '회원정보 수정';
+      sub.textContent = '회원 정보와 정보 이용 동의 설정을 변경합니다.';
+    } else {
+      titleText.textContent = '마이 페이지';
+      sub.textContent = '회원 정보 및 스토리지 사용 현황을 확인하세요';
+    }
+    document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  function openPwdConfirm() {
+    document.getElementById('pwdc-input').value = '';
+    document.getElementById('pwdc-field').classList.remove('has-error');
+    pwdcModal.classList.add('show');
+    setTimeout(function () { document.getElementById('pwdc-input').focus(); }, 30);
+  }
+  function closePwdConfirm() {
+    pwdcModal.classList.remove('show');
+  }
+  function submitPwdConfirm() {
+    // 프로토타입: 아무 값이나 입력되면 통과 (빈 값만 거부)
+    var v = document.getElementById('pwdc-input').value;
+    var field = document.getElementById('pwdc-field');
+    if (!v) {
+      field.classList.add('has-error');
+      field.querySelector('.err-msg').textContent = '비밀번호를 입력해 주세요.';
+      return;
+    }
+    closePwdConfirm();
+    prefillEditForm();
+    switchView('edit');
+  }
+
+  document.getElementById('pwdc-close').addEventListener('click', closePwdConfirm);
+  document.getElementById('pwdc-cancel').addEventListener('click', closePwdConfirm);
+  document.getElementById('pwdc-confirm').addEventListener('click', submitPwdConfirm);
+  pwdcModal.addEventListener('click', function (e) {
+    if (e.target === pwdcModal) closePwdConfirm();
+  });
+  document.getElementById('pwdc-input').addEventListener('input', function () {
+    document.getElementById('pwdc-field').classList.remove('has-error');
+  });
+  document.getElementById('pwdc-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') submitPwdConfirm();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && pwdcModal.classList.contains('show')) closePwdConfirm();
+  });
+
+  function prefillEditForm() {
+    document.getElementById('ef-name').value = PROFILE.name;
+    document.getElementById('ef-email').value = PROFILE.email;
+    document.getElementById('ef-phone').value = PROFILE.phone;
+    document.getElementById('ef-rank').value = PROFILE.rank;
+    document.getElementById('ef-dept').value = PROFILE.dept;
+    document.getElementById('consent-marketing').checked = !!PROFILE.consent.marketing;
+    document.getElementById('consent-sms').checked = !!PROFILE.consent.sms;
+    document.getElementById('consent-email').checked = !!PROFILE.consent.email;
+  }
+
+  function saveEdit() {
+    var phone = document.getElementById('ef-phone').value.trim();
+    if (!phone) {
+      if (window.NotifyUI) NotifyUI.warn('전화번호를 입력해 주세요.', '입력 오류');
+      return;
+    }
+    PROFILE.phone = phone;
+    PROFILE.rank = document.getElementById('ef-rank').value.trim() || PROFILE.rank;
+    PROFILE.dept = document.getElementById('ef-dept').value;
+    PROFILE.consent.marketing = document.getElementById('consent-marketing').checked;
+    PROFILE.consent.sms = document.getElementById('consent-sms').checked;
+    PROFILE.consent.email = document.getElementById('consent-email').checked;
+
+    renderProfile();
+    switchView('main');
+    if (window.NotifyUI) NotifyUI.toast('회원정보가 저장되었습니다.', '변경 완료', { type: 'success' });
+  }
+
+  document.getElementById('btn-edit-cancel').addEventListener('click', function () {
+    switchView('main');
+  });
+  document.getElementById('btn-edit-save').addEventListener('click', saveEdit);
+
+  // 마케팅 동의 해제 시 하위 SMS/Email 자동 해제
+  document.getElementById('consent-marketing').addEventListener('change', function () {
+    if (!this.checked) {
+      document.getElementById('consent-sms').checked = false;
+      document.getElementById('consent-email').checked = false;
+    }
+  });
+
+  // ── 버튼 이벤트 ──
+  document.getElementById('btn-change-pwd').addEventListener('click', openPwdModal);
+  document.getElementById('btn-edit-profile').addEventListener('click', openPwdConfirm);
+  // ── 스토리지 증량 신청 모달 ──
+  var srModal = document.getElementById('storage-modal');
+  function openStorageModal() {
+    document.getElementById('sr-capacity').value = '';
+    document.getElementById('sr-reason').value = '';
+    document.getElementById('sr-field-capacity').classList.remove('has-error');
+    document.getElementById('sr-field-reason').classList.remove('has-error');
+    document.querySelectorAll('.sr-preset-btn').forEach(function (b) { b.classList.remove('active'); });
+    srModal.classList.add('show');
+  }
+  function closeStorageModal() { srModal.classList.remove('show'); }
+
+  function saveStorageRequest() {
+    var capVal = document.getElementById('sr-capacity').value;
+    var cap = Number(capVal);
+    var reason = document.getElementById('sr-reason').value.trim();
+    var capField = document.getElementById('sr-field-capacity');
+    var reasonField = document.getElementById('sr-field-reason');
+    var ok = true;
+
+    var capValid = capVal !== '' && !isNaN(cap) && cap >= 10 && cap <= 10240;
+    capField.classList.toggle('has-error', !capValid);
+    if (!capValid) ok = false;
+
+    reasonField.classList.toggle('has-error', !reason);
+    if (!reason) ok = false;
+
+    if (!ok) return;
+
+    var now = new Date();
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var iso = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) +
+      'T' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+
+    STORAGE_HISTORY.unshift({
+      capacity: cap,
+      reason: reason,
+      requestedAt: iso,
+      status: 'pending',
+      note: '검토 중'
+    });
+    renderHistory();
+    closeStorageModal();
+    if (window.NotifyUI) NotifyUI.toast(cap + 'GB 증량 신청이 접수되었습니다.', '신청 완료', { type: 'success' });
+  }
+
+  document.getElementById('sr-close').addEventListener('click', closeStorageModal);
+  document.getElementById('sr-cancel').addEventListener('click', closeStorageModal);
+  document.getElementById('sr-save').addEventListener('click', saveStorageRequest);
+  srModal.addEventListener('click', function (e) {
+    if (e.target === srModal) closeStorageModal();
+  });
+  document.getElementById('sr-capacity').addEventListener('input', function () {
+    document.getElementById('sr-field-capacity').classList.remove('has-error');
+    // 숫자 직접 입력 시 프리셋 active 해제
+    var v = Number(this.value);
+    var matched = false;
+    document.querySelectorAll('.sr-preset-btn').forEach(function (b) {
+      var bv = b.dataset.gb;
+      if (bv !== 'custom' && Number(bv) === v) {
+        b.classList.add('active');
+        matched = true;
+      } else {
+        b.classList.remove('active');
+      }
+    });
+    if (!matched && this.value !== '') {
+      var customBtn = document.querySelector('.sr-preset-btn[data-gb="custom"]');
+      if (customBtn) customBtn.classList.add('active');
+    }
+  });
+
+  document.querySelectorAll('.sr-preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.sr-preset-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var gb = btn.dataset.gb;
+      var input = document.getElementById('sr-capacity');
+      if (gb === 'custom') {
+        input.value = '';
+        input.focus();
+      } else {
+        input.value = gb;
+      }
+      document.getElementById('sr-field-capacity').classList.remove('has-error');
+    });
+  });
+  document.getElementById('sr-reason').addEventListener('input', function () {
+    document.getElementById('sr-field-reason').classList.remove('has-error');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && srModal.classList.contains('show')) closeStorageModal();
+  });
+
+  document.getElementById('btn-request-storage').addEventListener('click', openStorageModal);
+
+  // ── 초기 렌더 ──
+  renderProfile();
+  renderDonut();
+  renderHistory();
+})();
+</script>
+</body>
+</html>

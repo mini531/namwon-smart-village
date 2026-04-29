@@ -1,0 +1,388 @@
+/* =============================================================
+   page-report-list.css — 보고서 목록 카드 공용 스타일
+   (조사료/농지/비닐하우스 보고서 목록이 모두 동일 구조 사용)
+
+   카드 3행 레이아웃:
+     row1: 발급 일시 · 요청자 · 다운로드 횟수 · 상태 pill · [다운로드]
+     row2: 행정정보
+     row3: 생육기 · 생산기 · 곤포사일리지 (혹은 단일 분석 필드)
+   ============================================================= */
+
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.report-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.report-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(15, 37, 64, 0.06);
+}
+.report-card.is-clickable { cursor: pointer; }
+.report-card.is-clickable:hover { background: var(--color-primary-tint); }
+
+/* ── Row 1 — 메타 정보 + 액션 ── */
+.report-card-row1 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #F1F3F5;
+  flex-wrap: wrap;
+}
+.report-card-row1 .meta-left {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.report-card-row1 .meta-kv {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  min-width: 0;
+}
+.report-card-row1 .meta-kv .label {
+  color: var(--color-text-muted);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.report-card-row1 .meta-kv .value {
+  color: var(--color-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.report-card-row1 .meta-kv.issued .value {
+  font-size: 14px;
+  font-weight: 800;
+}
+.report-card-row1 .admin-pill { flex-shrink: 0; }
+.report-card-row1 .btn { flex-shrink: 0; }
+
+/* ── Row 2 — 행정정보 (단일 필드, 한 줄 전체) ── */
+.report-card-row2 {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #F1F3F5;
+  font-size: 13px;
+}
+
+/* ── Row 3 — 분석 필드들 (3개 균등 배치, 카드 너비를 충분히 활용) ── */
+.report-card-row3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 28px;
+  font-size: 13px;
+}
+/* Row 3 가 2개 필드일 때(농지/비닐하우스 — 행정정보+분석) — 2열 */
+.report-card-row3.pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Row 3 가 단일 필드일 때 — 한 줄 전체 차지 */
+.report-card-row3.single { grid-template-columns: 1fr; }
+
+.report-card .item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.report-card .item .label {
+  color: var(--color-text-muted);
+  font-weight: 700;
+  flex-shrink: 0;
+  white-space: nowrap;
+  min-width: 64px;
+}
+.report-card .item .value {
+  color: var(--color-text);
+  word-break: break-all;
+  line-height: 1.5;
+}
+.report-card .item .value.muted { color: var(--color-text-muted); }
+
+/* 빈 목록 */
+.report-list-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--border-radius-lg);
+}
+
+/* 목록 카드 컨테이너 */
+.report-list-card .card-body { padding: 14px 18px; background: var(--color-page-bg); }
+.report-list-card .card-header { padding: 0 20px; height: 56px; min-height: 56px; }
+
+/* =============================================================
+   발급 요청 폼 뷰 — .admin-list-view ↔ .admin-form-view 토글
+   ============================================================= */
+.form-view-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+.form-view-header h2 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.form-view-header h2 svg { color: var(--color-primary); }
+.form-view-header .form-sub {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* 섹션 카드 — 좌측 이미지 꽉 차고 우측에 헤더+필드 */
+.report-form-section {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  overflow: hidden;
+}
+.report-step-img {
+  width: 320px;
+  align-self: stretch;
+  object-fit: cover;
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid var(--color-border);
+  flex-shrink: 0;
+  background: var(--color-surface-2);
+}
+@media (max-width: 1280px) {
+  .report-step-img { width: 260px; }
+}
+.report-form-section-body {
+  flex: 1;
+  min-width: 0;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 섹션 제목 행 — 타이틀 + 설명 + 더 보기 버튼 */
+.report-form-section-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+.report-form-section-text { flex: 1; min-width: 0; }
+.report-form-section-text .section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0 0 6px;
+}
+.report-form-section-text .step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.report-form-section-text .section-desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+.report-form-section-head > .btn { flex-shrink: 0; align-self: center; }
+
+/* 라벨 + 최근 3개 카드 */
+.report-form-field-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.report-form-field-wrap .field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  flex-shrink: 0;
+  min-width: 90px;
+  padding-top: 14px;
+}
+.report-form-field-wrap .field-label .req {
+  color: var(--color-primary);
+  margin-left: 2px;
+}
+.report-form-field-wrap .pick-card-list { flex: 1; min-width: 0; }
+
+/* 선택 카드 — 최근 3개 항상 3열 (wide 카드는 .pick-card--wide 로 전체 너비 spanning) */
+.pick-card-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 900px) {
+  .report-form-section { flex-direction: column; }
+  .report-step-img { width: 100%; height: 140px; border-right: none; border-bottom: 1px solid var(--color-border); }
+  .pick-card-list { grid-template-columns: 1fr; }
+}
+.pick-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  min-width: 0;
+}
+.pick-card:hover { border-color: var(--color-primary); }
+.pick-card:has(input:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+.pick-card input[type="radio"] {
+  margin-top: 2px;
+  accent-color: var(--color-primary);
+  flex-shrink: 0;
+}
+.pick-card-body { flex: 1; min-width: 0; }
+/* 행정정보 카드 — 제목(큰 볼드) + 보조 메타(작은 muted) */
+.pick-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.4;
+  word-break: break-all;
+}
+.pick-card-meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+/* 분석 3종 카드 — 상단 분석명 + 하단 3줄 (기준 일자/정사영상/분석범위) */
+.pick-card-lines {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #F1F3F5;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.pick-card-line {
+  font-size: 12px;
+  color: var(--color-text);
+  line-height: 1.5;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.pick-card-line .k {
+  color: var(--color-text-muted);
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 56px;
+}
+.pick-card-line .v {
+  color: var(--color-text);
+  word-break: break-all;
+}
+.pick-card-line.pick-card-date .v {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+/* 모달에서 선택한 카드 — 한 줄 전체 너비 차지. 배경/테두리 하이라이트는
+   .pick-card:has(input:checked) 공용 규칙이 담당 (체크 해제되면 자동 해제) */
+.pick-card--wide {
+  grid-column: 1 / -1;
+}
+
+/* wide 카드가 있으면 기존 최근 3개는 감춤 — 선택을 모달로만 유지 */
+.pick-card-list:has(.pick-card--wide) .pick-card:not(.pick-card--wide) {
+  display: none;
+}
+
+/* wide 카드의 속성 3개(기준 일자/정사영상/분석범위)는 가로 한 행으로 배치 */
+.pick-card--wide .pick-card-lines {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px 28px;
+}
+
+/* 폼 하단 액션 — 기본은 일반 버튼 영역. 스크롤로 뷰포트를 넘기는 순간만 스티키 플로팅.
+   스티키일 때 배경을 가로 100vw 로 확장하기 위해 ::before 로 뷰포트 전체 가리개를 깔음 */
+.report-form-actions {
+  position: sticky;
+  bottom: -1px;
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 0;
+  transition: padding 0.18s;
+}
+.report-form-actions::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background: #EDEFF2;
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -6px 18px rgba(15, 37, 64, 0.08);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.18s;
+  pointer-events: none;
+}
+/* 스티키로 전환되는 순간만 — 회색 배경 바가 가로 전체에 깔림 */
+.report-form-actions.is-stuck {
+  padding: 14px 0;
+}
+.report-form-actions.is-stuck::before {
+  opacity: 1;
+}
+
+/* 반응형 */
+@media (max-width: 1100px) {
+  /* 중간 화면 — 3열 카드는 2열로 */
+  .report-card-row3:not(.pair):not(.single) { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 720px) {
+  .report-card { padding: 12px 14px; gap: 8px; }
+  .report-card-row1 { gap: 12px; }
+  .report-card-row1 .meta-left { gap: 14px; }
+  .report-card-row3 { grid-template-columns: 1fr; gap: 6px; }
+}

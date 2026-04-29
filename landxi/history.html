@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>탐지 이력 관리 - Land-XI</title>
+  <link rel="icon" href="assets/images/favicon_landxi.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/page-history.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="history-container">
+
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M7.76 16.24l-2.83 2.83M19.07 4.93l-2.83 2.83"/><circle cx="12" cy="12" r="3"/></svg>
+          분석 이력 관리
+        </h1>
+        <p>AI 분석 작업 단위로 실행 이력을 조회하고, 각 작업에서 탐지된 이상 객체를 관리합니다</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" onclick="exportCSV()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV 내보내기
+        </button>
+        <a href="report-road-ortho.html" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          보고서 생성
+        </a>
+      </div>
+    </div>
+
+    <!-- 통계 요약 -->
+    <div class="summary-strip" id="summary-strip">
+      <button type="button" class="summary-card" data-kpi="all">
+        <div class="summary-icon blue">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="summary-info">
+          <div class="label">총 탐지</div>
+          <div class="value"><span id="sum-total">0</span><span class="unit">건</span></div>
+        </div>
+      </button>
+      <button type="button" class="summary-card" data-kpi="severity:high">
+        <div class="summary-icon red">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="summary-info">
+          <div class="label">고위험</div>
+          <div class="value"><span id="sum-high">0</span><span class="unit">건</span></div>
+        </div>
+      </button>
+      <button type="button" class="summary-card" data-kpi="status:미처리">
+        <div class="summary-icon orange">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="summary-info">
+          <div class="label">미처리</div>
+          <div class="value"><span id="sum-unprocessed">0</span><span class="unit">건</span></div>
+        </div>
+      </button>
+      <button type="button" class="summary-card" data-kpi="model:orthophoto">
+        <div class="summary-icon purple">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        </div>
+        <div class="summary-info">
+          <div class="label">정사영상</div>
+          <div class="value"><span id="sum-ortho">0</span><span class="unit">건</span></div>
+        </div>
+      </button>
+      <button type="button" class="summary-card" data-kpi="model:camera">
+        <div class="summary-icon green">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        </div>
+        <div class="summary-info">
+          <div class="label">카메라</div>
+          <div class="value"><span id="sum-cam">0</span><span class="unit">건</span></div>
+        </div>
+      </button>
+    </div>
+
+    <!-- 탭 스트립 -->
+    <div class="view-tabs">
+      <div class="view-tab active" id="tab-jobs" onclick="switchView('jobs')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        분석 작업 이력
+      </div>
+      <div class="view-tab" id="tab-detections" onclick="switchView('detections')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+        탐지 객체 목록
+      </div>
+    </div>
+
+    <!-- 작업 이력 뷰 -->
+    <div class="view-panel active" id="view-jobs">
+      <div class="table-card">
+        <div class="table-head">
+          <div class="th-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            분석 작업 목록
+          </div>
+          <div class="th-info" id="jobs-table-info">총 0건</div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table jobs-data-table">
+            <thead>
+              <tr>
+                <th class="col-job-id">작업 ID</th>
+                <th>원본 영상/이미지</th>
+                <th>모델</th>
+                <th class="col-cap">촬영일</th>
+                <th class="col-ana">분석일</th>
+                <th class="col-detect">탐지</th>
+                <th>주요 클래스</th>
+                <th class="col-status-head">상태</th>
+              </tr>
+            </thead>
+            <tbody id="jobs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 탐지 객체 뷰 -->
+    <div class="view-panel" id="view-detections">
+
+    <!-- 작업 필터 배너 -->
+    <div class="job-filter-banner" id="job-filter-banner" hidden>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        분석 작업 <strong id="banner-job-id"></strong> 의 탐지 결과만 표시 중입니다
+      </span>
+      <button type="button" onclick="clearJobFilter()">× 전체 보기</button>
+    </div>
+
+    <!-- 필터 패널 -->
+    <div class="filter-panel">
+      <div class="filter-row">
+        <div class="filter-field">
+          <label>기간 시작</label>
+          <input type="date" id="filter-date-from" value="2026-03-01">
+        </div>
+        <div class="filter-field">
+          <label>기간 종료</label>
+          <input type="date" id="filter-date-to" value="2026-04-15">
+        </div>
+        <div class="filter-field">
+          <label>모델 종류</label>
+          <select id="filter-model">
+            <option value="">전체</option>
+            <option value="orthophoto">정사영상</option>
+            <option value="camera">카메라</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label>심각도</label>
+          <select id="filter-severity">
+            <option value="">전체</option>
+            <option value="high">고위험</option>
+            <option value="medium">주의</option>
+            <option value="low">양호</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label>처리 상태</label>
+          <select id="filter-status">
+            <option value="">전체</option>
+            <option value="미처리">미처리</option>
+            <option value="처리중">처리중</option>
+            <option value="완료">완료</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label>키워드 (클래스/주소)</label>
+          <input type="text" id="filter-keyword" placeholder="예: 포트홀, 도통동">
+        </div>
+        <div class="filter-actions">
+          <button class="btn btn-secondary" onclick="resetFilter()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            초기화
+          </button>
+          <button class="btn btn-primary" onclick="applyFilter()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            검색
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="table-card">
+      <div class="table-head">
+        <div class="th-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          탐지 이력 목록
+        </div>
+        <div class="th-info" id="table-info">총 0건 · 페이지 1/1</div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-id">ID</th>
+              <th class="col-thumb">썸네일</th>
+              <th>모델</th>
+              <th>탐지 클래스</th>
+              <th>심각도</th>
+              <th>위치 (주소)</th>
+              <th>탐지 일시</th>
+              <th>처리 상태</th>
+              <th class="col-actions">처리</th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody">
+          </tbody>
+        </table>
+      </div>
+      <div id="empty-state-wrap"></div>
+      <div class="pagination pagination--history" id="pagination"></div>
+    </div>
+    </div><!-- /view-detections -->
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<!-- 상세 모달 -->
+<div class="modal-backdrop" id="detail-modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="title">탐지 정보</div>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <img class="modal-thumb modal-thumb-img" id="modal-thumb" alt="썸네일">
+      <div class="modal-info-grid">
+        <div class="info-item"><div class="label">탐지 ID</div><div class="value" id="m-id">-</div></div>
+        <div class="info-item"><div class="label">탐지 클래스</div><div class="value" id="m-class">-</div></div>
+        <div class="info-item"><div class="label">심각도</div><div class="value" id="m-severity">-</div></div>
+        <div class="info-item full"><div class="label">위치</div><div class="value" id="m-addr">-</div></div>
+        <div class="info-item"><div class="label">탐지 일시</div><div class="value" id="m-date">-</div></div>
+        <div class="info-item"><div class="label">처리 상태</div><div class="value" id="m-status">-</div></div>
+        <div class="info-item full"><div class="label">원본 파일</div><div class="value" id="m-file">-</div></div>
+      </div>
+
+      <!-- 처리 액션 섹션 -->
+      <div class="m-action-section">
+        <div class="m-action-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          처리 상태 변경
+        </div>
+        <div class="m-status-steps">
+          <button class="m-status-step" data-status="미처리">
+            <span class="m-step-dot unprocessed"></span>
+            <span class="m-step-label">미처리</span>
+          </button>
+          <div class="m-step-line"></div>
+          <button class="m-status-step" data-status="처리중">
+            <span class="m-step-dot processing"></span>
+            <span class="m-step-label">처리중</span>
+          </button>
+          <div class="m-step-line"></div>
+          <button class="m-status-step" data-status="완료">
+            <span class="m-step-dot done"></span>
+            <span class="m-step-label">완료</span>
+          </button>
+        </div>
+        <div class="m-action-field">
+          <label>조치 메모 (선택)</label>
+          <textarea id="m-note" placeholder="예) 4/15 현장 확인 · 긴급 보수 요청 · 자재 주문 완료 등"></textarea>
+        </div>
+        <div id="m-history-log" class="m-history-log"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal()">닫기</button>
+      <button class="btn btn-secondary" onclick="goToMap()">지도에서 보기</button>
+      <button class="btn btn-primary" onclick="saveProcessing()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var allDetections = [];
+  var allJobs = [];
+  var filtered = [];
+  var currentPage = 1;
+  var pageSize = 12;
+  var currentDetection = null;
+  var currentJobFilter = null;
+  var pendingStatus = null;
+  var OVERRIDE_KEY = 'namwon-detection-overrides';
+  var LOG_KEY = 'namwon-detection-logs';
+
+  var CLASS_KO_SHORT = {
+    Pothole: '포트홀', Crack: '크랙', Patch: '보수흔적', Void_Suspected: '공동의심',
+    Litter: '쓰레기', Barrier_Damaged: '분리대파손', Delineator_Damaged: '시선유도봉파손',
+    Pedestrian_Facility_Damaged: '보행시설파손', Sign_Damaged: '표지판파손',
+    Lane_Faded: '차선불량', Color_Manhole: '컬러맨홀', Illegal_Parking: '불법주정차'
+  };
+
+  var SEVERITY_KO = { high: '고위험', medium: '주의', low: '양호' };
+  var SEVERITY_BADGE = { high: 'badge-high', medium: 'badge-medium', low: 'badge-low' };
+  var STATUS_BADGE = { '미처리': 'badge-unprocessed', '처리중': 'badge-processing', '완료': 'badge-done' };
+
+  // ── 데이터 로드 ──
+  function loadData() {
+    Promise.all([
+      fetch('assets/data/sample-detections.json').then(function (r) { return r.json(); }),
+      fetch('assets/data/sample-jobs.json').then(function (r) { return r.json(); })
+    ]).then(function (results) {
+      var detJson = results[0];
+      var jobJson = results[1];
+
+      allDetections = detJson.detections.slice();
+      // 로컬스토리지 오버라이드 적용
+      var overrides = getOverrides();
+      allDetections.forEach(function (d) {
+        if (overrides[d.id]) d.status = overrides[d.id];
+      });
+
+      allDetections.sort(function (a, b) { return b.detected_at.localeCompare(a.detected_at); });
+      allJobs = jobJson.jobs.slice();
+      allJobs.sort(function (a, b) { return b.analyzed_at.localeCompare(a.analyzed_at); });
+
+      updateSummaryLive();
+      renderJobsTable();
+
+      // URL 쿼리 파라미터: job / severity / status 필터 지원
+      var params = new URLSearchParams(window.location.search);
+      var jobId = params.get('job');
+      var severityParam = params.get('severity');
+      var statusParam = params.get('status');
+      if (jobId) {
+        currentJobFilter = jobId;
+        switchView('detections');
+      }
+      if (severityParam || statusParam || jobId) {
+        // 탐지 객체 뷰로 전환하고 필터 값 세팅
+        if (!jobId) switchView('detections');
+        if (severityParam) {
+          var sevSel = document.getElementById('filter-severity');
+          if (sevSel) sevSel.value = severityParam;
+        }
+        if (statusParam) {
+          var statSel = document.getElementById('filter-status');
+          if (statSel) statSel.value = statusParam;
+        }
+      }
+      applyFilter();
+
+      // 상단 KPI 카드 클릭 → 탐지 뷰 + 해당 필터 적용
+      document.querySelectorAll('.summary-card[data-kpi]').forEach(function (card) {
+        card.addEventListener('click', function () {
+          var spec = card.dataset.kpi;
+          var sev = document.getElementById('filter-severity');
+          var stat = document.getElementById('filter-status');
+          var modelSel = document.getElementById('filter-model');
+          // 우선 기존 필터 초기화 (KPI 는 단일 축 필터)
+          if (sev) sev.value = '';
+          if (stat) stat.value = '';
+          if (modelSel) modelSel.value = '';
+          if (spec && spec !== 'all') {
+            var parts = spec.split(':');
+            var key = parts[0], val = parts[1];
+            if (key === 'severity' && sev) sev.value = val;
+            if (key === 'status' && stat) stat.value = val;
+            if (key === 'model' && modelSel) modelSel.value = val;
+          }
+          switchView('detections');
+          currentPage = 1;
+          applyFilter();
+          card.blur();
+        });
+      });
+    }).catch(function (err) {
+      console.error('데이터 로드 실패:', err);
+      renderEmptyState('데이터를 불러올 수 없습니다.');
+    });
+  }
+
+  // ── 탭 전환 ──
+  window.switchView = function (view) {
+    document.getElementById('tab-jobs').classList.toggle('active', view === 'jobs');
+    document.getElementById('tab-detections').classList.toggle('active', view === 'detections');
+    document.getElementById('view-jobs').classList.toggle('active', view === 'jobs');
+    document.getElementById('view-detections').classList.toggle('active', view === 'detections');
+
+    if (view === 'detections') {
+      var banner = document.getElementById('job-filter-banner');
+      if (currentJobFilter) {
+        document.getElementById('banner-job-id').textContent = currentJobFilter;
+        banner.hidden = false;
+      } else {
+        banner.hidden = true;
+      }
+    }
+  };
+
+  window.clearJobFilter = function () {
+    currentJobFilter = null;
+    document.getElementById('job-filter-banner').hidden = true;
+    // URL 쿼리 제거
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+    applyFilter();
+  };
+
+  // ── 분석 작업 테이블 렌더링 ──
+  function renderJobsTable() {
+    var tbody = document.getElementById('jobs-tbody');
+    tbody.innerHTML = '';
+
+    allJobs.forEach(function (job) {
+      var modelBadge = job.source_type === 'orthophoto'
+        ? '<span class="badge badge-primary">정사영상</span>'
+        : '<span class="badge">카메라</span>';
+
+      var captured = job.captured_at.replace(/-/g, '.');
+      var analyzed = job.analyzed_at.substring(0, 10).replace(/-/g, '.');
+      var statusClass = job.status === '완료' ? 'badge-done' : job.status === '처리중' ? 'badge-processing' : 'badge-unprocessed';
+
+      // 클래스 요약 칩
+      var classChips = Object.entries(job.class_summary).sort(function (a, b) { return b[1] - a[1]; })
+        .map(function (e) {
+          return '<span class="job-class-chip">' + (CLASS_KO_SHORT[e[0]] || e[0]) + ' ' + e[1] + '</span>';
+        }).join('');
+
+      var highMark = job.high_count > 0
+        ? '<div class="job-high-mark">고위험 ' + job.high_count + '건</div>'
+        : '';
+
+      var tr = document.createElement('tr');
+      tr.className = 'job-row-clickable';
+      tr.innerHTML =
+        '<td class="job-id-cell">' + job.job_id + '</td>' +
+        '<td class="job-source-cell" title="' + job.source_name + '">' + (job.source_label || job.source_name) +
+          '<div class="job-source-sub">' + job.source_name + '</div></td>' +
+        '<td>' + modelBadge + '<div class="job-model-sub">' + job.model + ' ' + job.model_version + '</div></td>' +
+        '<td class="job-date-cell">' + captured + '</td>' +
+        '<td class="job-date-cell">' + analyzed + '</td>' +
+        '<td class="job-count-cell"><div class="job-count-big">' + job.detection_count + '</div>' + highMark + '</td>' +
+        '<td><div class="job-class-summary">' + classChips + '</div></td>' +
+        '<td class="col-status-cell"><span class="badge ' + statusClass + '">' + job.status + '</span></td>';
+
+      tr.addEventListener('click', function () {
+        currentJobFilter = job.job_id;
+        switchView('detections');
+        applyFilter();
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, '', window.location.pathname + '?job=' + job.job_id);
+        }
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('jobs-table-info').textContent = '총 ' + allJobs.length + '건';
+  }
+
+  function updateSummaryLive() {
+    var total = allDetections.length;
+    var high = 0, unproc = 0, ortho = 0, cam = 0;
+    allDetections.forEach(function (d) {
+      if (d.severity === 'high') high++;
+      if (d.status === '미처리') unproc++;
+      if (d.model_type === 'orthophoto') ortho++;
+      else cam++;
+    });
+    document.getElementById('sum-total').textContent = total;
+    document.getElementById('sum-high').textContent = high;
+    document.getElementById('sum-unprocessed').textContent = unproc;
+    document.getElementById('sum-ortho').textContent = ortho;
+    document.getElementById('sum-cam').textContent = cam;
+  }
+
+  // ── 처리 상태 오버라이드 관리 ──
+  function getOverrides() {
+    try { return JSON.parse(localStorage.getItem(OVERRIDE_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+
+  function setOverride(detId, status) {
+    var o = getOverrides();
+    o[detId] = status;
+    try { localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o)); } catch (e) {}
+  }
+
+  function getLogs() {
+    try { return JSON.parse(localStorage.getItem(LOG_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+
+  function appendLog(detId, action, note) {
+    var logs = getLogs();
+    if (!logs[detId]) logs[detId] = [];
+    logs[detId].push({
+      at: new Date().toISOString(),
+      action: action,
+      note: note || ''
+    });
+    try { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); } catch (e) {}
+  }
+
+  // ── 필터 적용 ──
+  window.applyFilter = function () {
+    var dateFrom = document.getElementById('filter-date-from').value;
+    var dateTo = document.getElementById('filter-date-to').value;
+    var model = document.getElementById('filter-model').value;
+    var severity = document.getElementById('filter-severity').value;
+    var status = document.getElementById('filter-status').value;
+    var keyword = document.getElementById('filter-keyword').value.trim().toLowerCase();
+
+    // 작업 필터 적용: 해당 job_id의 detection_ids 목록만 통과
+    var jobDetIds = null;
+    if (currentJobFilter) {
+      var job = allJobs.find(function (j) { return j.job_id === currentJobFilter; });
+      if (job) jobDetIds = new Set(job.detection_ids);
+      document.getElementById('banner-job-id').textContent = currentJobFilter;
+      document.getElementById('job-filter-banner').hidden = false;
+    }
+
+    filtered = allDetections.filter(function (d) {
+      if (jobDetIds && !jobDetIds.has(d.id)) return false;
+      var date = d.detected_at.substring(0, 10);
+      if (dateFrom && date < dateFrom) return false;
+      if (dateTo && date > dateTo) return false;
+      if (model && d.model_type !== model) return false;
+      if (severity && d.severity !== severity) return false;
+      if (status && d.status !== status) return false;
+      if (keyword) {
+        var hay = (d.class_ko + ' ' + d.address + ' ' + d.class_en).toLowerCase();
+        if (hay.indexOf(keyword) === -1) return false;
+      }
+      return true;
+    });
+
+    currentPage = 1;
+    renderTable();
+  };
+
+  window.resetFilter = function () {
+    document.getElementById('filter-date-from').value = '2026-03-01';
+    document.getElementById('filter-date-to').value = '2026-04-15';
+    document.getElementById('filter-model').value = '';
+    document.getElementById('filter-severity').value = '';
+    document.getElementById('filter-status').value = '';
+    document.getElementById('filter-keyword').value = '';
+    applyFilter();
+  };
+
+  // ── 테이블 렌더링 ──
+  function renderTable() {
+    var tbody = document.getElementById('history-tbody');
+    var emptyWrap = document.getElementById('empty-state-wrap');
+    tbody.innerHTML = '';
+    emptyWrap.innerHTML = '';
+
+    if (filtered.length === 0) {
+      renderEmptyState('조건에 해당하는 탐지 이력이 없습니다.');
+      document.getElementById('table-info').textContent = '총 0건 · 페이지 1/1';
+      document.getElementById('pagination').innerHTML = '';
+      return;
+    }
+
+    var totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    var start = (currentPage - 1) * pageSize;
+    var pageItems = filtered.slice(start, start + pageSize);
+
+    pageItems.forEach(function (d, i) {
+      var tr = document.createElement('tr');
+      var modelLabel = d.model_type === 'orthophoto' ? '정사영상' : '카메라';
+      var modelBadge = d.model_type === 'orthophoto' ? 'badge-orthophoto' : 'badge-camera';
+
+      var imgIdx = (parseInt(d.id.replace(/\D/g, ''), 10) || 0) % 6 + 1;
+      var thumbSrc = (d.model_type === 'camera' ? 'assets/images/camera_0' : 'assets/images/drone_0') + imgIdx + '.png';
+
+      tr.innerHTML =
+        '<td class="col-id">' + d.id + '</td>' +
+        '<td><img class="row-thumb" src="' + thumbSrc + '" width="44" height="32"></td>' +
+        '<td><span class="badge ' + modelBadge + '">' + modelLabel + '</span></td>' +
+        '<td><strong>' + d.class_ko + '</strong></td>' +
+        '<td><span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + SEVERITY_KO[d.severity] + '</span></td>' +
+        '<td class="det-addr-cell">' + d.address + '</td>' +
+        '<td class="det-date-cell">' + d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.') + '</td>' +
+        '<td><span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span></td>' +
+        '<td class="col-actions"><button class="row-action-btn" data-id="' + d.id + '">처리</button></td>';
+
+      tr.querySelector('.row-action-btn').addEventListener('click', function () {
+        openModal(d);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('table-info').textContent =
+      '총 ' + filtered.length + '건 · 페이지 ' + currentPage + '/' + totalPages;
+    renderPagination(totalPages);
+  }
+
+  function renderEmptyState(message) {
+    var wrap = document.getElementById('empty-state-wrap');
+    wrap.innerHTML =
+      '<div class="empty-state">' +
+        '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+        '<p>' + message + '</p>' +
+      '</div>';
+  }
+
+  // ── 페이지네이션 ──
+  function renderPagination(totalPages) {
+    var container = document.getElementById('pagination');
+    container.innerHTML = '';
+
+    function makeBtn(label, page, opts) {
+      opts = opts || {};
+      var btn = document.createElement('button');
+      btn.className = 'page-btn';
+      if (opts.active) btn.classList.add('active');
+      btn.textContent = label;
+      if (opts.disabled) {
+        btn.style.opacity = '0.4';
+        btn.style.cursor = 'not-allowed';
+      } else {
+        btn.addEventListener('click', function () {
+          currentPage = page;
+          renderTable();
+          window.scrollTo({ top: 200, behavior: 'smooth' });
+        });
+      }
+      container.appendChild(btn);
+    }
+
+    makeBtn('‹', currentPage - 1, { disabled: currentPage === 1 });
+
+    var maxButtons = 7;
+    var startP = Math.max(1, currentPage - 3);
+    var endP = Math.min(totalPages, startP + maxButtons - 1);
+    if (endP - startP < maxButtons - 1) startP = Math.max(1, endP - maxButtons + 1);
+
+    for (var p = startP; p <= endP; p++) {
+      makeBtn(String(p), p, { active: p === currentPage });
+    }
+
+    makeBtn('›', currentPage + 1, { disabled: currentPage === totalPages });
+  }
+
+  // ── 모달 ──
+  function openModal(d) {
+    currentDetection = d;
+    pendingStatus = d.status;
+    document.getElementById('m-id').textContent = d.id;
+    document.getElementById('m-class').textContent = d.class_ko + ' (' + d.class_en + ')';
+    document.getElementById('m-severity').innerHTML =
+      '<span class="badge ' + SEVERITY_BADGE[d.severity] + '">' + SEVERITY_KO[d.severity] + '</span>';
+    document.getElementById('m-addr').textContent = d.address;
+    document.getElementById('m-date').textContent = d.detected_at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+    document.getElementById('m-status').innerHTML =
+      '<span class="badge ' + STATUS_BADGE[d.status] + '">' + d.status + '</span>';
+    document.getElementById('m-file').textContent = d.image_file;
+
+    // 큰 썸네일
+    var imgIdx = (parseInt(d.id.replace(/\D/g, ''), 10) || 0) % 6 + 1;
+    document.getElementById('modal-thumb').src =
+      (d.model_type === 'camera' ? 'assets/images/camera_0' : 'assets/images/drone_0') + imgIdx + '.png';
+
+    // 처리 상태 단계 버튼 반영
+    document.querySelectorAll('.m-status-step').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.status === d.status);
+    });
+
+    // 메모 초기화
+    document.getElementById('m-note').value = '';
+
+    // 이력 로그 표시
+    var logEl = document.getElementById('m-history-log');
+    var logs = getLogs()[d.id] || [];
+    if (logs.length === 0) {
+      logEl.innerHTML = '';
+    } else {
+      logEl.innerHTML = logs.slice().reverse().map(function (l) {
+        var t = l.at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+        return '<div class="m-history-log-item"><time>' + t + '</time><span>' + l.action + (l.note ? ' · ' + l.note : '') + '</span></div>';
+      }).join('');
+    }
+
+    document.getElementById('detail-modal').classList.add('show');
+  }
+
+  // 처리 단계 버튼 클릭
+  document.querySelectorAll('.m-status-step').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      pendingStatus = btn.dataset.status;
+      document.querySelectorAll('.m-status-step').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    });
+  });
+
+  // 저장 핸들러
+  window.saveProcessing = function () {
+    if (!currentDetection) return;
+    var newStatus = pendingStatus;
+    var note = document.getElementById('m-note').value.trim();
+
+    if (newStatus === currentDetection.status && !note) {
+      NotifyUI.info('변경 사항이 없습니다.');
+      return;
+    }
+
+    var oldStatus = currentDetection.status;
+    currentDetection.status = newStatus;
+    setOverride(currentDetection.id, newStatus);
+
+    if (oldStatus !== newStatus) {
+      appendLog(currentDetection.id, oldStatus + ' → ' + newStatus, note);
+    } else if (note) {
+      appendLog(currentDetection.id, '메모 추가', note);
+    }
+
+    // UI 업데이트
+    updateSummaryLive();
+    renderTable();
+
+    // 모달 내 상태 배지 & 이력 로그 갱신
+    document.getElementById('m-status').innerHTML =
+      '<span class="badge ' + STATUS_BADGE[newStatus] + '">' + newStatus + '</span>';
+
+    var logs = getLogs()[currentDetection.id] || [];
+    document.getElementById('m-history-log').innerHTML = logs.slice().reverse().map(function (l) {
+      var t = l.at.replace('T', ' ').substring(0, 16).replace(/-/g, '.');
+      return '<div class="m-history-log-item"><time>' + t + '</time><span>' + l.action + (l.note ? ' · ' + l.note : '') + '</span></div>';
+    }).join('');
+
+    // 메모 입력 초기화
+    document.getElementById('m-note').value = '';
+
+    // 완료 피드백
+    var foot = document.querySelector('.modal-foot');
+    var saved = document.createElement('span');
+    saved.textContent = '저장되었습니다';
+    saved.style.cssText = 'color:var(--color-success);font-size:12px;font-weight:600;margin-right:auto;align-self:center;';
+    foot.insertBefore(saved, foot.firstChild);
+    setTimeout(function () { saved.remove(); }, 2000);
+  };
+
+  window.closeModal = function () {
+    document.getElementById('detail-modal').classList.remove('show');
+  };
+
+  document.getElementById('detail-modal').addEventListener('click', function (e) {
+    if (e.target === this) closeModal();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  window.goToMap = function () {
+    if (!currentDetection) return;
+    window.location.href = 'map-home.html?id=' + encodeURIComponent(currentDetection.id);
+  };
+
+  // ── CSV 내보내기 ──
+  window.exportCSV = function () {
+    if (filtered.length === 0) {
+      NotifyUI.warn('내보낼 데이터가 없습니다.');
+      return;
+    }
+    var headers = ['ID', '모델', '클래스', '심각도', '주소', '탐지일시', '상태', '원본파일'];
+    var rows = filtered.map(function (d) {
+      return [
+        d.id,
+        d.model_type === 'orthophoto' ? '정사영상' : '카메라',
+        d.class_ko,
+        SEVERITY_KO[d.severity],
+        d.address,
+        d.detected_at,
+        d.status,
+        d.image_file
+      ].map(function (v) {
+        var s = String(v).replace(/"/g, '""');
+        return /[",\n]/.test(s) ? '"' + s + '"' : s;
+      }).join(',');
+    });
+    var csv = '\uFEFF' + headers.join(',') + '\n' + rows.join('\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = '남원시_탐지이력_' + new Date().toISOString().substring(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // ── 초기화 ──
+  loadData();
+})();
+</script>
+</body>
+</html>

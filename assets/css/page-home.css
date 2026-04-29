@@ -1,0 +1,184 @@
+/* =========================================================
+   홈 페이지 — 외부 home_nw.css 위에 우리 헤더·푸터와 호환되게 보정
+   ========================================================= */
+
+/* 외부 .section-container 가 min-width:1560px 으로 가로 스크롤을 만들 수 있어 우리 폭에 맞춤 */
+.home-page-body .section-container { min-width: 0; }
+
+/* 외부 .visualty1.visualty1_namwon 이 height: 100vh 라 우리 헤더(70px) 와 합쳐 페이지가 길어짐 */
+.home-page-body .visualty1.visualty1_namwon { height: calc(100vh - var(--header-height)); }
+
+/* 외부 .container max-width 1560 → 우리 페이지에 그대로 두되 좌우 패딩 보정 */
+.home-page-body .container { max-width: 1440px; }
+
+/* 외부 home_nw.css 의 .deco-* 등 상대경로(../img/...) 가 우리 도메인 기준으로 잡혀 깨지는 경우 가림 */
+.home-page-body .deco-1 img,
+.home-page-body .deco-2 img,
+.home-page-body .deco-3 img { max-width: 100%; }
+
+/* .page-body 의 내부 스크롤(height:100vh + overflow-y:auto)을 그대로 사용 — 별도 override 없음 */
+
+/* =========================================================
+   알림마당 섹션 (풋터 위, 흰 배경)
+   ========================================================= */
+.home-board {
+  background: #fff;
+  padding: 90px 0 100px;
+}
+
+.home-board .container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.home-board-title {
+  font-size: 38px;
+  font-weight: 800;
+  color: #0F2540;
+  letter-spacing: -1px;
+  margin: 0 0 32px;
+}
+
+/* 탭 (pill 형) */
+.home-board-tabs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.home-board-tab {
+  padding: 13px 30px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.home-board-tab:hover { border-color: #0F2540; color: #0F2540; }
+
+.home-board-tab.is-active {
+  background: #0F2540;
+  border-color: #0F2540;
+  color: #fff;
+}
+
+/* 게시물 리스트 */
+.home-board-list {
+  border-top: 1px solid #DEE2E6;
+}
+
+.home-board-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 22px 8px;
+  border-bottom: 1px solid #DEE2E6;
+}
+
+.home-board-cat {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: -0.2px;
+}
+
+/* 공지사항 — page-notice.css 의 .notice-cat 색감 일치 */
+.home-board-cat--urgent {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: #FBEEF0;
+}
+.home-board-cat--work,
+.home-board-cat--release,
+.home-board-cat--update {
+  border-color: #B6C3D6;
+  color: #1F4E79;
+  background: #EDF2FA;
+}
+.home-board-cat--maintain {
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+/* FAQ — page-faq.css 의 .faq-q-cat 톤 일치 (outline 만) */
+.home-board-cat--faq {
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.home-board-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  color: var(--color-text);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-board-row:hover .home-board-text { color: var(--color-primary); }
+
+.home-board-meta {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 18px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.home-board-meta-sep::before {
+  content: '|';
+  margin-right: 18px;
+  color: #DEE2E6;
+}
+
+/* 더보기 버튼 */
+.home-board-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.home-board-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 36px;
+  border: 1.5px solid #ADB5BD;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: all .15s;
+}
+
+.home-board-more-btn:hover {
+  border-color: #0F2540;
+  color: #0F2540;
+}
+
+@media (max-width: 768px) {
+  .home-board { padding: 60px 0 70px; }
+  .home-board-title { font-size: 28px; }
+  .home-board-row { flex-wrap: wrap; gap: 12px; padding: 18px 4px; }
+  .home-board-text { white-space: normal; flex-basis: 100%; order: 2; }
+  .home-board-cat { order: 1; }
+  .home-board-meta { order: 3; flex-basis: 100%; font-size: 12px; gap: 10px; }
+  .home-board-meta-sep::before { margin-right: 10px; }
+}

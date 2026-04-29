@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사용자 관리 - Land-XI</title>
+  <link rel="icon" href="assets/images/favicon_landxi.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/page-admin-users.css">
+</head>
+<body>
+
+<div id="header-include"></div>
+
+<div class="page-body">
+  <div class="admin-container">
+
+    <div class="page-header">
+      <div class="page-title-wrap">
+        <h1>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          <span id="page-title-text">사용자 관리</span>
+        </h1>
+        <p id="page-title-sub">등록된 사용자를 조회하고 권한·상태를 관리하거나 계정을 탈퇴·삭제할 수 있습니다</p>
+      </div>
+    </div>
+
+    <!-- 목록 뷰 -->
+    <section class="admin-list-view" id="list-view">
+      <div class="board-toolbar">
+        <div class="board-field">
+          <label for="us-email">아이디(이메일)</label>
+          <input type="text" class="board-search-input" id="us-email" placeholder="아이디(이메일)">
+        </div>
+        <div class="board-field">
+          <label for="us-name">이름</label>
+          <input type="text" class="board-search-input" id="us-name" placeholder="이름">
+        </div>
+        <div class="board-field">
+          <label for="us-phone">전화번호</label>
+          <input type="text" class="board-search-input" id="us-phone" placeholder="전화번호">
+        </div>
+        <div class="board-field">
+          <label for="us-dept">부서</label>
+          <input type="text" class="board-search-input" id="us-dept" placeholder="부서명">
+        </div>
+        <div class="board-field">
+          <label for="us-status">계정 상태</label>
+          <select class="board-search-select" id="us-status">
+            <option value="all">전체</option>
+            <option value="active">정상</option>
+            <option value="withdrawn">탈퇴</option>
+          </select>
+        </div>
+        <div class="board-field">
+          <label for="us-action">처리 상태</label>
+          <select class="board-search-select" id="us-action">
+            <option value="all">전체</option>
+            <option value="approved">승인</option>
+            <option value="rejected">거부</option>
+            <option value="pending">대기</option>
+          </select>
+        </div>
+        <div class="board-field board-field--period">
+          <label>가입일</label>
+          <div class="board-period-row">
+            <div class="board-period-dates">
+              <input type="date" class="board-date-input" id="us-from">
+              <span class="board-period-sep">~</span>
+              <input type="date" class="board-date-input" id="us-to">
+            </div>
+            <div class="board-period-quicks">
+              <button type="button" class="board-quick-btn active" data-months="0">전체</button>
+              <button type="button" class="board-quick-btn" data-months="1">1개월</button>
+              <button type="button" class="board-quick-btn" data-months="3">3개월</button>
+              <button type="button" class="board-quick-btn" data-months="6">6개월</button>
+              <button type="button" class="board-quick-btn" data-months="12">12개월</button>
+            </div>
+          </div>
+        </div>
+        <div class="board-toolbar-actions board-toolbar-actions--end">
+          <button type="button" class="btn btn-secondary" id="us-reset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            초기화
+          </button>
+          <button type="button" class="btn btn-accent" id="us-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            검색
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">사용자 목록</div>
+        </div>
+        <table class="data-table users-table is-clickable">
+          <thead>
+            <tr>
+              <th>아이디(이메일)</th>
+              <th class="col-name">이름</th>
+              <th class="col-phone">전화번호</th>
+              <th class="col-dept">부서</th>
+              <th class="col-rank">직위</th>
+              <th class="col-status">계정상태</th>
+              <th class="col-date">가입일시</th>
+              <th class="col-status">처리상태</th>
+              <th class="col-author">처리자</th>
+              <th class="col-date">처리일시</th>
+            </tr>
+          </thead>
+          <tbody id="us-tbody"></tbody>
+        </table>
+        <div id="us-empty-wrap"></div>
+      </div>
+
+      <div class="board-paginator">
+        <button type="button" class="board-page-btn" id="us-first">처음</button>
+        <button type="button" class="board-page-btn" id="us-prev">이전</button>
+        <div class="board-page-pages" id="us-pages"></div>
+        <button type="button" class="board-page-btn" id="us-next">다음</button>
+        <button type="button" class="board-page-btn" id="us-last">마지막</button>
+        <div class="board-page-size-wrap">
+          <select class="board-page-size" id="us-page-size">
+            <option value="10">10</option><option value="20">20</option><option value="50">50</option>
+          </select>
+          <span>페이지 크기</span>
+        </div>
+        <div class="board-count" id="us-count">총 <strong>0</strong>건 중 0~0행</div>
+      </div>
+    </section>
+
+    <!-- 상세 뷰 -->
+    <section class="admin-view-view hidden" id="view-view">
+      <div class="admin-card-grid cols-3">
+        <!-- 소속 정보 (읽기 전용) -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              소속 정보
+            </div>
+          </div>
+          <div class="card-body card-body--sm">
+            <div class="info-row"><span class="info-label">이름</span>
+              <span class="info-value" id="d-name">-</span></div>
+            <div class="info-row"><span class="info-label">전화번호</span>
+              <span class="info-value" id="d-phone">-</span></div>
+            <div class="info-row"><span class="info-label">부서</span>
+              <span class="info-value" id="d-dept">-</span></div>
+            <div class="info-row"><span class="info-label">직위</span>
+              <span class="info-value" id="d-rank">-</span></div>
+          </div>
+        </div>
+
+        <!-- 계정 정보 (읽기 전용 + 비밀번호 초기화) -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              계정 정보
+            </div>
+          </div>
+          <div class="card-body card-body--sm">
+            <div class="info-row"><span class="info-label">아이디(이메일)</span>
+              <span class="info-value" id="d-email">-</span></div>
+            <div class="info-row"><span class="info-label">계정 상태</span>
+              <span class="info-value info-value--actions">
+                <span class="admin-pill" id="d-status">-</span>
+                <button type="button" class="btn btn-danger btn-sm" id="d-inline-withdraw" hidden>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
+                  탈퇴
+                </button>
+              </span>
+            </div>
+            <div class="info-row"><span class="info-label">가입일시</span>
+              <span class="info-value" id="d-joined">-</span></div>
+            <div class="info-row"><span class="info-label">탈퇴일시</span>
+              <span class="info-value" id="d-withdrawn-at">-</span></div>
+            <div class="info-row"><span class="info-label">비밀번호 실패 횟수</span>
+              <span class="info-value info-value--actions">
+                <span class="info-value-main"><strong id="d-pwd-fails">0</strong> 회</span>
+                <button type="button" class="btn btn-secondary btn-sm" id="d-reset-fails">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+                  비밀번호 초기화
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 권한 정보 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              권한 정보
+            </div>
+          </div>
+          <div class="card-body card-body--sm">
+            <div class="info-row"><span class="info-label">처리 상태</span>
+              <span class="info-value info-value--actions">
+                <span class="admin-pill" id="d-action-status">-</span>
+                <button type="button" class="btn btn-primary btn-sm" id="d-inline-approve" hidden>승인</button>
+                <button type="button" class="btn btn-danger btn-sm" id="d-inline-reject" hidden>거부</button>
+              </span>
+            </div>
+            <div class="info-row info-row--split">
+              <div class="info-sub">
+                <span class="info-label">처리자</span>
+                <span class="info-value" id="d-action-by">-</span>
+              </div>
+              <div class="info-sub">
+                <span class="info-label">처리일시</span>
+                <span class="info-value" id="d-action-at">-</span>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="info-label">권한</span>
+              <div class="role-list role-list--scroll" id="d-roles">
+                <label class="role-item"><input type="checkbox" class="form-check" value="admin"><span>남원시청 관리자</span></label>
+                <label class="role-item"><input type="checkbox" class="form-check" value="forage"><span>사료작물 분석</span></label>
+                <label class="role-item"><input type="checkbox" class="form-check" value="farmland"><span>농지 활용 분석</span></label>
+                <label class="role-item"><input type="checkbox" class="form-check" value="crop"><span>영농 정보 분석</span></label>
+                <label class="role-item"><input type="checkbox" class="form-check" value="general"><span>일반사용자</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 이력 탭 -->
+      <div class="card">
+        <div class="history-tabs" role="tablist">
+          <button type="button" class="history-tab active" data-tab="login" role="tab">로그인 이력</button>
+          <button type="button" class="history-tab" data-tab="pwd" role="tab">비밀번호 변경 이력</button>
+        </div>
+        <div class="history-panel" id="history-login">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>로그인 ID</th>
+                <th class="col-ip">접속 IP</th>
+                <th class="col-status">성공 여부</th>
+                <th>실패 사유</th>
+                <th class="col-date">접속 일시</th>
+                <th class="col-date">로그아웃 일시</th>
+              </tr>
+            </thead>
+            <tbody id="login-tbody"></tbody>
+          </table>
+          <div class="board-paginator board-paginator--embedded">
+            <button type="button" class="board-page-btn" id="hl-first">처음</button>
+            <button type="button" class="board-page-btn" id="hl-prev">이전</button>
+            <div class="board-page-pages" id="hl-pages"></div>
+            <button type="button" class="board-page-btn" id="hl-next">다음</button>
+            <button type="button" class="board-page-btn" id="hl-last">마지막</button>
+            <div class="board-page-size-wrap">
+              <select class="board-page-size" id="hl-page-size">
+                <option value="10">10</option><option value="20">20</option><option value="50">50</option>
+              </select>
+              <span>페이지 크기</span>
+            </div>
+            <div class="board-count" id="hl-count">총 <strong>0</strong>건 중 0~0행</div>
+          </div>
+        </div>
+        <div class="history-panel hidden" id="history-pwd">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>로그인 ID</th>
+                <th class="col-date">변경 일시</th>
+                <th class="col-author">변경자</th>
+                <th>변경 사유</th>
+              </tr>
+            </thead>
+            <tbody id="pwd-tbody"></tbody>
+          </table>
+          <div class="board-paginator board-paginator--embedded">
+            <button type="button" class="board-page-btn" id="hp-first">처음</button>
+            <button type="button" class="board-page-btn" id="hp-prev">이전</button>
+            <div class="board-page-pages" id="hp-pages"></div>
+            <button type="button" class="board-page-btn" id="hp-next">다음</button>
+            <button type="button" class="board-page-btn" id="hp-last">마지막</button>
+            <div class="board-page-size-wrap">
+              <select class="board-page-size" id="hp-page-size">
+                <option value="10">10</option><option value="20">20</option><option value="50">50</option>
+              </select>
+              <span>페이지 크기</span>
+            </div>
+            <div class="board-count" id="hp-count">총 <strong>0</strong>건 중 0~0행</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 푸터 액션: 좌측 목록 / 우측 삭제·저장 (저장 좌측에 삭제) -->
+      <div class="form-actions form-actions--split">
+        <button type="button" class="btn btn-secondary" id="d-list">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          목록
+        </button>
+        <div class="form-actions-group">
+          <button type="button" class="btn btn-danger" id="d-delete-footer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6M5 6l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14"/></svg>
+            삭제
+          </button>
+          <button type="button" class="btn btn-primary" id="d-save">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            저장
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="footer-include"></div>
+</div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/policy-modal.js"></script>
+<script src="assets/js/confirm-modal.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // v4 — 구 버전이 빈 배열 등 손상된 상태를 남겼을 수 있어 키 갱신.
+  var STORAGE_KEY = 'namwon-admin-users-v4';
+  var ROLES = ['admin', 'analyze', 'report', 'dataset', 'map', 'unlimited'];
+
+  var DEFAULT_SEED = [
+    { id: 1,  email: 'admin@namwon.go.kr',    name: '김관리', phone: '063-620-6000', dept: '홍보전산과',   rank: '팀장',   status: 'active',    expires: '',           pwdFails: 0, joined: '2025-04-10T11:18:00', lastLogin: '2026-04-23T08:12:00', action: 'approved', actionBy: '시스템',        actionAt: '2025-04-10T11:18:30', roles: ['admin','unlimited'] },
+    { id: 2,  email: 'leejuwon@namwon.go.kr', name: '이주원', phone: '063-620-6134', dept: '홍보전산과',   rank: '주무관', status: 'active',    expires: '2028-05-15', pwdFails: 0, joined: '2025-04-10T11:20:00', lastLogin: '2026-04-22T17:05:23', action: 'approved', actionBy: '김관리',        actionAt: '2025-04-10T14:22:10', roles: ['admin','analyze','report','dataset','map'] },
+    { id: 3,  email: 'ngii@kakao.com',         name: '이상준', phone: '010-7568-5253', dept: '홍보전산과',     rank: '대리',   status: 'active',    expires: '2027-03-17', pwdFails: 0, joined: '2026-03-17T08:39:00', lastLogin: '2026-04-22T10:12:05', action: 'approved', actionBy: '관리자',        actionAt: '2026-03-17T08:41:22', roles: ['analyze','report'] },
+    { id: 4,  email: 'jyong1@korea.kr',        name: '정재용', phone: '010-5002-6724', dept: '홍보전산과',   rank: '주무관', status: 'active',    expires: '2028-03-16', pwdFails: 0, joined: '2026-03-16T09:23:00', lastLogin: '2026-04-21T11:04:12', action: 'approved', actionBy: '남원시 홍보전산과', actionAt: '2026-03-16T09:24:45', roles: ['analyze'] },
+    { id: 5,  email: 'dbwjdakrso4235@gmail.com', name: '고유정', phone: '010-7227-4235', dept: '홍보전산과', rank: '대리',   status: 'active',    expires: '2028-01-13', pwdFails: 0, joined: '2026-01-13T15:07:00', lastLogin: '2026-04-20T09:48:10', action: 'approved', actionBy: '관리자',        actionAt: '2026-01-13T15:08:30', roles: ['report'] },
+    { id: 6,  email: 'test8@korea.kr',         name: '테스터', phone: '010-0000-0000', dept: '홍보전산과',   rank: '주무관', status: 'active',    expires: '2027-12-30', pwdFails: 0, joined: '2025-12-30T10:51:00', lastLogin: '2026-03-11T09:12:30', action: 'approved', actionBy: '강상우',        actionAt: '2025-12-30T10:53:14', roles: ['analyze'] },
+    { id: 7,  email: 'hanlee@namwon.go.kr',    name: '이한길', phone: '063-620-7321', dept: '도로관리과',   rank: '과장',   status: 'active',    expires: '2029-03-15', pwdFails: 0, joined: '2025-02-11T09:40:00', lastLogin: '2026-04-22T09:48:41', action: 'approved', actionBy: '김관리',        actionAt: '2025-02-11T11:02:00', roles: ['analyze','report','dataset'] },
+    { id: 8,  email: 'parkjs@namwon.go.kr',    name: '박정수', phone: '063-620-7335', dept: '도로관리과',   rank: '주무관', status: 'active',    expires: '2029-02-28', pwdFails: 0, joined: '2025-03-04T14:10:00', lastLogin: '2026-04-21T15:32:10', action: 'approved', actionBy: '이한길',        actionAt: '2025-03-04T16:18:40', roles: ['analyze','report'] },
+    { id: 9,  email: 'ohgilsu@namwon.go.kr',   name: '오길수', phone: '063-620-7340', dept: '도로관리과',   rank: '주임',   status: 'active',    expires: '2028-12-31', pwdFails: 1, joined: '2025-08-22T10:03:15', lastLogin: '2026-04-20T11:12:55', action: 'approved', actionBy: '이한길',        actionAt: '2025-08-22T11:40:00', roles: ['analyze'] },
+    { id: 10, email: 'jsk@namwon.go.kr',       name: '조수경', phone: '063-620-8520', dept: '농업기술센터', rank: '주무관', status: 'active',    expires: '2027-10-05', pwdFails: 1, joined: '2025-09-18T20:23:19', lastLogin: '2026-04-19T16:58:21', action: 'approved', actionBy: '노명석',        actionAt: '2025-09-19T09:02:00', roles: ['analyze','map'] },
+    { id: 11, email: 'noh.ms@namwon.go.kr',    name: '노명석', phone: '063-620-8534', dept: '농업기술센터', rank: '팀장',   status: 'active',    expires: '',           pwdFails: 0, joined: '2024-11-03T09:12:00', lastLogin: '2026-04-22T10:40:19', action: 'approved', actionBy: '김관리',        actionAt: '2024-11-03T10:15:00', roles: ['analyze','report','dataset'] },
+    { id: 12, email: 'chnam@namwon.go.kr',     name: '차남호', phone: '063-620-9411', dept: '환경관리과',   rank: '과장',   status: 'active',    expires: '',           pwdFails: 0, joined: '2024-12-05T09:00:00', lastLogin: '2026-04-22T08:55:41', action: 'approved', actionBy: '김관리',        actionAt: '2024-12-05T10:30:00', roles: ['analyze','report','map'] },
+    { id: 13, email: 'kimsy@namwon.go.kr',     name: '김서영', phone: '063-620-9425', dept: '환경관리과',   rank: '주무관', status: 'active',    expires: '2028-01-20', pwdFails: 0, joined: '2025-01-20T09:45:00', lastLogin: '2026-04-17T14:29:08', action: 'approved', actionBy: '차남호',        actionAt: '2025-01-20T11:00:00', roles: ['analyze'] },
+    { id: 14, email: 'hong.js@namwon.go.kr',   name: '홍지수', phone: '063-620-9302', dept: '기획감사실',   rank: '실장',   status: 'active',    expires: '',           pwdFails: 0, joined: '2024-10-14T10:10:00', lastLogin: '2026-04-22T11:18:45', action: 'approved', actionBy: '김관리',        actionAt: '2024-10-14T11:22:00', roles: ['admin','report'] },
+    { id: 15, email: 'yoo.jh@namwon.go.kr',    name: '유정호', phone: '063-620-9318', dept: '기획감사실',   rank: '주임',   status: 'active',    expires: '2028-08-10', pwdFails: 0, joined: '2025-08-12T15:00:00', lastLogin: '2026-04-21T10:02:31', action: 'approved', actionBy: '홍지수',        actionAt: '2025-08-12T16:30:00', roles: ['report'] },
+    { id: 16, email: 'hyun.mk@namwon.go.kr',   name: '현미경', phone: '063-620-6145', dept: '홍보전산과',   rank: '주무관', status: 'active',    expires: '2029-02-28', pwdFails: 0, joined: '2025-11-03T11:25:00', lastLogin: '2026-04-22T13:50:14', action: 'approved', actionBy: '이주원',        actionAt: '2025-11-03T13:00:00', roles: ['analyze','report'] },
+    { id: 17, email: 'kang.hw@kovis.co.kr',    name: '강해원', phone: '010-4822-1177', dept: '홍보전산과',   rank: '외부협력', status: 'active', expires: '2026-12-31', pwdFails: 0, joined: '2025-12-01T10:00:00', lastLogin: '2026-04-15T17:08:23', action: 'approved', actionBy: '이주원',        actionAt: '2025-12-01T14:12:00', roles: ['analyze','dataset'] },
+    { id: 18, email: 'newreq@namwon.go.kr',    name: '신청자', phone: '063-620-9990', dept: '농업기술센터', rank: '주무관', status: 'active',    expires: '',           pwdFails: 0, joined: '2026-04-22T09:15:00', lastLogin: '',                    action: 'pending',  actionBy: '',              actionAt: '',                    roles: [] },
+    { id: 19, email: 'parkmj@namwon.go.kr',    name: '박민지', phone: '063-620-9430', dept: '환경관리과',   rank: '주무관', status: 'active',    expires: '2027-12-31', pwdFails: 5, joined: '2025-12-24T10:07:00', lastLogin: '2025-12-24T10:08:00', action: 'approved', actionBy: '차남호',        actionAt: '2025-12-24T10:12:00', roles: ['map'] },
+    { id: 20, email: 'reject.aa@gmail.com',    name: '김거절', phone: '010-0000-9999', dept: '외부',         rank: '',       status: 'withdrawn', expires: '',           pwdFails: 0, joined: '2026-04-18T10:20:00', lastLogin: '',                    action: 'rejected', actionBy: '김관리',        actionAt: '2026-04-18T13:15:00', withdrawnAt: '2026-04-18T13:15:00', roles: [] },
+    { id: 21, email: 'choi.ys@namwon.go.kr',   name: '최영수', phone: '063-620-9320', dept: '기획감사실',   rank: '실장',   status: 'withdrawn', expires: '',           pwdFails: 0, joined: '2024-12-18T13:15:00', lastLogin: '2025-12-30T10:14:57', action: 'approved', actionBy: '김관리',        actionAt: '2024-12-18T14:02:00', withdrawnAt: '2026-01-15T09:30:00', roles: [] }
+  ];
+
+  // 사용자별 로그인 이력 시드 (id → array). 새 시드의 id 기준.
+  var LOGIN_HISTORY = {
+    1: [
+      { loginId: 'admin@namwon.go.kr', ip: '211.252.232.5',  success: true, reason: '', at: '2026-04-23T08:12:00', logoutAt: '2026-04-23T18:05:12' },
+      { loginId: 'admin@namwon.go.kr', ip: '211.252.232.5',  success: true, reason: '', at: '2026-04-22T08:05:00', logoutAt: '2026-04-22T17:58:30' }
+    ],
+    2: [
+      { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',               at: '2026-04-22T17:05:23', logoutAt: '' },
+      { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: true,  reason: '',               at: '2026-04-22T09:02:11', logoutAt: '2026-04-22T17:00:00' },
+      { loginId: 'leejuwon@namwon.go.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치', at: '2026-04-19T10:12:44' }
+    ],
+    3: [
+      { loginId: 'ngii@kakao.com', ip: '211.252.232.33', success: true,  reason: '',                at: '2026-04-22T10:12:05', logoutAt: '2026-04-22T16:40:00' },
+      { loginId: 'ngii@kakao.com', ip: '211.252.232.33', success: true,  reason: '',                at: '2026-04-10T09:40:00', logoutAt: '2026-04-10T18:15:22' },
+      { loginId: 'ngii@kakao.com', ip: '211.252.232.33', success: false, reason: '비밀번호 불일치',  at: '2026-04-02T11:05:12' }
+    ],
+    4: [
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', success: true,  reason: '',                at: '2026-04-21T11:04:12', logoutAt: '2026-04-21T18:00:00' },
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T16:00:00' },
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T15:59:30' },
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', success: false, reason: '비밀번호 불일치',  at: '2026-03-10T15:58:50' },
+      { loginId: 'jyong1@korea.kr', ip: '211.252.232.17', success: true,  reason: '',                at: '2026-03-04T09:18:22', logoutAt: '2026-03-04T17:30:00' }
+    ],
+    5: [
+      { loginId: 'dbwjdakrso4235@gmail.com', ip: '211.252.232.42', success: true, reason: '', at: '2026-04-20T09:48:10' }
+    ],
+    6: [
+      { loginId: 'test8@korea.kr', ip: '211.252.232.50', success: true, reason: '', at: '2026-03-11T09:12:30' }
+    ],
+    7: [
+      { loginId: 'hanlee@namwon.go.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-04-22T09:48:41' },
+      { loginId: 'hanlee@namwon.go.kr', ip: '211.252.232.18', success: true, reason: '', at: '2026-04-20T09:50:02' }
+    ],
+    9: [
+      { loginId: 'ohgilsu@namwon.go.kr', ip: '211.252.232.20', success: true,  reason: '',                at: '2026-04-20T11:12:55' },
+      { loginId: 'ohgilsu@namwon.go.kr', ip: '211.252.232.20', success: false, reason: '비밀번호 불일치',  at: '2026-04-15T10:40:02' }
+    ],
+    11: [
+      { loginId: 'noh.ms@namwon.go.kr', ip: '211.252.232.88', success: true, reason: '', at: '2026-04-22T10:40:19' }
+    ],
+    19: [
+      { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', success: false, reason: '비밀번호 5회 초과로 잠금', at: '2025-12-24T10:08:05' },
+      { loginId: 'parkmj@namwon.go.kr', ip: '211.252.232.22', success: false, reason: '비밀번호 불일치', at: '2025-12-24T10:08:00' }
+    ]
+  };
+
+  // 비밀번호 변경 이력 (id → 변경 이벤트 목록).
+  // reason: 최초 설정 / 사용자 변경 / 관리자 초기화 / 3개월 주기 정책 등.
+  // by: 변경자 이름 (부서명 금지 — 그건 소속 정보임).
+  var PWD_HISTORY = {
+    1: [
+      { loginId: 'admin@namwon.go.kr', at: '2026-01-15T09:00:00', by: '김관리', reason: '주기적 비밀번호 변경 정책(3개월)' },
+      { loginId: 'admin@namwon.go.kr', at: '2025-10-12T09:00:00', by: '김관리', reason: '주기적 비밀번호 변경 정책(3개월)' },
+      { loginId: 'admin@namwon.go.kr', at: '2025-04-10T11:18:00', by: '시스템', reason: '최초 계정 발급' }
+    ],
+    3: [
+      { loginId: 'ngii@kakao.com', at: '2026-04-02T11:20:00', by: '이주원', reason: '비밀번호 실패 초기화' },
+      { loginId: 'ngii@kakao.com', at: '2026-03-17T08:41:00', by: '김관리', reason: '최초 계정 발급' }
+    ],
+    4: [
+      { loginId: 'jyong1@korea.kr', at: '2026-03-10T16:10:00', by: '김관리', reason: '비밀번호 실패 초기화' },
+      { loginId: 'jyong1@korea.kr', at: '2026-03-16T09:24:00', by: '이주원', reason: '최초 계정 발급' }
+    ],
+    9: [
+      { loginId: 'ohgilsu@namwon.go.kr', at: '2026-04-15T10:50:00', by: '이한길', reason: '비밀번호 실패 초기화' }
+    ],
+    19: [
+      { loginId: 'parkmj@namwon.go.kr', at: '2025-12-24T10:15:00', by: '차남호', reason: '5회 실패로 계정 잠금 해제' },
+      { loginId: 'parkmj@namwon.go.kr', at: '2025-12-24T10:10:00', by: '차남호', reason: '최초 계정 발급' }
+    ]
+  };
+
+  var STATUS_LABEL = { active: '정상', withdrawn: '탈퇴' };
+  var ACTION_LABEL = { approved: '승인', rejected: '거부', pending: '대기' };
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        // 빈 배열이 저장돼 있으면 시드로 복구 (사용자가 모든 계정을 의도적으로
+        // 지운 경우가 아닌 "손상된 상태" 대응).
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return DEFAULT_SEED.slice();
+  }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.list)); } catch (e) {}
+  }
+  function fmtDateTime(iso) {
+    if (!iso) return '-';
+    return iso.replace('T', ' ').replace(/-/g, '.').substring(0, 19);
+  }
+  function escapeHtml(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var state = {
+    list: load(),
+    filter: { email: '', name: '', phone: '', dept: '', status: 'all', action: 'all', from: '', to: '', quick: 0 },
+    page: 1,
+    pageSize: 10,
+    viewingId: null,
+    // 상세 뷰 이력 탭 별도 페이징
+    loginPage: 1, loginPageSize: 10,
+    pwdPage: 1, pwdPageSize: 10
+  };
+
+  function getFiltered() {
+    var list = state.list.slice();
+    var f = state.filter;
+    if (f.email)  { var kw = f.email.toLowerCase();  list = list.filter(function (n) { return (n.email || '').toLowerCase().indexOf(kw) !== -1; }); }
+    if (f.name)   { var kw = f.name.toLowerCase();   list = list.filter(function (n) { return (n.name  || '').toLowerCase().indexOf(kw) !== -1; }); }
+    if (f.phone)  list = list.filter(function (n) { return (n.phone || '').indexOf(f.phone) !== -1; });
+    if (f.dept)   { var kw = f.dept;                 list = list.filter(function (n) { return (n.dept  || '').indexOf(kw) !== -1; }); }
+    if (f.status !== 'all') list = list.filter(function (n) { return n.status === f.status; });
+    if (f.action !== 'all') list = list.filter(function (n) { return (n.action || 'pending') === f.action; });
+    if (f.from) list = list.filter(function (n) { return (n.joined || '').substring(0, 10) >= f.from; });
+    if (f.to) list = list.filter(function (n) { return (n.joined || '').substring(0, 10) <= f.to; });
+    list.sort(function (a, b) { return (b.joined || '').localeCompare(a.joined || ''); });
+    return list;
+  }
+
+  function renderList() {
+    var tbody = document.getElementById('us-tbody');
+    var emptyWrap = document.getElementById('us-empty-wrap');
+    var countEl = document.getElementById('us-count');
+    var list = getFiltered();
+    var total = list.length;
+    tbody.innerHTML = '';
+    emptyWrap.innerHTML = '';
+
+    if (total === 0) {
+      emptyWrap.innerHTML =
+        '<div class="empty-state"><p>검색 조건에 맞는 사용자가 없습니다.</p></div>';
+      countEl.innerHTML = '총 <strong>0</strong>건 중 0~0행';
+      renderPagination(1);
+      return;
+    }
+
+    var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+    if (state.page > totalPages) state.page = totalPages;
+    var startIdx = (state.page - 1) * state.pageSize;
+    var endIdx = Math.min(total, startIdx + state.pageSize);
+
+    list.slice(startIdx, endIdx).forEach(function (u) {
+      var tr = document.createElement('tr');
+      tr.dataset.id = u.id;
+      var action = u.action || 'pending';
+      var actionCls = action === 'approved' ? 'ok' : (action === 'rejected' ? 'off' : 'pending');
+      tr.innerHTML =
+        '<td><button type="button" class="title-link" data-id="' + u.id + '">' + escapeHtml(u.email) + '</button></td>' +
+        '<td class="col-name">' + escapeHtml(u.name) + '</td>' +
+        '<td class="col-phone">' + escapeHtml(u.phone || '-') + '</td>' +
+        '<td class="col-dept">' + escapeHtml(u.dept || '-') + '</td>' +
+        '<td class="col-rank">' + escapeHtml(u.rank || '-') + '</td>' +
+        '<td class="col-status"><span class="admin-pill ' + u.status + '">' + STATUS_LABEL[u.status] + '</span></td>' +
+        '<td class="col-date">' + (u.joined ? fmtDateTime(u.joined).substring(0, 16) : '-') + '</td>' +
+        '<td class="col-status"><span class="admin-pill ' + actionCls + '">' + ACTION_LABEL[action] + '</span></td>' +
+        '<td class="col-author">' + escapeHtml(u.actionBy || '-') + '</td>' +
+        '<td class="col-date">' + (u.actionAt ? fmtDateTime(u.actionAt).substring(0, 16) : '-') + '</td>';
+      tbody.appendChild(tr);
+    });
+
+    countEl.innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (startIdx + 1) + '~' + endIdx + '행';
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    var pagesEl = document.getElementById('us-pages');
+    pagesEl.innerHTML = '';
+    document.getElementById('us-first').disabled = document.getElementById('us-prev').disabled = state.page <= 1;
+    document.getElementById('us-next').disabled = document.getElementById('us-last').disabled = state.page >= totalPages;
+    var start = Math.max(1, state.page - 2);
+    var end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    for (var p = start; p <= end; p++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'board-page-btn' + (p === state.page ? ' active' : '');
+      btn.textContent = String(p);
+      (function (pg) { btn.addEventListener('click', function () { state.page = pg; renderList(); }); })(p);
+      pagesEl.appendChild(btn);
+    }
+  }
+
+  var VIEW_TITLES = {
+    list: { title: '사용자 관리',       sub: '등록된 사용자를 조회하고 권한·상태를 관리하거나 계정을 탈퇴·삭제할 수 있습니다' },
+    view: { title: '사용자 정보 열람',  sub: '사용자 정보·권한·접속 이력을 확인하고 수정합니다' }
+  };
+  function updatePageTitle(key) {
+    var t = VIEW_TITLES[key] || VIEW_TITLES.list;
+    document.getElementById('page-title-text').textContent = t.title;
+    document.getElementById('page-title-sub').textContent = t.sub;
+    document.title = t.title + ' - Land-XI';
+  }
+  function showView(which) {
+    document.getElementById('list-view').classList.toggle('hidden', which !== 'list');
+    document.getElementById('view-view').classList.toggle('hidden', which !== 'view');
+    updatePageTitle(which);
+    document.querySelector('.page-body').scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  function renderHistoryTables(id) {
+    renderLoginHistory(id);
+    renderPwdHistory(id);
+  }
+
+  function renderLoginHistory(id) {
+    var list = LOGIN_HISTORY[id] || [];
+    var total = list.length;
+    var totalPages = Math.max(1, Math.ceil(total / state.loginPageSize));
+    if (state.loginPage > totalPages) state.loginPage = totalPages;
+    var startIdx = total === 0 ? 0 : (state.loginPage - 1) * state.loginPageSize;
+    var endIdx = Math.min(total, startIdx + state.loginPageSize);
+    var lt = document.getElementById('login-tbody');
+    lt.innerHTML = total
+      ? list.slice(startIdx, endIdx).map(function (r) {
+          return '<tr>' +
+            '<td>' + escapeHtml(r.loginId) + '</td>' +
+            '<td class="col-ip">' + escapeHtml(r.ip) + '</td>' +
+            '<td class="col-status"><span class="admin-pill ' + (r.success ? 'ok' : 'off') + '">' + (r.success ? '성공' : '실패') + '</span></td>' +
+            '<td>' + escapeHtml(r.reason || '-') + '</td>' +
+            '<td class="col-date">' + fmtDateTime(r.at) + '</td>' +
+            '<td class="col-date">' + (r.logoutAt ? fmtDateTime(r.logoutAt) : '-') + '</td>' +
+          '</tr>';
+        }).join('')
+      : '<tr><td colspan="6" class="empty-cell">로그인 이력이 없습니다.</td></tr>';
+    document.getElementById('hl-count').innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (total === 0 ? '0~0' : (startIdx + 1) + '~' + endIdx) + '행';
+    renderMiniPages('hl-pages', state.loginPage, totalPages, function (p) { state.loginPage = p; renderLoginHistory(id); });
+    document.getElementById('hl-first').disabled = document.getElementById('hl-prev').disabled = state.loginPage <= 1;
+    document.getElementById('hl-next').disabled = document.getElementById('hl-last').disabled = state.loginPage >= totalPages;
+  }
+
+  function renderPwdHistory(id) {
+    var list = PWD_HISTORY[id] || [];
+    var total = list.length;
+    var totalPages = Math.max(1, Math.ceil(total / state.pwdPageSize));
+    if (state.pwdPage > totalPages) state.pwdPage = totalPages;
+    var startIdx = total === 0 ? 0 : (state.pwdPage - 1) * state.pwdPageSize;
+    var endIdx = Math.min(total, startIdx + state.pwdPageSize);
+    var pt = document.getElementById('pwd-tbody');
+    pt.innerHTML = total
+      ? list.slice(startIdx, endIdx).map(function (r) {
+          return '<tr>' +
+            '<td>' + escapeHtml(r.loginId) + '</td>' +
+            '<td class="col-date">' + fmtDateTime(r.at) + '</td>' +
+            '<td class="col-author">' + escapeHtml(r.by || '-') + '</td>' +
+            '<td>' + escapeHtml(r.reason || '-') + '</td>' +
+          '</tr>';
+        }).join('')
+      : '<tr><td colspan="4" class="empty-cell">비밀번호 변경 이력이 없습니다.</td></tr>';
+    document.getElementById('hp-count').innerHTML = '총 <strong>' + total + '</strong>건 중 ' + (total === 0 ? '0~0' : (startIdx + 1) + '~' + endIdx) + '행';
+    renderMiniPages('hp-pages', state.pwdPage, totalPages, function (p) { state.pwdPage = p; renderPwdHistory(id); });
+    document.getElementById('hp-first').disabled = document.getElementById('hp-prev').disabled = state.pwdPage <= 1;
+    document.getElementById('hp-next').disabled = document.getElementById('hp-last').disabled = state.pwdPage >= totalPages;
+  }
+
+  // 공용 미니 페이지네이션 렌더러 — 컨테이너 id / 현재 페이지 / 총 페이지 / 페이지 클릭 시 콜백
+  function renderMiniPages(pagesContainerId, cur, totalPages, onPick) {
+    var pagesEl = document.getElementById(pagesContainerId);
+    pagesEl.innerHTML = '';
+    var start = Math.max(1, cur - 2);
+    var end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    for (var p = start; p <= end; p++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'board-page-btn' + (p === cur ? ' active' : '');
+      btn.textContent = String(p);
+      (function (pg) { btn.addEventListener('click', function () { onPick(pg); }); })(p);
+      pagesEl.appendChild(btn);
+    }
+  }
+
+  function openDetail(id) {
+    var u = state.list.find(function (x) { return x.id === id; });
+    if (!u) return;
+    state.viewingId = id;
+    // 소속 정보 (읽기 전용 표시)
+    document.getElementById('d-name').textContent = u.name || '-';
+    document.getElementById('d-phone').textContent = u.phone || '-';
+    document.getElementById('d-dept').textContent = u.dept || '-';
+    document.getElementById('d-rank').textContent = u.rank || '-';
+    // 계정 정보 (읽기 전용 표시)
+    document.getElementById('d-email').textContent = u.email;
+    var statusEl = document.getElementById('d-status');
+    statusEl.className = 'admin-pill ' + u.status;
+    statusEl.textContent = STATUS_LABEL[u.status];
+    document.getElementById('d-joined').textContent = fmtDateTime(u.joined);
+    document.getElementById('d-withdrawn-at').textContent = u.withdrawnAt ? fmtDateTime(u.withdrawnAt) : '-';
+    document.getElementById('d-pwd-fails').textContent = u.pwdFails || 0;
+    // 권한 정보 상단
+    var action = u.action || 'pending';
+    var actionStatusEl = document.getElementById('d-action-status');
+    actionStatusEl.className = 'admin-pill ' + (action === 'approved' ? 'ok' : (action === 'rejected' ? 'off' : 'pending'));
+    actionStatusEl.textContent = ACTION_LABEL[action];
+    document.getElementById('d-action-by').textContent = u.actionBy || '-';
+    document.getElementById('d-action-at').textContent = u.actionAt ? fmtDateTime(u.actionAt) : '-';
+
+    // 상태별 인라인 액션 전환 (계정 상태 pill 우측)
+    // · 정상 (active)    → 탈퇴 버튼
+    // · 탈퇴 (withdrawn) → 인라인 액션 없음 (삭제는 푸터 d-delete-footer 로만)
+    var isWithdrawn = u.status === 'withdrawn';
+    document.getElementById('d-inline-withdraw').hidden = isWithdrawn;
+    // 처리 상태 "대기" 일 때만 승인 / 거부
+    document.getElementById('d-inline-approve').hidden = action !== 'pending';
+    document.getElementById('d-inline-reject').hidden = action !== 'pending';
+
+    var roles = u.roles || [];
+    document.querySelectorAll('#d-roles input[type="checkbox"]').forEach(function (cb) {
+      cb.checked = roles.indexOf(cb.value) !== -1;
+    });
+
+    renderHistoryTables(id);
+    // 탭 초기화 — 항상 로그인 이력으로
+    document.querySelectorAll('.history-tab').forEach(function (t) {
+      t.classList.toggle('active', t.dataset.tab === 'login');
+    });
+    document.getElementById('history-login').classList.remove('hidden');
+    document.getElementById('history-pwd').classList.add('hidden');
+
+    showView('view');
+  }
+
+  // 소속·계정 정보는 읽기 전용. 저장은 권한(roles) 변경만 반영.
+  function saveDetail() {
+    var idx = state.list.findIndex(function (x) { return x.id === state.viewingId; });
+    if (idx < 0) return;
+    state.list[idx].roles = Array.prototype.slice
+      .call(document.querySelectorAll('#d-roles input[type="checkbox"]:checked'))
+      .map(function (cb) { return cb.value; });
+    save();
+    if (window.NotifyUI) NotifyUI.toast('권한이 저장되었습니다', '완료');
+  }
+
+  function resetPwdFails() {
+    ConfirmModal.open({
+      title: '확인',
+      message: '비밀번호 실패 횟수를 초기화 하시겠습니까?',
+      onConfirm: function () {
+        var idx = state.list.findIndex(function (x) { return x.id === state.viewingId; });
+        if (idx < 0) return;
+        state.list[idx].pwdFails = 0;
+        save();
+        document.getElementById('d-pwd-fails').textContent = 0;
+      }
+    });
+  }
+
+  function withdrawUser() {
+    ConfirmModal.open({
+      title: '확인',
+      message: '사용자를 탈퇴 처리하시겠습니까?',
+      danger: true,
+      onConfirm: function () {
+        var idx = state.list.findIndex(function (x) { return x.id === state.viewingId; });
+        if (idx < 0) return;
+        state.list[idx].status = 'withdrawn';
+        state.list[idx].withdrawnAt = nowIso();
+        save();
+        openDetail(state.viewingId); // 인라인 버튼 가시성 갱신 포함
+      }
+    });
+  }
+
+  // 완전 삭제 — 탈퇴된 계정만 대상. 이력 포함 영구 제거.
+  function deleteUser() {
+    ConfirmModal.open({
+      title: '확인',
+      message: '사용자를 완전히 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+      danger: true,
+      onConfirm: function () {
+        state.list = state.list.filter(function (n) { return n.id !== state.viewingId; });
+        save();
+        state.viewingId = null;
+        showView('list');
+        renderList();
+      }
+    });
+  }
+
+  function approveUser() {
+    ConfirmModal.open({
+      title: '확인',
+      message: '이 사용자의 가입을 승인하시겠습니까?',
+      onConfirm: function () {
+        var idx = state.list.findIndex(function (x) { return x.id === state.viewingId; });
+        if (idx < 0) return;
+        state.list[idx].action = 'approved';
+        state.list[idx].actionBy = '관리자';
+        state.list[idx].actionAt = nowIso();
+        save();
+        openDetail(state.viewingId);
+      }
+    });
+  }
+
+  function rejectUser() {
+    ConfirmModal.open({
+      title: '확인',
+      message: '이 사용자의 가입을 거부하시겠습니까?',
+      danger: true,
+      onConfirm: function () {
+        var idx = state.list.findIndex(function (x) { return x.id === state.viewingId; });
+        if (idx < 0) return;
+        state.list[idx].action = 'rejected';
+        state.list[idx].actionBy = '관리자';
+        state.list[idx].actionAt = nowIso();
+        save();
+        openDetail(state.viewingId);
+      }
+    });
+  }
+
+  function applyQuick(months) {
+    var to = '', from = '';
+    if (months > 0) {
+      var now = new Date();
+      var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+      to = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+      var past = new Date(now);
+      past.setMonth(past.getMonth() - months);
+      from = past.getFullYear() + '-' + pad(past.getMonth() + 1) + '-' + pad(past.getDate());
+    }
+    document.getElementById('us-from').value = from;
+    document.getElementById('us-to').value = to;
+    state.filter.quick = months;
+    document.querySelectorAll('.board-quick-btn[data-months]').forEach(function (b) {
+      b.classList.toggle('active', parseInt(b.dataset.months, 10) === months);
+    });
+  }
+  function applySearch() {
+    state.filter.email  = document.getElementById('us-email').value.trim();
+    state.filter.name   = document.getElementById('us-name').value.trim();
+    state.filter.phone  = document.getElementById('us-phone').value.trim();
+    state.filter.dept   = document.getElementById('us-dept').value.trim();
+    state.filter.status = document.getElementById('us-status').value;
+    state.filter.action = document.getElementById('us-action').value;
+    state.filter.from   = document.getElementById('us-from').value;
+    state.filter.to     = document.getElementById('us-to').value;
+    state.page = 1;
+    renderList();
+  }
+
+  // ── 이벤트 ──
+  document.getElementById('us-search').addEventListener('click', applySearch);
+  ['us-email','us-name','us-phone','us-dept'].forEach(function (id) {
+    document.getElementById(id).addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') applySearch();
+    });
+  });
+  document.getElementById('us-reset').addEventListener('click', function () {
+    ['us-email','us-name','us-phone','us-dept'].forEach(function (id) { document.getElementById(id).value = ''; });
+    document.getElementById('us-status').value = 'all';
+    document.getElementById('us-action').value = 'all';
+    applyQuick(0);
+    state.filter = { email: '', name: '', phone: '', dept: '', status: 'all', action: 'all', from: '', to: '', quick: 0 };
+    state.page = 1;
+    renderList();
+  });
+  document.querySelectorAll('.board-quick-btn[data-months]').forEach(function (b) {
+    b.addEventListener('click', function () { applyQuick(parseInt(b.dataset.months, 10)); });
+  });
+  document.getElementById('us-first').addEventListener('click', function () { state.page = 1; renderList(); });
+  document.getElementById('us-prev').addEventListener('click', function () {
+    if (state.page > 1) { state.page -= 1; renderList(); }
+  });
+  document.getElementById('us-next').addEventListener('click', function () { state.page += 1; renderList(); });
+  document.getElementById('us-last').addEventListener('click', function () {
+    state.page = Math.max(1, Math.ceil(getFiltered().length / state.pageSize));
+    renderList();
+  });
+  document.getElementById('us-page-size').addEventListener('change', function () {
+    state.pageSize = parseInt(this.value, 10) || 10;
+    state.page = 1;
+    renderList();
+  });
+  document.getElementById('us-tbody').addEventListener('click', function (e) {
+    var row = e.target.closest('tr[data-id]');
+    if (row) { openDetail(parseInt(row.dataset.id, 10)); return; }
+  });
+
+  // 탭 전환
+  document.querySelectorAll('.history-tab').forEach(function (t) {
+    t.addEventListener('click', function () {
+      document.querySelectorAll('.history-tab').forEach(function (x) { x.classList.remove('active'); });
+      t.classList.add('active');
+      document.getElementById('history-login').classList.toggle('hidden', t.dataset.tab !== 'login');
+      document.getElementById('history-pwd').classList.toggle('hidden', t.dataset.tab !== 'pwd');
+    });
+  });
+
+  document.getElementById('d-list').addEventListener('click', function () {
+    state.viewingId = null;
+    showView('list');
+    renderList();
+  });
+  document.getElementById('d-save').addEventListener('click', saveDetail);
+  document.getElementById('d-reset-fails').addEventListener('click', resetPwdFails);
+  document.getElementById('d-delete-footer').addEventListener('click', deleteUser);
+  // 인라인 액션: 상태 값 우측 버튼들
+  document.getElementById('d-inline-withdraw').addEventListener('click', withdrawUser);
+  document.getElementById('d-inline-approve').addEventListener('click', approveUser);
+  document.getElementById('d-inline-reject').addEventListener('click', rejectUser);
+
+  // 이력 탭 페이지네이션
+  function bindMiniPager(prefix, getPage, setPage, renderFn, getPageSize, setPageSize) {
+    document.getElementById(prefix + '-first').addEventListener('click', function () { setPage(1); renderFn(state.viewingId); });
+    document.getElementById(prefix + '-prev').addEventListener('click', function () {
+      if (getPage() > 1) { setPage(getPage() - 1); renderFn(state.viewingId); }
+    });
+    document.getElementById(prefix + '-next').addEventListener('click', function () { setPage(getPage() + 1); renderFn(state.viewingId); });
+    document.getElementById(prefix + '-last').addEventListener('click', function () {
+      var list = prefix === 'hl' ? (LOGIN_HISTORY[state.viewingId] || []) : (PWD_HISTORY[state.viewingId] || []);
+      var totalPages = Math.max(1, Math.ceil(list.length / getPageSize()));
+      setPage(totalPages);
+      renderFn(state.viewingId);
+    });
+    document.getElementById(prefix + '-page-size').addEventListener('change', function () {
+      setPageSize(parseInt(this.value, 10) || 10);
+      setPage(1);
+      renderFn(state.viewingId);
+    });
+  }
+  bindMiniPager('hl',
+    function () { return state.loginPage; }, function (p) { state.loginPage = p; },
+    renderLoginHistory,
+    function () { return state.loginPageSize; }, function (n) { state.loginPageSize = n; });
+  bindMiniPager('hp',
+    function () { return state.pwdPage; }, function (p) { state.pwdPage = p; },
+    renderPwdHistory,
+    function () { return state.pwdPageSize; }, function (n) { state.pwdPageSize = n; });
+
+  renderList();
+  // URL ?id=N 이 있으면 해당 사용자 상세를 바로 열기 (딥링크·테스트용)
+  var urlId = parseInt(new URLSearchParams(window.location.search).get('id'), 10);
+  if (Number.isInteger(urlId) && state.list.some(function (u) { return u.id === urlId; })) {
+    openDetail(urlId);
+  }
+})();
+</script>
+</body>
+</html>

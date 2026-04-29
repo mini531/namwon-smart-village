@@ -1,0 +1,194 @@
+/* =========================================================
+   포털 진입 페이지 (index.html) — Land-XI / 남원시 스마트빌리지 카드 선택
+   ========================================================= */
+
+html, body { overflow: auto; }
+body { background: #0E1626; }
+
+.portal-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.portal-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 25%, rgba(var(--color-primary-rgb), 0.32), transparent 55%),
+    radial-gradient(circle at 80% 75%, rgba(37, 99, 235, 0.22), transparent 55%),
+    linear-gradient(135deg, #0E1626 0%, #1A2238 50%, #0E1626 100%);
+  z-index: 0;
+}
+
+.portal-page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.portal-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  width: 100%;
+}
+
+.portal-head {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.portal-title {
+  font-size: 64px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -2px;
+  margin: 0 0 12px;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+}
+
+.portal-sub {
+  font-size: 18px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.portal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+
+.portal-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 44px 36px 50px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  text-decoration: none;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: transform .25s ease, border-color .2s ease, background .2s ease;
+  min-height: 260px;
+  overflow: hidden;
+}
+
+.portal-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 60%);
+  pointer-events: none;
+}
+
+.portal-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.portal-card--lx { border-color: rgba(37, 99, 235, 0.3); }
+.portal-card--lx:hover { border-color: rgba(37, 99, 235, 0.7); }
+
+.portal-card--namwon { border-color: rgba(var(--color-primary-rgb), 0.3); }
+.portal-card--namwon:hover { border-color: rgba(var(--color-primary-rgb), 0.7); }
+
+.portal-card-tag {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.portal-card--lx .portal-card-tag {
+  background: rgba(37, 99, 235, 0.22);
+  border-color: rgba(37, 99, 235, 0.5);
+  color: #BFD4FB;
+}
+
+.portal-card--namwon .portal-card-tag {
+  background: rgba(var(--color-primary-rgb), 0.22);
+  border-color: rgba(var(--color-primary-rgb), 0.55);
+  color: #FFC2CD;
+}
+
+.portal-card-title {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.15;
+  color: #fff;
+  margin: 0;
+}
+
+.portal-card-title span {
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: -0.2px;
+  display: inline-block;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.portal-card-desc {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  letter-spacing: -0.2px;
+  flex: 1;
+}
+
+.portal-card-arrow {
+  position: absolute;
+  bottom: 28px;
+  right: 32px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: transform .2s ease, background .2s ease;
+}
+
+.portal-card:hover .portal-card-arrow {
+  transform: translateX(6px);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+@media (max-width: 720px) {
+  .portal-page { padding: 40px 16px; }
+  .portal-title { font-size: 44px; }
+  .portal-sub { font-size: 15px; }
+  .portal-grid { grid-template-columns: 1fr; gap: 16px; }
+  .portal-card { padding: 32px 24px 56px; min-height: 200px; }
+  .portal-card-title { font-size: 28px; }
+  .portal-card-arrow { bottom: 20px; right: 20px; width: 40px; height: 40px; }
+}
