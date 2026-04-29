@@ -603,6 +603,11 @@ html, body { overflow: hidden; }
   box-sizing: border-box;
 }
 .btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.btn:disabled, .btn.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .btn-primary {
   background: var(--color-primary);
