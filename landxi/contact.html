@@ -141,10 +141,22 @@
             <tbody id="inq-tbody"></tbody>
           </table>
         </div>
+        <div id="empty-state-wrap"></div>
+        <div class="board-paginator board-paginator--embedded">
+          <button type="button" class="board-page-btn" id="inq-first">처음</button>
+          <button type="button" class="board-page-btn" id="inq-prev">이전</button>
+          <div class="board-page-pages" id="inq-pages"></div>
+          <button type="button" class="board-page-btn" id="inq-next">다음</button>
+          <button type="button" class="board-page-btn" id="inq-last">마지막</button>
+          <div class="board-page-size-wrap">
+            <select class="board-page-size" id="inq-page-size">
+              <option value="10">10</option><option value="20">20</option><option value="50">50</option>
+            </select>
+            <span>페이지 크기</span>
+          </div>
+          <div class="board-count" id="inq-count">총 <strong>0</strong>건 중 0~0행</div>
+        </div>
       </div>
-
-      <div id="empty-state-wrap"></div>
-      <div class="pagination" id="pagination"></div>
     </section>
 
     <!-- 문의 상세 -->
@@ -198,7 +210,7 @@
   'use strict';
 
   var STORAGE_KEY = 'namwon-inquiries-v3';
-  var PAGE_SIZE = 10;
+  var PAGE_SIZE = 10; // legacy 기본값 — state.pageSize 로 대체됨
   var MAX_FILES = 5;
   var MAX_SIZE_MB = 10;
 
@@ -262,7 +274,8 @@
     inquiries: loadInquiries(),
     pendingFiles: [],
     filter: { status: '', keyword: '', from: '', to: '', quick: 0 },
-    page: 1
+    page: 1,
+    pageSize: 10
   };
 
   function loadInquiries() {
@@ -454,14 +467,16 @@
           '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
           '<p>등록된 문의가 없습니다.</p>' +
         '</div>';
-      document.getElementById('pagination').innerHTML = '';
+      document.getElementById('inq-count').innerHTML = '총 <strong>0</strong>건 중 0~0행';
+      renderPagination(1);
       return;
     }
 
-    var totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+    var totalPages = Math.max(1, Math.ceil(all.length / state.pageSize));
     if (state.page > totalPages) state.page = totalPages;
-    var startIdx = (state.page - 1) * PAGE_SIZE;
-    var pageItems = all.slice(startIdx, startIdx + PAGE_SIZE);
+    var startIdx = (state.page - 1) * state.pageSize;
+    var endIdx = Math.min(all.length, startIdx + state.pageSize);
+    var pageItems = all.slice(startIdx, endIdx);
 
     pageItems.forEach(function (inq) {
       var tr = document.createElement('tr');
@@ -477,6 +492,8 @@
       tbody.appendChild(tr);
     });
 
+    document.getElementById('inq-count').innerHTML =
+      '총 <strong>' + all.length + '</strong>건 중 ' + (startIdx + 1) + '~' + endIdx + '행';
     renderPagination(totalPages);
   }
 
@@ -522,27 +539,53 @@
   }
 
   function renderPagination(totalPages) {
-    var cont = document.getElementById('pagination');
-    cont.innerHTML = '';
-    function mkBtn(label, page, opts) {
-      opts = opts || {};
+    var first = document.getElementById('inq-first');
+    var prev = document.getElementById('inq-prev');
+    var next = document.getElementById('inq-next');
+    var last = document.getElementById('inq-last');
+    var pagesEl = document.getElementById('inq-pages');
+
+    first.disabled = prev.disabled = state.page <= 1;
+    next.disabled = last.disabled = state.page >= totalPages;
+
+    pagesEl.innerHTML = '';
+    var startP = Math.max(1, state.page - 2);
+    var endP = Math.min(totalPages, startP + 4);
+    startP = Math.max(1, endP - 4);
+    for (var p = startP; p <= endP; p++) {
       var b = document.createElement('button');
-      b.className = 'page-btn';
-      if (opts.active) b.classList.add('active');
-      b.textContent = label;
-      if (opts.disabled) b.disabled = true;
-      else b.addEventListener('click', function () {
-        state.page = page;
-        renderList();
-      });
-      cont.appendChild(b);
+      b.type = 'button';
+      b.className = 'board-page-btn' + (p === state.page ? ' active' : '');
+      b.textContent = String(p);
+      (function (pg) {
+        b.addEventListener('click', function () {
+          state.page = pg;
+          renderList();
+        });
+      })(p);
+      pagesEl.appendChild(b);
     }
-    mkBtn('‹', state.page - 1, { disabled: state.page <= 1 });
-    for (var p = 1; p <= totalPages; p++) {
-      mkBtn(String(p), p, { active: p === state.page });
-    }
-    mkBtn('›', state.page + 1, { disabled: state.page >= totalPages });
   }
+
+  // ── 페이지네이션 컨트롤 바인딩 (1회) ──
+  document.getElementById('inq-first').addEventListener('click', function () {
+    state.page = 1; renderList();
+  });
+  document.getElementById('inq-prev').addEventListener('click', function () {
+    if (state.page > 1) { state.page -= 1; renderList(); }
+  });
+  document.getElementById('inq-next').addEventListener('click', function () {
+    state.page += 1; renderList();
+  });
+  document.getElementById('inq-last').addEventListener('click', function () {
+    var totalPages = Math.max(1, Math.ceil(getFiltered().length / state.pageSize));
+    state.page = totalPages; renderList();
+  });
+  document.getElementById('inq-page-size').addEventListener('change', function (e) {
+    state.pageSize = parseInt(e.target.value, 10) || 10;
+    state.page = 1;
+    renderList();
+  });
 
   // ── 이벤트 바인딩 ──
   document.querySelectorAll('.view-tab').forEach(function (tab) {

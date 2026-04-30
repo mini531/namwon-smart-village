@@ -127,7 +127,7 @@
 }
 
 .report-kpi.highlight .value { color: var(--color-primary); }
-.report-kpi.highlight { background: var(--color-primary-tint); border-color: #F5DDE1; }
+.report-kpi.highlight { background: var(--color-primary-tint); border-color: rgba(var(--color-primary-rgb), 0.2); }
 
 .report-kpi .value .unit {
   font-size: 13px;

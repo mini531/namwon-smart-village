@@ -595,7 +595,7 @@ html, body { overflow: hidden; }
 
 .stat-row.danger {
   background: var(--color-primary-tint);
-  border-color: #F5DDE1;
+  border-color: rgba(var(--color-primary-rgb), 0.2);
 }
 
 .stat-label {

@@ -18,9 +18,6 @@ html, body { overflow: hidden; }
 /* 배너 내 아이콘 — 수직 정렬 + 우측 여백 */
 .job-filter-banner svg { vertical-align: middle; margin-right: 4px; }
 
-/* 페이지네이션 — history 페이지 고유 여백 */
-.pagination--history { margin: 18px 0; }
-
 /* 작업 행 세부 셀 스타일 */
 .job-id-cell {
   color: var(--color-text-muted);
@@ -308,7 +305,7 @@ img.row-thumb { object-fit: cover; border-radius: 4px; }
 /* 작업 필터 배너 (탐지 객체 탭이 작업으로 필터링 중일 때 표시) */
 .job-filter-banner {
   background: var(--color-primary-tint);
-  border: 1px solid #F5DDE1;
+  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
   border-radius: var(--border-radius);
   padding: 10px 16px;
   margin-bottom: 14px;

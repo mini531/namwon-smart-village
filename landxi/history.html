@@ -27,16 +27,6 @@
         </h1>
         <p>AI 분석 작업 단위로 실행 이력을 조회하고, 각 작업에서 탐지된 이상 객체를 관리합니다</p>
       </div>
-      <div class="page-actions">
-        <button class="btn btn-secondary" onclick="exportCSV()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          CSV 내보내기
-        </button>
-        <a href="report-road-ortho.html" class="btn btn-primary">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          보고서 생성
-        </a>
-      </div>
     </div>
 
     <!-- 통계 요약 -->
@@ -108,7 +98,6 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             분석 작업 목록
           </div>
-          <div class="th-info" id="jobs-table-info">총 0건</div>
         </div>
         <div class="table-wrap">
           <table class="data-table jobs-data-table">
@@ -126,6 +115,22 @@
             </thead>
             <tbody id="jobs-tbody"></tbody>
           </table>
+        </div>
+        <div class="board-paginator board-paginator--embedded">
+          <button type="button" class="board-page-btn" id="jobs-first">처음</button>
+          <button type="button" class="board-page-btn" id="jobs-prev">이전</button>
+          <div class="board-page-pages" id="jobs-pages"></div>
+          <button type="button" class="board-page-btn" id="jobs-next">다음</button>
+          <button type="button" class="board-page-btn" id="jobs-last">마지막</button>
+          <div class="board-page-size-wrap">
+            <select class="board-page-size" id="jobs-page-size">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+            <span>페이지 크기</span>
+          </div>
+          <div class="board-count" id="jobs-count">총 <strong>0</strong>건 중 0~0행</div>
         </div>
       </div>
     </div>
@@ -188,7 +193,7 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
             초기화
           </button>
-          <button class="btn btn-primary" onclick="applyFilter()">
+          <button class="btn btn-accent" onclick="applyFilter()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             검색
           </button>
@@ -203,7 +208,10 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           탐지 이력 목록
         </div>
-        <div class="th-info" id="table-info">총 0건 · 페이지 1/1</div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="exportCSV()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV 내보내기
+        </button>
       </div>
       <div class="table-wrap">
         <table class="data-table">
@@ -225,7 +233,22 @@
         </table>
       </div>
       <div id="empty-state-wrap"></div>
-      <div class="pagination pagination--history" id="pagination"></div>
+      <div class="board-paginator board-paginator--embedded">
+        <button type="button" class="board-page-btn" id="hist-first">처음</button>
+        <button type="button" class="board-page-btn" id="hist-prev">이전</button>
+        <div class="board-page-pages" id="hist-pages"></div>
+        <button type="button" class="board-page-btn" id="hist-next">다음</button>
+        <button type="button" class="board-page-btn" id="hist-last">마지막</button>
+        <div class="board-page-size-wrap">
+          <select class="board-page-size" id="hist-page-size">
+            <option value="12">12</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+          <span>페이지 크기</span>
+        </div>
+        <div class="board-count" id="hist-count">총 <strong>0</strong>건 중 0~0행</div>
+      </div>
     </div>
     </div><!-- /view-detections -->
 
@@ -301,6 +324,8 @@
   var filtered = [];
   var currentPage = 1;
   var pageSize = 12;
+  var jobsPage = 1;
+  var jobsPageSize = 10;
   var currentDetection = null;
   var currentJobFilter = null;
   var pendingStatus = null;
@@ -427,7 +452,14 @@
     var tbody = document.getElementById('jobs-tbody');
     tbody.innerHTML = '';
 
-    allJobs.forEach(function (job) {
+    var total = allJobs.length;
+    var totalPages = Math.max(1, Math.ceil(total / jobsPageSize));
+    if (jobsPage > totalPages) jobsPage = totalPages;
+    var start = (jobsPage - 1) * jobsPageSize;
+    var endIdx = Math.min(total, start + jobsPageSize);
+    var pageItems = allJobs.slice(start, endIdx);
+
+    pageItems.forEach(function (job) {
       var modelBadge = job.source_type === 'orthophoto'
         ? '<span class="badge badge-primary">정사영상</span>'
         : '<span class="badge">카메라</span>';
@@ -471,8 +503,61 @@
       tbody.appendChild(tr);
     });
 
-    document.getElementById('jobs-table-info').textContent = '총 ' + allJobs.length + '건';
+    document.getElementById('jobs-count').innerHTML = total === 0
+      ? '총 <strong>0</strong>건 중 0~0행'
+      : '총 <strong>' + total + '</strong>건 중 ' + (start + 1) + '~' + endIdx + '행';
+    renderJobsPagination(totalPages);
   }
+
+  // ── 작업 이력 페이지네이션 ──
+  function renderJobsPagination(totalPages) {
+    var first = document.getElementById('jobs-first');
+    var prev = document.getElementById('jobs-prev');
+    var next = document.getElementById('jobs-next');
+    var last = document.getElementById('jobs-last');
+    var pagesEl = document.getElementById('jobs-pages');
+
+    first.disabled = prev.disabled = jobsPage <= 1;
+    next.disabled = last.disabled = jobsPage >= totalPages;
+
+    pagesEl.innerHTML = '';
+    var startP = Math.max(1, jobsPage - 2);
+    var endP = Math.min(totalPages, startP + 4);
+    startP = Math.max(1, endP - 4);
+    for (var p = startP; p <= endP; p++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'board-page-btn' + (p === jobsPage ? ' active' : '');
+      btn.textContent = String(p);
+      (function (pg) {
+        btn.addEventListener('click', function () {
+          jobsPage = pg;
+          renderJobsTable();
+        });
+      })(p);
+      pagesEl.appendChild(btn);
+    }
+  }
+
+  // 작업 이력 컨트롤 바인딩
+  document.getElementById('jobs-first').addEventListener('click', function () {
+    jobsPage = 1; renderJobsTable();
+  });
+  document.getElementById('jobs-prev').addEventListener('click', function () {
+    if (jobsPage > 1) { jobsPage -= 1; renderJobsTable(); }
+  });
+  document.getElementById('jobs-next').addEventListener('click', function () {
+    jobsPage += 1; renderJobsTable();
+  });
+  document.getElementById('jobs-last').addEventListener('click', function () {
+    var totalPages = Math.max(1, Math.ceil(allJobs.length / jobsPageSize));
+    jobsPage = totalPages; renderJobsTable();
+  });
+  document.getElementById('jobs-page-size').addEventListener('change', function (e) {
+    jobsPageSize = parseInt(e.target.value, 10) || 10;
+    jobsPage = 1;
+    renderJobsTable();
+  });
 
   function updateSummaryLive() {
     var total = allDetections.length;
@@ -574,8 +659,8 @@
 
     if (filtered.length === 0) {
       renderEmptyState('조건에 해당하는 탐지 이력이 없습니다.');
-      document.getElementById('table-info').textContent = '총 0건 · 페이지 1/1';
-      document.getElementById('pagination').innerHTML = '';
+      document.getElementById('hist-count').innerHTML = '총 <strong>0</strong>건 중 0~0행';
+      renderPagination(1);
       return;
     }
 
@@ -611,8 +696,9 @@
       tbody.appendChild(tr);
     });
 
-    document.getElementById('table-info').textContent =
-      '총 ' + filtered.length + '건 · 페이지 ' + currentPage + '/' + totalPages;
+    var endIdx = Math.min(filtered.length, start + pageSize);
+    document.getElementById('hist-count').innerHTML =
+      '총 <strong>' + filtered.length + '</strong>건 중 ' + (start + 1) + '~' + endIdx + '행';
     renderPagination(totalPages);
   }
 
@@ -625,43 +711,55 @@
       '</div>';
   }
 
-  // ── 페이지네이션 ──
+  // ── 페이지네이션 (board-paginator 표준) ──
   function renderPagination(totalPages) {
-    var container = document.getElementById('pagination');
-    container.innerHTML = '';
+    var first = document.getElementById('hist-first');
+    var prev = document.getElementById('hist-prev');
+    var next = document.getElementById('hist-next');
+    var last = document.getElementById('hist-last');
+    var pagesEl = document.getElementById('hist-pages');
 
-    function makeBtn(label, page, opts) {
-      opts = opts || {};
-      var btn = document.createElement('button');
-      btn.className = 'page-btn';
-      if (opts.active) btn.classList.add('active');
-      btn.textContent = label;
-      if (opts.disabled) {
-        btn.style.opacity = '0.4';
-        btn.style.cursor = 'not-allowed';
-      } else {
-        btn.addEventListener('click', function () {
-          currentPage = page;
-          renderTable();
-          window.scrollTo({ top: 200, behavior: 'smooth' });
-        });
-      }
-      container.appendChild(btn);
-    }
+    first.disabled = prev.disabled = currentPage <= 1;
+    next.disabled = last.disabled = currentPage >= totalPages;
 
-    makeBtn('‹', currentPage - 1, { disabled: currentPage === 1 });
-
-    var maxButtons = 7;
-    var startP = Math.max(1, currentPage - 3);
-    var endP = Math.min(totalPages, startP + maxButtons - 1);
-    if (endP - startP < maxButtons - 1) startP = Math.max(1, endP - maxButtons + 1);
-
+    pagesEl.innerHTML = '';
+    var startP = Math.max(1, currentPage - 2);
+    var endP = Math.min(totalPages, startP + 4);
+    startP = Math.max(1, endP - 4);
     for (var p = startP; p <= endP; p++) {
-      makeBtn(String(p), p, { active: p === currentPage });
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'board-page-btn' + (p === currentPage ? ' active' : '');
+      btn.textContent = String(p);
+      (function (pg) {
+        btn.addEventListener('click', function () {
+          currentPage = pg;
+          renderTable();
+        });
+      })(p);
+      pagesEl.appendChild(btn);
     }
-
-    makeBtn('›', currentPage + 1, { disabled: currentPage === totalPages });
   }
+
+  // ── 페이지네이션 컨트롤 바인딩 (1회) ──
+  document.getElementById('hist-first').addEventListener('click', function () {
+    currentPage = 1; renderTable();
+  });
+  document.getElementById('hist-prev').addEventListener('click', function () {
+    if (currentPage > 1) { currentPage -= 1; renderTable(); }
+  });
+  document.getElementById('hist-next').addEventListener('click', function () {
+    currentPage += 1; renderTable();
+  });
+  document.getElementById('hist-last').addEventListener('click', function () {
+    var totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    currentPage = totalPages; renderTable();
+  });
+  document.getElementById('hist-page-size').addEventListener('change', function (e) {
+    pageSize = parseInt(e.target.value, 10) || 12;
+    currentPage = 1;
+    renderTable();
+  });
 
   // ── 모달 ──
   function openModal(d) {

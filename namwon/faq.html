@@ -277,17 +277,18 @@
     render();
   });
 
-  // 외부 진입 — ?faq={id} 로 들어오면 해당 항목 자동 펼침 + 스크롤
+  // 초기 렌더링 (외부 진입 ?faq={id} 시 해당 항목 자동 펼침 + 스크롤)
   (function () {
     var params = new URLSearchParams(window.location.search);
     var fid = parseInt(params.get('faq'), 10);
-    if (!fid) return;
-    state.openIds[fid] = true;
+    if (fid) state.openIds[fid] = true;
     render();
-    setTimeout(function () {
-      var target = document.querySelector('.faq-item[data-id="' + fid + '"]');
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 50);
+    if (fid) {
+      setTimeout(function () {
+        var target = document.querySelector('.faq-item[data-id="' + fid + '"]');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
+    }
   })();
 })();
 </script>

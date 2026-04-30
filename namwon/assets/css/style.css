@@ -4875,7 +4875,11 @@ body.mobile-nav-open .gnb-backdrop {
 .info-value--actions > .info-value-main { margin-right: auto; }
 
 /* 카드 본문 내 embed 된 페이지네이터 (이력 탭 등) */
-.board-paginator--embedded { padding: 12px 20px; }
+.board-paginator--embedded {
+  padding: 12px 20px;
+  margin-top: 0;
+  border-top: 1px solid var(--color-border);
+}
 
 /* 카드 내부 탭 (관리자 이력 탭 · 통계 결과 탭 등 공용)
    구조: .card > .history-tabs > .history-tab + .history-panel */
