@@ -437,45 +437,78 @@
   $panelClose.addEventListener('click', closePanel);
 
   // ── 분석 실행 / 진행 오버레이 ─────────────────────────
-  var $progress     = document.getElementById('ai-progress-overlay');
-  var $progressFill = document.getElementById('ai-progress-fill');
-  var $progressPct  = document.getElementById('ai-progress-pct');
-  var $progressStg  = document.getElementById('ai-progress-stage');
-  var $progressMeta = document.getElementById('ai-progress-meta');
-  var $progressTtl  = document.getElementById('ai-progress-title');
-  var $restartBtn   = document.getElementById('ai-restart-btn');
+  // 실제 분석은 평균 24시간 소요 — 화면도 동일 페이스로 진행 (랜덤 ±1시간)
+  var $progress       = document.getElementById('ai-progress-overlay');
+  var $progressFill   = document.getElementById('ai-progress-fill');
+  var $progressPct    = document.getElementById('ai-progress-pct');
+  var $progressStg    = document.getElementById('ai-progress-stage');
+  var $progressTtl    = document.getElementById('ai-progress-title');
+  var $progressParcel = document.getElementById('ai-progress-parcel');
+  var $progressStart  = document.getElementById('ai-progress-start');
+  var $progressEnd    = document.getElementById('ai-progress-end');
+  var $progressRemain = document.getElementById('ai-progress-remain');
+  var $restartBtn     = document.getElementById('ai-restart-btn');
   var progressTimer = null;
 
+  function fmtTimestamp(ms) {
+    var d = new Date(ms);
+    var pad = function (n) { return ('0' + n).slice(-2); };
+    return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function fmtRemain(ms) {
+    var min = Math.max(0, Math.floor(ms / 60000));
+    var hh = Math.floor(min / 60);
+    var mm = min % 60;
+    if (hh > 0) return hh + '시간 ' + mm + '분';
+    if (mm > 0) return mm + '분';
+    var sec = Math.max(0, Math.floor(ms / 1000));
+    return sec + '초';
+  }
+
   function startProgressSim() {
-    var pct = 0;
     var totalParcels = 2583;
+    var totalMs = (24 * 60 + (Math.random() * 120 - 60)) * 60 * 1000;  // 24h ± 1h
+    var startMs = Date.now();
+    var endMs = startMs + totalMs;
+
     if (progressTimer) clearInterval(progressTimer);
     $progressTtl.textContent = '분석 진행 중';
-    $progressStg.textContent = '추론중';
-    progressTimer = setInterval(function () {
-      pct = Math.min(100, pct + Math.random() * 4 + 1);
+    $progressStg.textContent = '대기열 등록';
+    $progressStart.textContent = fmtTimestamp(startMs);
+    $progressEnd.textContent = fmtTimestamp(endMs);
+
+    function tick() {
+      var now = Date.now();
+      var pct = Math.min(100, ((now - startMs) / totalMs) * 100);
+      var stage;
+      if (pct < 2) stage = '전처리';
+      else if (pct < 95) stage = '추론중';
+      else if (pct < 100) stage = '후처리';
+      else stage = '완료';
+
       $progressFill.style.width = pct + '%';
-      $progressPct.textContent = Math.floor(pct) + '%';
-      var done = Math.floor(totalParcels * pct / 100);
-      var remainMin = Math.max(0, Math.round((100 - pct) * 1.8));
-      var hh = Math.floor(remainMin / 60);
-      var mm = remainMin % 60;
-      var remainStr = hh > 0 ? (hh + '시간 ' + mm + '분') : (mm + '분');
-      $progressMeta.textContent = '필지 ' + done.toLocaleString() + ' / ' + totalParcels.toLocaleString() +
-        ' · 예상 잔여 시간 ' + remainStr;
+      $progressPct.textContent = pct.toFixed(2) + '%';
+      $progressStg.textContent = stage;
+      $progressParcel.textContent = Math.floor(totalParcels * pct / 100).toLocaleString() +
+        ' / ' + totalParcels.toLocaleString();
+      $progressRemain.textContent = fmtRemain(endMs - now);
+
       if (pct >= 100) {
         clearInterval(progressTimer);
         progressTimer = null;
         $progressTtl.textContent = '분석 완료';
-        $progressStg.textContent = '완료';
+        $progressRemain.textContent = '0분';
       }
-    }, 350);
+    }
+    tick();
+    progressTimer = setInterval(tick, 1000);
   }
 
   function showProgress() {
     $progress.hidden = false;
     $progressFill.style.width = '0%';
-    $progressPct.textContent = '0%';
+    $progressPct.textContent = '0.00%';
     startProgressSim();
   }
 

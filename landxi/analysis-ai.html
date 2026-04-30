@@ -112,7 +112,13 @@
           </div>
           <div class="ai-progress-body">
             <div class="ai-progress-bar"><div class="ai-progress-bar-fill" id="ai-progress-fill"></div></div>
-            <div class="ai-progress-meta" id="ai-progress-meta">필지 0 / 0 · 예상 잔여 시간 -</div>
+            <dl class="ai-progress-meta">
+              <div class="ai-progress-row"><dt>필지 진행</dt><dd id="ai-progress-parcel">0 / 0</dd></div>
+              <div class="ai-progress-row"><dt>시작 시간</dt><dd id="ai-progress-start">-</dd></div>
+              <div class="ai-progress-row"><dt>예상 완료</dt><dd id="ai-progress-end">-</dd></div>
+              <div class="ai-progress-row"><dt>예상 잔여</dt><dd id="ai-progress-remain">-</dd></div>
+            </dl>
+            <p class="ai-progress-note">평균 24시간 소요 · 완료 시 메일/대시보드로 알림</p>
           </div>
           <div class="ai-progress-foot">
             <button type="button" class="btn btn-secondary btn-cta" id="ai-restart-btn">
